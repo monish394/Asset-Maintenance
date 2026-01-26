@@ -1,0 +1,138 @@
+assert-maintenance/        <-- Project root
+├── backend/               <-- Backend code (Node/Express/Next.js API, etc.)
+│   ├── index.js           <-- Entry point for backend server
+│   ├── routes/            <-- All API routes (auth, users, etc.)
+│   │   └── auth.js        <-- Login/Register routes
+│   ├── controllers/       <-- Logic for handling requests
+│   │   └── authController.js
+│   ├── models/            <-- Database models (User, etc.)
+│   │   └── User.js
+│   ├── middleware/        <-- Auth middleware, error handling, etc.
+│   ├── utils/             <-- Helpers, e.g., JWT token generator
+│   └── package.json       <-- Backend dependencies
+│
+├── frontend/              <-- React + shadcn + Tailwind app
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── ui/        <-- shadcn UI components (button, card, input, label)
+│   │   ├── lib/           <-- Utility functions, helpers
+│   │   │   └── utils.js   <-- cn() helper for Tailwind classNames
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   └── Register.jsx
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── index.css           <-- Tailwind base CSS
+│   ├── package.json        <-- Frontend dependencies
+│   └── vite.config.js
+│
+├── .gitignore
+└── README.md
+
+
+
+
+
+
+
+
+project-root/
+│
+├── backend/                  # Node + Express backend
+│   ├── controllers/          # Business logic for each model
+│   │   ├── authController.js
+│   │   ├── userController.js
+│   │   ├── adminController.js
+│   │   ├── technicianController.js
+│   │   ├── assetController.js
+│   │   └── workOrderController.js
+│   │
+│   ├── models/               # Mongoose models
+│   │   ├── User.js
+│   │   ├── Technician.js
+│   │   ├── Asset.js
+│   │   └── WorkOrder.js
+│   │
+│   ├── routes/               # Express routes
+│   │   ├── authRoutes.js
+│   │   ├── userRoutes.js
+│   │   ├── adminRoutes.js
+│   │   ├── technicianRoutes.js
+│   │   ├── assetRoutes.js
+│   │   └── workOrderRoutes.js
+│   │
+│   ├── middleware/           # Auth, role-based access, error handling
+│   │   ├── authMiddleware.js
+│   │   └── roleMiddleware.js
+│   │
+│   ├── utils/                # Helper functions
+│   │   └── distanceCalculator.js  # Haversine formula for nearest technician
+│   │
+│   ├── config/               # DB, environment, cloud storage config
+│   │   └── db.js
+│   │
+│   ├── server.js             # Entry point for Express
+│   └── package.json
+│
+├── frontend/                 # React frontend
+│   ├── public/
+│   │   └── index.html
+│   │
+│   ├── src/
+│   │   ├── api/              # Axios or fetch API functions
+│   │   │   ├── authApi.js
+│   │   │   ├── userApi.js
+│   │   │   └── adminApi.js
+│   │   │
+│   │   ├── components/       # Shared UI components
+│   │   │   ├── Header.js
+│   │   │   ├── Sidebar.js
+│   │   │   ├── Card.js
+│   │   │   ├── Badge.js
+│   │   │   └── Button.js
+│   │   │
+│   │   ├── dashboards/       # Role-specific dashboard layouts
+│   │   │   ├── AdminDashboard/
+│   │   │   │   ├── Home.js
+│   │   │   │   ├── Assets.js
+│   │   │   │   ├── WorkOrders.js
+│   │   │   │   ├── Users.js
+│   │   │   │   └── Technicians.js
+│   │   │   │
+│   │   │   ├── TechnicianDashboard/
+│   │   │   │   ├── Home.js
+│   │   │   │   ├── AssignedWorkOrders.js
+│   │   │   │   ├── CompletedWork.js
+│   │   │   │   └── Profile.js
+│   │   │   │
+│   │   │   └── UserDashboard/
+│   │   │       ├── Home.js
+│   │   │       ├── MyAssets.js
+│   │   │       ├── RaiseRequest.js
+│   │   │       └── Payments.js
+│   │   │
+│   │   ├── context/          # React Context API for auth & roles
+│   │   │   └── AuthContext.js
+│   │   │
+│   │   ├── pages/            # Authentication & error pages
+│   │   │   ├── Login.js
+│   │   │   ├── Register.js
+│   │   │   └── NotFound.js
+│   │   │
+│   │   ├── routes/           # Frontend routing
+│   │   │   └── AppRoutes.js
+│   │   │
+│   │   ├── styles/           # Global CSS / Tailwind / SCSS
+│   │   │   └── globals.css
+│   │   │
+│   │   ├── utils/            # Helpers like formatDate, currency, distance
+│   │   │   └── helpers.js
+│   │   │
+│   │   ├── App.js
+│   │   └── index.js
+│   │
+│   └── package.json
+│
+├── .env
+└── README.md
+
