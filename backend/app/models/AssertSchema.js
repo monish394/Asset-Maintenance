@@ -17,7 +17,7 @@ const assetSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["unassigned", "assigned", "underMaintenance"],
+    enum: ["unassigned", "assigned", "undermaintenance"],
     default: "unassigned",
     required: true
   },

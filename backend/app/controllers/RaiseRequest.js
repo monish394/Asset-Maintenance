@@ -49,7 +49,7 @@ RaiseRequestCtrl.Getallrequest = async (req, res) => {
       })
       .populate({
         path: 'assignedto',
-        select: 'name', // get technician name
+        select: 'name', 
       });
 
     res.status(200).json(allraiserequest);
@@ -112,6 +112,20 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
     res.status(500).json({ err: "Update failed" });
   }
 };
+
+RaiseRequestCtrl.TechnicianStatusUpdate=async (req,res) => {
+   const {requestid}=req.params;
+   const body=req.body;
+  try{
+    const stausupdate=await RaiseRequest.findByIdAndUpdate(requestid,{status:body.status},{new:true})
+    res.status(200).json(stausupdate)
+
+  }catch(err){
+    console.log(err.message)
+    res.status(400).json({err:"something went wrong while techncianstatusupdate !!!"})
+  }
+  
+}
 
 
 export default RaiseRequestCtrl

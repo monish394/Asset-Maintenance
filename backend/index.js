@@ -42,6 +42,8 @@ app.get("/api/allraiserequest",RaiseRequestCtrl.Getallrequest)
 app.put("/api/assigntechnician/:requestid", RaiseRequestCtrl.AssignTechnician)
 app.get("/api/alltechnicianrequest",AuthenticateUser, RaiseRequestCtrl.getTechnicianrequests)
 app.put("/api/raiserequest/accept/:requestid",AuthenticateUser,RaiseRequestCtrl.TechnicianAccept)
+app.put("/api/technicianstatusupdate/:requestid",RaiseRequestCtrl.TechnicianStatusUpdate)
+
 
 
 

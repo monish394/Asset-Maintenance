@@ -32,6 +32,7 @@ export default function Assets() {
   const filtereddata=assets.filter((i)=>{
     return i.assetName.toLowerCase().includes(btnsearch.toLowerCase())
   })
+  console.log(filtereddata)
 
   const handleSearch=()=>{
     setBtnsearch(txt)
@@ -201,12 +202,14 @@ export default function Assets() {
       </div>
 
       <div className="flex gap-2 p-3 pt-0">
-        <button
-          onClick={() => handleAssign(asset._id)}
-          className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700"
-        >
-          Assign
-        </button>
+         {asset.status !== "undermaintenance" && (
+    <button
+      onClick={() => handleAssign(asset._id)}
+      className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700"
+    >
+      Assign
+    </button>
+  )}
 
         <button className="flex-1 text-xs bg-gray-600 text-white py-1.5 rounded hover:bg-gray-700">
           Edit

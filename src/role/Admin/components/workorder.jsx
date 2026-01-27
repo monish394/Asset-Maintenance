@@ -11,11 +11,7 @@ export default function WorkOrder() {
   const {allraiserequest,setAllraiserequest,alltechnicians}=AdminData();
   console.log(alltechnicians)
   console.log(allraiserequest)
-  const handleSubmit=()=>{
-    
-    setShowform(!showform)
-  }
-
+ 
 
   
     
@@ -42,6 +38,7 @@ const handleAssign = () => {
             : req
         )
       );
+      setTechnicianid("");
 
       setShowform(false);
     })
@@ -56,7 +53,10 @@ const handleAssign = () => {
     <div className="bg-white rounded-xl shadow-xl w-[400px] max-w-[90%] p-6 relative animate-fadeIn">
       
       <button
-        onClick={() => setShowform(false)}
+        onClick={() => {
+      setTechnicianid("");
+
+          setShowform(false)}}
         className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition text-lg"
       >
         ✕
@@ -91,7 +91,9 @@ const handleAssign = () => {
 
       <div className="flex justify-end gap-3">
         <button
-          onClick={() => setShowform(false)}
+          onClick={() =>{ 
+            setTechnicianid("");
+            setShowform(false)}}
           className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
         >
           Cancel

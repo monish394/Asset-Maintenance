@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
 import axios from "axios";
 
 export default function AssignedRequest() {
+  const[requestid,setRequestid]=useState("")
+  const [statusedit,setStatusedit]=useState("")
+  const [showeditform,setShoweditform]=useState(false)
   const { technicianassignedassert, setTechnicianassignedassert } = TechData();
 
   const handleAccept = async (requestId) => {
@@ -26,8 +30,82 @@ export default function AssignedRequest() {
     }
   };
 
+  const handleEdit=(requestId)=>{
+    setRequestid(requestId)
+    setShoweditform(!showeditform)
+  }
+  const handleUpdate=async()=>{
+try{
+
+
+    console.log("handleupdate clicked",statusedit)
+    console.log("requestid",requestid)
+    const res=await axios.put(`http://localhost:5000/api/technicianstatusupdate/${requestid}`,{status:statusedit})
+     setTechnicianassignedassert((prev) =>
+      prev.map((item) =>
+        item._id === res.data._id
+          ? { ...item, status: res.data.status }
+          : item
+      )
+    );
+    setShoweditform(!showeditform)
+    console.log(res.data)
+}catch(err){
+  console.log(err.message)
+}
+
+
+  }
+
   return (
     <div className="p-6">
+{showeditform && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      onClick={() => setShoweditform(false)}
+    />
+
+    <div className="relative z-10 w-80 rounded-xl bg-white p-6 shadow-2xl">
+      
+      <h3 className="mb-4 text-base font-semibold text-gray-800">
+        Update Request Status
+      </h3>
+
+      <select
+        value={statusedit}
+        onChange={(e) => setStatusedit(e.target.value)}
+        className="mb-6 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm
+                   text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      >
+        <option value="assigned">Assigned</option>
+        <option value="in-process">In Process</option>
+        <option value="completed">Completed</option>
+      </select>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShoweditform(false)}
+          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium
+                     text-gray-600 hover:bg-gray-100 transition"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleUpdate}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium
+                     text-white hover:bg-blue-700 transition"
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
       <h1 className="text-2xl font-bold mb-4">Assigned Requests</h1>
 
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -108,7 +186,7 @@ export default function AssignedRequest() {
                   </button>}
                   <button
                     className="px-3 py-1 text-sm font-semibold bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-                    onClick={() => console.log("Edit", ele._id)}
+                    onClick={()=>{handleEdit(ele._id)}}
                   >
                     Edit
                   </button>
