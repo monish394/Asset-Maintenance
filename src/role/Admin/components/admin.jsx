@@ -43,7 +43,8 @@ export default function Admin() {
       </div>
       <div className="flex justify-between text-sm text-gray-700 mt-1">
         <span>Asset Name:</span>
-       <span>{requestinfo.assignedto?.name || "Not Assigned"}</span>
+        {/* made change */}
+       <span>{requestinfo.assetid?.assetName || "Not Assigned"}</span>
 
       </div>
     </div>
