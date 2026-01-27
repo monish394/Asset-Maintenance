@@ -24,6 +24,7 @@ import Payment from "./role/user/components/payment.jsx";
 import WorkOrderRequest from "./role/user/components/workorderrequest.jsx";
 
 //techniican page
+import TechDataProvider from "./role/Technician/context/Techniciandatamaintenance.jsx";
 import TechnicianLayout from "./role/Technician/components/technicianlayout.jsx";
 import TechnicianHome from "./role/Technician/components/technicianhome.jsx";
 import AssignedRequest from "./role/Technician/components/assignedrequest.jsx";
@@ -62,7 +63,7 @@ export default function App() {
         </Route>
 
         {/* technician route */}
-         <Route path="/technician" element={<TechnicianLayout />}>
+         <Route path="/technician" element={<TechDataProvider><TechnicianLayout /></TechDataProvider>}>
           <Route index element={<Navigate to={<TechnicianHome/>}/>} />
 
           <Route path="home" element={<TechnicianHome />} />

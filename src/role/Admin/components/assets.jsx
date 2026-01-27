@@ -77,42 +77,60 @@ export default function Assets() {
   return (
     <>
       <div>
+        
 {showassign && (
-  <div className="backdrop-blur-sm fixed z-500 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] bg-gray-100 bg-opacity-95 p-6 rounded-lg shadow-lg font-semibold">
-    <h2 className="text-xl mb-4 text-gray-700">Assign To</h2>
+  <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
 
-    <div className="mb-4">
-     <select
-  value={assignuser}
-  onChange={(e) => setAssignuser(e.target.value)}
-  className="w-full border border-black rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
->
-  <option value="" disabled>
-    Select User
-  </option>
+  <div className="bg-white rounded-xl shadow-xl w-[400px] max-w-[90%] p-6 font-semibold relative animate-fadeIn">
+    
+   
+    <button
+      onClick={() => setShowassign(false)}
+      className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition"
+    >
+      ✕
+    </button>
 
-  {user.map((ele) => (
-    <option  key={ele._id} value={ele._id}>
-      <b style={{color:"black"}}>{ele.name}</b>
-    </option>
-  ))}
-</select>
+    <h2 className="text-2xl font-semibold text-gray-800 mb-2">Assign Asset</h2>
+    <p className="text-sm text-gray-500 mb-5">Select a User from the list to assign this Asset</p>
 
+    <div className="mb-6">
+      <label className="block text-sm font-medium text-gray-700 mb-1">User's</label>
+      <select
+        value={assignuser}
+        onChange={(e) => setAssignuser(e.target.value)}
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+      >
+        <option value="" disabled>
+          Select User
+        </option>
+        {user.map((ele) => (
+          <option key={ele._id} value={ele._id}>
+            {ele.name}
+          </option>
+        ))}
+      </select>
     </div>
 
-    <div className="flex gap-2">
-      <button  onClick={handleAssignTo} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-        Assign
-      </button>
+    <div className="flex justify-end gap-3">
       <button
         onClick={() => setShowassign(false)}
-        className="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 transition"
+        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
       >
         Cancel
       </button>
+      <button
+        onClick={handleAssignTo}
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        Assign
+      </button>
     </div>
   </div>
+</div>
+
 )}
+
 
 
 

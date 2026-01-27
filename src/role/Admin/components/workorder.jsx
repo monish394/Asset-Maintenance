@@ -38,7 +38,7 @@ const handleAssign = () => {
       setAllraiserequest((prev) =>
         prev.map((req) =>
           req._id === requestid
-            ? { ...req, assignedto: technicianObj, status: "assigned" } // <-- assign full object
+            ? { ...req, assignedto: technicianObj } 
             : req
         )
       );
@@ -51,39 +51,64 @@ const handleAssign = () => {
 
   return (
     <div className="p-8 mt-20 ml-64">
-  {showform&&<div className="fixed inset-0  bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
-
-  <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-   
-    <h1 className="text-lg font-semibold text-gray-800 mb-4">Assign Technician</h1>
-    <div className="flex flex-col gap-2 mb-4">
-      <label htmlFor="technician" className="text-sm font-medium text-gray-700">
-        Select Technician
-      </label>
-      <select value={technicianid} onChange={e=>setTechnicianid(e.target.value)}
-        id="technician"
-        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  {showform && (
+  <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl shadow-xl w-[400px] max-w-[90%] p-6 relative animate-fadeIn">
+      
+      <button
+        onClick={() => setShowform(false)}
+        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition text-lg"
       >
-        <option value="">-- Select Technician --</option>
-        {
-          alltechnicians.map((ele)=>{
-            
-            
-            return <option  value={ele._id}>{ele.name}</option>
-          })
-        }
-      </select>
-    </div>
-    <div className="flex justify-end gap-2">
-      <button onClick={handleSubmit} className="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
-        Cancel
+        ✕
       </button>
-      <button onClick={handleAssign} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-        Assign
-      </button>
+
+      <h1 className="text-2xl font-semibold text-gray-800 mb-2">Assign Technician</h1>
+      <p className="text-sm text-gray-500 mb-5">
+        Select a technician from the list to assign this request.
+      </p>
+
+      <div className="mb-6">
+        <label
+          htmlFor="technician"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Technician
+        </label>
+        <select
+          id="technician"
+          value={technicianid}
+          onChange={(e) => setTechnicianid(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+        >
+          <option value="">-- Select Technician --</option>
+          {alltechnicians.map((ele) => (
+            <option key={ele._id} value={ele._id}>
+              {ele.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShowform(false)}
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleAssign}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          Assign
+        </button>
+      </div>
     </div>
   </div>
-</div>}
+)}
+
+
+
 
 
         <div>
@@ -107,7 +132,7 @@ const handleAssign = () => {
           <img
             src={ele.assetid.assetImg}
             alt={ele.assetid?.assetName}
-            className="w-full h-full object-cover"
+            className="w-40 h-30 object-cover"
           />
         ) : (
           <span className="text-gray-400 font-medium">No Image</span>
@@ -190,9 +215,14 @@ const handleAssign = () => {
               </span>
             </td>
             <td className="px-4 py-2 text-sm text-gray-600">{ele.description || "No description"}</td>
-<td className="px-4 py-2 text-sm text-gray-800">
+<td
+  className={`px-4 py-2 text-sm font-medium ${
+    ele.assignedto ? "text-blue-800" : "text-red-500"
+  }`}
+>
   {ele.assignedto?.name || "Unassigned"}
 </td>
+
 
            <td className="px-4 py-2 text-sm">
   <button onClick={()=>{

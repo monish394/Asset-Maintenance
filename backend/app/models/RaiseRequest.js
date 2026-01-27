@@ -41,7 +41,7 @@ const raiseRequestSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-})
+},{timestamps:true})
 
 const RaiseRequest = mongoose.model("RaiseRequest", raiseRequestSchema)
 export default RaiseRequest

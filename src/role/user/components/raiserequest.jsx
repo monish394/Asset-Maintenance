@@ -49,7 +49,7 @@ export default function RaiseRequest() {
       },
     };
 
-    setMyraiserequest([...myraiserequest, newRequest]);
+    setMyraiserequest([newRequest,...myraiserequest ]);
 
     setAssetid("");
     setAssetdescription("");
@@ -188,8 +188,9 @@ export default function RaiseRequest() {
           </td>
 
           <td className="px-4 py-3 text-gray-700">
-            {ele.assignedto || "Unassigned"}
-          </td>
+  {ele.assignedto ? ele.assignedto.name : "Unassigned"}
+</td>
+
         </tr>
       ))}
     </tbody>

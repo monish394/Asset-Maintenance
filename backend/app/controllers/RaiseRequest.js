@@ -26,7 +26,7 @@ RaiseRequestCtrl.Postissue=async (req,res) => {
 
 RaiseRequestCtrl.Getuserissue=async (req,res) => {
     try{
-        const alluserissue=await RaiseRequest.find({userid:req.userid}).populate("assetid", "assetName assetImg")
+        const alluserissue=await RaiseRequest.find({userid:req.userid}).populate("assetid", "assetName assetImg") .populate("assignedto", "name")
         res.status(200).json(alluserissue)
 
     }catch(err){
@@ -69,7 +69,7 @@ RaiseRequestCtrl.AssignTechnician = async (req, res) => {
   try {
     const updated = await RaiseRequest.findByIdAndUpdate(
       requestid ,
-      { assignedto: technicianid,status:"assigned" },
+      { assignedto: technicianid, },
       { new: true }
     );
 
@@ -85,14 +85,31 @@ RaiseRequestCtrl.getTechnicianrequests = async (req, res) => {
   try {
     const technicianId = req.userid; 
 
-    const requests = await RaiseRequest.find({ assignedto: technicianId })
-      .populate({ path: "assetid", select: "assetName assetImg" })
-      .populate({ path: "userid", select: "name" });
+   const requests = await RaiseRequest.find({ assignedto: technicianId })
+  .populate({ path: "assetid", select: "assetName assetImg" })
+  .populate({ path: "userid", select: "name address" }); 
 
     res.status(200).json(requests);
   } catch (err) {
     console.log(err.message);
     res.status(400).json({ err: "Something went wrong fetching technician requests" });
+  }
+};
+
+RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
+  const { requestid } = req.params;
+  const technicianId = req.userid; 
+
+  try {
+    const updated = await RaiseRequest.findByIdAndUpdate(
+      requestid,
+      { status: "assigned", assignAt: new Date(), assignedto: technicianId },
+      { new: true }
+    );
+    res.status(200).json(updated);
+  } catch(err) {
+    console.log(err.message);
+    res.status(500).json({ err: "Update failed" });
   }
 };
 
