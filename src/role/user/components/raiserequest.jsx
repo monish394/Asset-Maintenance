@@ -170,21 +170,22 @@ export default function RaiseRequest() {
           </td>
 
           <td className="px-4 py-3 text-gray-700">
-            <span
-              className={`font-medium ${
-                ele.status === "pending"
-                  ? "text-yellow-600"
-                  : ele.status === "assigned"
-                  ? "text-blue-600"
-                  : ele.status === "in-process"
-                  ? "text-purple-600"
-                  : ele.status === "completed"
-                  ? "text-green-600"
-                  : "text-gray-500"
-              }`}
-            >
-              {ele.status}
-            </span>
+           <span
+  className={`font-medium whitespace-nowrap ${
+    ele.status === "pending"
+      ? "text-yellow-600"
+      : ele.status === "assigned"
+      ? "text-blue-600"
+      : ele.status === "in-process"
+      ? "text-purple-600"
+      : ele.status === "completed"
+      ? "text-green-600"
+      : "text-gray-500"
+  }`}
+>
+  {ele.status}
+</span>
+
           </td>
 
           <td className="px-4 py-3 text-gray-700">

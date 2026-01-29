@@ -29,9 +29,14 @@ app.get("/api/findtechnicians",UserCtrl.FindAllTechnician)
 //assets route
 
 app.post("/api/assets",AssetsCtrl.CreateAsset)
+
+//dashboard stats
+app.get("/api/dashboardstats",AssetsCtrl.DashboardStats)
+
 app.get("/api/assets",AssetsCtrl.GetAsset)
 app.put("/api/assets/:assetid",AssetsCtrl.Assignuser)
 app.get("/api/userassets",AuthenticateUser,AssetsCtrl.Userasset)
+app.put("/api/editassert/:assetid",AssetsCtrl.EditAllFieldAsset)
 
 
 //raise request route

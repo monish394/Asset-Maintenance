@@ -33,6 +33,10 @@ const raiseRequestSchema = new mongoose.Schema({
         default: null
 
     },
+    costEstimate:{
+       type:Number,
+       default:null
+    },
     assignAt: {
         type: Date,
         default: null

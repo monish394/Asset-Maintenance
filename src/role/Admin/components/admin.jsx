@@ -1,8 +1,11 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { AdminData } from "../context/Admindatamaintenance";
+import axios from "axios";
 
 export default function Admin() {
+
+
+  const [admindashboardstats,setAdmindashboardstats]=useState(null)
   const {allraiserequest} =AdminData();
   console.log(allraiserequest)
   const [showdetails,setShowdetails]=useState(false)
@@ -17,10 +20,73 @@ export default function Admin() {
     setRequestinfo(allinfo)
 
   }
+  useEffect(()=>{
+    axios.get("http://localhost:5000/api/dashboardstats")
+    .then((res)=>{
+      console.log(res.data)
+      setAdmindashboardstats(res.data)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+
+  },[])
 
 
   return (
     <div>
+      {/* made change */}
+  {admindashboardstats&&<div className="inline-block bg-grey-100 p-8 rounded-xl border border-slate-200 ml-70 mt-20">
+  <div className="flex gap-8">
+    
+    <div className="w-[220px] h-[150px] bg-white border rounded-xl border-gray-300  px-5 py-4 flex justify-between items-center shadow-sm">
+      <div>
+        <p className="text-xl text-gray-500 ">Total Assets</p>
+        <p className="text-2xl font-semibold text-gray-900 mt-1">{admindashboardstats.totalAssets}</p>
+      </div>
+      <div className="w-12 h-12 bg-white-200 rounded-xl flex items-center justify-center">
+        <span className="text-blue-600 text-3xl">📦</span>
+      </div>
+    </div>
+
+    <div className="w-[220px] h-[150px] bg-white rounded-xl border border-gray-300  px-5 py-4 flex justify-between items-center shadow-sm">
+      <div>
+        <p className="text-xl text-gray-500">Working</p>
+        <p className="text-2xl font-semibold text-gray-900 mt-1">{admindashboardstats.workingAssets}</p>
+      </div>
+      <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+        <span className="text-green-600 text-2xl">✔️</span>
+      </div>
+    </div>
+
+    <div className="w-[220px] h-[150px] bg-white border rounded-xl border border-gray-300 px-5 py-4 flex justify-between items-center shadow-sm">
+      <div>
+        <p className="text-xm text-gray-500">Under Maintenance</p>
+        <p className="text-2xl font-semibold text-gray-900 mt-1">{admindashboardstats.undermaintance}</p>
+      </div>
+      <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+        <span className="text-orange-600 text-2xl">🔧</span>
+      </div>
+    </div>
+
+    <div className="w-[220px] h-[150px] border rounded-xl bg-white border border-gray-300  px-5 py-4 flex justify-between items-center shadow-sm">
+      <div>
+        <p className="text-xm text-gray-500">Pending Requests</p>
+        <p className="text-2xl font-semibold text-gray-900 mt-1">{admindashboardstats.pendingRequests}</p>
+      </div>
+      <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+        <span className="text-yellow-600 text-2xl">🕒</span>
+      </div>
+    </div>
+
+  </div>
+</div>}
+
+
+
+
+
+
      
       <div className="p-8 mt-20 ml-64">
         <h1>Dashboard Page</h1>
@@ -39,7 +105,14 @@ export default function Admin() {
       <h3 className="text-sm font-medium text-gray-500 mb-2">Basic Info</h3>
       <div className="flex justify-between text-sm text-gray-700">
         <span>Status:</span>
-        <span className="text-blue-600">{requestinfo?.status}</span>
+  <span className={`font-medium ${
+    requestinfo?.status === 'assigned' ? 'text-blue-600' :
+    requestinfo?.status === 'in-process' ? 'text-purple-600' :
+    requestinfo?.status==="pending"?'text-yellow-600':
+    'text-green-600'
+  }`}>
+    {requestinfo?.status}
+  </span>
       </div>
       <div className="flex justify-between text-sm text-gray-700 mt-1">
         <span>Asset Name:</span>
@@ -66,7 +139,7 @@ export default function Admin() {
       </div>
       <div className="flex justify-between text-sm text-gray-700 mt-1">
         <span>Assigned Technician:</span>
-        <span>{requestinfo.assignedto?.name}</span>
+        <span>{requestinfo.assignedto?.name|| "Not Assigned"}</span>
       </div>
     </div>
 
@@ -114,12 +187,24 @@ export default function Admin() {
             <td className="px-6 py-4 text-sm text-gray-700">{ele.assetid.assetName}</td>
             <td className="px-6 py-4 text-sm text-gray-700">{ele.description}</td>
             <td className="px-6 py-4 text-sm text-gray-700">{ele.userid.name}</td>
-            <td className={`px-6 py-4 text-sm font-medium
-              ${ele.status === 'assigned' ? 'text-blue-600' :
-                ele.status === 'in-process' ? 'text-purple-600' :
-                'text-green-600'}`}>
-              {ele.status}
-            </td>
+  <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
+  <span
+    className={`${
+      ele.status === 'pending' ? 'text-yellow-600 bg-yellow-100' :
+      ele.status === 'assigned' ? 'text-blue-600 bg-blue-100' :
+      ele.status === 'in-process' ? 'text-purple-600 bg-purple-100' :
+      ele.status === 'completed' ? 'text-green-600 bg-green-100' :
+      'text-gray-500 bg-gray-100'
+    }`}
+  >
+    {ele.status}
+  </span>
+</td>
+
+
+
+
+
             <td className="px-6 py-4 text-sm flex gap-2">
               <button
                 onClick={() => { setShowdetails(true);

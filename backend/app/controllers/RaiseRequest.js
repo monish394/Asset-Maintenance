@@ -113,19 +113,27 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
   }
 };
 
-RaiseRequestCtrl.TechnicianStatusUpdate=async (req,res) => {
-   const {requestid}=req.params;
-   const body=req.body;
-  try{
-    const stausupdate=await RaiseRequest.findByIdAndUpdate(requestid,{status:body.status},{new:true})
-    res.status(200).json(stausupdate)
+RaiseRequestCtrl.TechnicianStatusUpdate = async (req, res) => {
+  const { requestid } = req.params;
+  const { status, costEstimate } = req.body;
 
-  }catch(err){
-    console.log(err.message)
-    res.status(400).json({err:"something went wrong while techncianstatusupdate !!!"})
+  try {
+    const updatedRequest = await RaiseRequest.findByIdAndUpdate(
+      requestid,
+      {
+        status,
+        costEstimate: costEstimate !== undefined ? costEstimate : undefined,
+      },
+      { new: true }
+    );
+
+    res.status(200).json(updatedRequest);
+  } catch (err) {
+    console.log(err.message);
+    res.status(400).json({ err: "Something went wrong while updating technician status!" });
   }
-  
-}
+};
+
 
 
 export default RaiseRequestCtrl

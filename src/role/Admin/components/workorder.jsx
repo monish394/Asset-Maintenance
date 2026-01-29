@@ -3,6 +3,8 @@ import { AdminData } from "../context/Admindatamaintenance";
 import {  useState } from "react";
 import axios from "axios";
 export default function WorkOrder() {
+  
+  
   const[requestid,setRequestid]=useState("")
   console.log("assetid ",requestid)
   const[technicianid,setTechnicianid]=useState("")
@@ -145,7 +147,7 @@ const handleAssign = () => {
           {ele.assetid?.assetName || ele.assetid || "Unknown Asset"}
         </h2>
 
-        <p className="text-sm text-gray-500 truncate">
+        <p className="text-sm text-balck-500 truncate">
           <span className="font-medium">Raised By:</span> {ele.userid?.name || ele.userid || "Unknown"}
         </p>
 
@@ -172,7 +174,7 @@ const handleAssign = () => {
           </span>
         </p>
 
-       <p className="text-sm text-gray-500 truncate">
+       <p className="text-sm text-black-500 truncate">
   <span className="font-medium">Assigned To:</span> {ele.assignedto?.name || "Unassigned"}
 </p>
 
@@ -196,50 +198,59 @@ const handleAssign = () => {
         </tr>
       </thead>
       <tbody>
-        {allraiserequest.map((ele) => (
-          <tr key={ele._id} className="border-t border-gray-200 hover:bg-gray-50">
-            <td className="px-4 py-2 text-sm text-gray-800">{ele.assetid?.assetName || "Unknown Asset"}</td>
-            <td className="px-4 py-2 text-sm">
-              <span
-                className={`font-semibold ${
-                  ele.status === "pending"
-                    ? "text-yellow-600"
-                    : ele.status === "assigned"
-                    ? "text-blue-600"
-                    : ele.status === "in-process"
-                    ? "text-purple-600"
-                    : ele.status === "completed"
-                    ? "text-green-600"
-                    : "text-gray-500"
-                }`}
-              >
-                {ele.status}
-              </span>
-            </td>
-            <td className="px-4 py-2 text-sm text-gray-600">{ele.description || "No description"}</td>
-<td
-  className={`px-4 py-2 text-sm font-medium ${
-    ele.assignedto ? "text-blue-800" : "text-red-500"
-  }`}
->
-  {ele.assignedto?.name || "Unassigned"}
-</td>
+       {allraiserequest.map((ele) => (
+  <tr key={ele._id} className="border-t border-gray-200 hover:bg-gray-50">
+    <td className="px-4 py-2 text-sm text-gray-800 break-words">
+      {ele.assetid?.assetName || "Unknown Asset"}
+    </td>
 
-
-           <td className="px-4 py-2 text-sm">
-  <button onClick={()=>{
-    setRequestid(ele._id)
-    setShowform(true)
-  }}
-    className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition"
-  
+   <td className="px-4 py-2 text-sm text-ellipsis overflow-hidden whitespace-nowrap">
+  <span
+    className={`font-semibold ${
+      ele.status === "pending"
+        ? "text-yellow-600"
+        : ele.status === "assigned"
+        ? "text-blue-600"
+        : ele.status === "in-process"
+        ? "text-purple-600"
+        : ele.status === "completed"
+        ? "text-green-600"
+        : "text-gray-500"
+    }`}
   >
-    Assign
-  </button>
+    {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
+  </span>
 </td>
 
-          </tr>
-        ))}
+
+    <td className="px-4 py-2 text-sm text-gray-600 break-words whitespace-normal">
+      {ele.description || "No description"}
+    </td>
+
+    <td className={`px-4 py-2 text-sm font-medium break-words whitespace-normal ${
+      ele.assignedto ? "text-blue-800" : "text-red-500"
+    }`}>
+      {ele.assignedto?.name || "Unassigned"}
+    </td>
+
+    <td className="px-4 py-2 text-sm">
+      {ele.assignedto ? (
+        <span className="font-medium text-blue-800">Assigned</span>
+      ) : (
+        <button
+          onClick={() => {
+            setRequestid(ele._id);
+            setShowform(true);
+          }}
+          className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition"
+        >
+          Assign
+        </button>
+      )}
+    </td>
+  </tr>
+))}
+
       </tbody>
     </table>
   </div>
