@@ -1,5 +1,6 @@
 import RaiseRequest from "../models/RaiseRequest.js";
-
+import User from "../models/Registeruser.js";
+import Notification from "../models/NotificationUser.js";
 const RaiseRequestCtrl={};
 // creating raise request
 RaiseRequestCtrl.Postissue=async (req,res) => {
@@ -67,13 +68,33 @@ RaiseRequestCtrl.AssignTechnician = async (req, res) => {
   const { technicianid } = req.body;
 
   try {
+    const technician=await User.findById(technicianid)
+     if (!technician) return res.status(404).json({ err: "Technician not found" });
     const updated = await RaiseRequest.findByIdAndUpdate(
       requestid ,
       { assignedto: technicianid, },
       { new: true }
-    );
+    ).populate('assetid');
 
-    res.status(200).json(updated);
+    const message=`Your request for ${updated.assetid.assetName} has been assigned to ${technician.name} `
+    await Notification.create({
+      userid:updated.userid,
+      message:message,
+      requestid:updated._id
+    })
+    const techMessage = `You have been assigned to "${updated.assetid.assetName}"`;
+    await Notification.create({
+      userid: technician._id,
+      message: techMessage,
+      requestid: updated._id
+    });
+
+    res.status(200).json({
+  success: true,
+  message: 'Technician assigned and user notified',
+  updatedRequest: updated
+});
+
   } catch(err) {
     console.log(err.message)
     res.status(500).json({ err: "Update failed" });
@@ -116,6 +137,8 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
 RaiseRequestCtrl.TechnicianStatusUpdate = async (req, res) => {
   const { requestid } = req.params;
   const { status, costEstimate } = req.body;
+    let message;
+
 
   try {
     const updatedRequest = await RaiseRequest.findByIdAndUpdate(
@@ -125,9 +148,26 @@ RaiseRequestCtrl.TechnicianStatusUpdate = async (req, res) => {
         costEstimate: costEstimate !== undefined ? costEstimate : undefined,
       },
       { new: true }
-    );
+    ).populate("assetid");
+    if(status==="completed"){
+      message=`Your request for  ${updatedRequest.assetid.assetName} has been completed`;
+    }
+    if(status==="in-process"){
+      message=`Your request for  ${updatedRequest.assetid.assetName} has been in progress`
+    }
+  if(message){
+    await Notification.create({
+      userid:updatedRequest.userid._id,
+      message,
+      requestid:updatedRequest._id
+    })
+  }
+   res.status(200).json({
+  status: true,
+  message: message,
+  updated: updatedRequest
+});
 
-    res.status(200).json(updatedRequest);
   } catch (err) {
     console.log(err.message);
     res.status(400).json({ err: "Something went wrong while updating technician status!" });

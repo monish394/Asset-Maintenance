@@ -4,8 +4,10 @@ import axios from "axios";
 const UserAssetContext = createContext();
 
 export const UserAssetProvider = ({ children }) => {
+  const token=localStorage.getItem("token")
   const [myasset, setMyasset] = useState([]);
   const [myraiserequest,setMyraiserequest]=useState([])
+  const [usernotifications,setUsernotifications]=useState([])
 
   useEffect(() => {
     axios
@@ -22,9 +24,22 @@ export const UserAssetProvider = ({ children }) => {
       .then((res) =>{ setMyraiserequest(res.data)})
       .catch((err) => console.log(err.message));
   },[])
+  useEffect(()=>{
+  axios.get("http://localhost:5000/api/usersnotifications",{
+    headers:{Authorization:token}
+  })
+  .then((res)=>{
+    setUsernotifications(res.data)
+    console.log(res.data)
+  })
+  .catch((err)=>{
+    console.log(err.message)
+  })
+
+},[])
 
   return (
-    <UserAssetContext.Provider value={{ myasset, setMyasset,myraiserequest,setMyraiserequest }}>
+    <UserAssetContext.Provider value={{ myasset, setMyasset,myraiserequest,setMyraiserequest,usernotifications,setUsernotifications }}>
       {children}
     </UserAssetContext.Provider>
   );

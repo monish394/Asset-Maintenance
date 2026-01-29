@@ -113,4 +113,25 @@ AssetsCtrl.EditAllFieldAsset = async (req, res) => {
   }
 };
 
+
+AssetsCtrl.UserStatsDashboard=async (req,res) => {
+
+    try{
+
+        const userassets=await Asset.find({assignedTo:req.userid}).countDocuments()
+        const activeworkorders=await RaiseRequest.countDocuments({userid:req.userid,status:["assigned","in-process"]})
+        const pendingrequests=await RaiseRequest.countDocuments({userid:req.userid,status:"pending"})
+        const completedrequests=await RaiseRequest.countDocuments({userid:req.userid,status:"completed"})
+        res.status(200).json({
+            userassets,activeworkorders,pendingrequests,completedrequests
+        })
+
+
+    }catch(err){
+        console.log(err.message)
+        res.status(400).json({err:"something went wrong while fetching user stats!!!"})
+    }
+    
+}
+
 export default AssetsCtrl;

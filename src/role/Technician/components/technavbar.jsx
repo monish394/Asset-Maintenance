@@ -3,8 +3,11 @@ import { FaUser } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { TechData } from "../context/Techniciandatamaintenance";
 
 export default function TechnicianNavbar() {
+  const{techniciansnotifications}=TechData();
+  // console.log(techniciansnotifications)
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
@@ -38,15 +41,46 @@ export default function TechnicianNavbar() {
         >
           <IoMdNotifications size={28} />
           {showNotifications && (
-            <div className="absolute right-0 mt-3 w-64 bg-white shadow-lg rounded-lg p-4 z-50">
-              <p className="font-semibold text-sm mb-2">Notifications</p>
-              <p className="font-semibold text-sm mb-2">Notifications</p>
-              <p className="font-semibold text-sm mb-2">Notifications</p>
-              <p className="font-semibold text-sm mb-2">Notifications</p>
-              <p className="font-semibold text-sm mb-2">Notifications</p>
+  <div className="absolute right-0 mt-3 w-80 bg-white shadow-xl rounded-xl p-4 z-50 border border-gray-200">
+    <h3 className="font-semibold text-lg mb-3 border-b pb-2">Notifications</h3>
 
-            </div>
-          )}
+    {techniciansnotifications.length === 0 ? (
+      <p className="text-gray-500 text-sm">No new notifications</p>
+    ) : (
+      <ul className="max-h-64 overflow-y-auto">
+        {techniciansnotifications
+          .slice(0, 5).reverse() 
+          .map((n) => (
+            <li
+              key={n._id}
+              className="mb-2 p-2 rounded hover:bg-gray-100 cursor-pointer flex justify-between items-start"
+            >
+              <div className="flex-1">
+                <p className="text-sm text-gray-700">{n.message}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(n.createdAt).toLocaleString()}
+                </p>
+              </div>
+              {!n.isRead && (
+                <span className="w-2 h-2 bg-blue-500 rounded-full mt-1 ml-2"></span>
+              )}
+            </li>
+          ))}
+      </ul>
+    )}
+
+    {/* {usernotifications.length > 5 && (
+      <div className="mt-2 text-center">
+        <button
+          className="text-blue-500 text-sm hover:underline"
+          onClick={() => navigate("/notifications")}
+        >
+          See all notifications
+        </button>
+      </div>
+    )} */}
+  </div>
+)}
         </li>
 
         <li

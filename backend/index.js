@@ -7,6 +7,7 @@ import UserCtrl from "./app/controllers/UsersControllers.js";
 import  AssetsCtrl  from "./app/controllers/AssetsControllers.js";
 import RaiseRequestCtrl from "./app/controllers/RaiseRequest.js";
 import { AuthenticateUser } from "./app/middlewares/AuthenticateUser.js";
+import NotificationCtrl from "./app/controllers/NotificationControllers.js";
 const app=express();
 app.use(cors())
 app.use(express.json())
@@ -25,14 +26,17 @@ app.get("/api/findusers",UserCtrl.FindAllUser)
 app.get("/api/findtechnicians",UserCtrl.FindAllTechnician)
 
 
-
-//assets route
-
-app.post("/api/assets",AssetsCtrl.CreateAsset)
-
 //dashboard stats
 app.get("/api/dashboardstats",AssetsCtrl.DashboardStats)
+app.get("/api/userdashboardstats",AuthenticateUser,AssetsCtrl.UserStatsDashboard)
 
+
+
+
+
+
+//assets route
+app.post("/api/assets",AssetsCtrl.CreateAsset)
 app.get("/api/assets",AssetsCtrl.GetAsset)
 app.put("/api/assets/:assetid",AssetsCtrl.Assignuser)
 app.get("/api/userassets",AuthenticateUser,AssetsCtrl.Userasset)
@@ -50,7 +54,10 @@ app.put("/api/raiserequest/accept/:requestid",AuthenticateUser,RaiseRequestCtrl.
 app.put("/api/technicianstatusupdate/:requestid",RaiseRequestCtrl.TechnicianStatusUpdate)
 
 
+//Notification route
 
+app.get("/api/usersnotifications",AuthenticateUser,NotificationCtrl.UsersNotification)
+app.get("/api/techniciansnotifications",AuthenticateUser,NotificationCtrl.TechniciansNotification)
 
 
 

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import UserNavbar from "./UserNavbar";
+import UserNavbar from "./usernavbar";
 import Footer from "./footer";
 
 export default function UserLayout() {

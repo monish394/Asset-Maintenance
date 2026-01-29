@@ -1,8 +1,13 @@
 
+// import { useEffect } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
+
 export default function TechnicianHome() {
     const {technicianassignedassert}=TechData()
     console.log(technicianassignedassert)
+
+
+ 
 
 
 

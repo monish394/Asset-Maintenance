@@ -50,13 +50,18 @@ export default function AssignedRequest() {
         payload
       );
 
-      setTechnicianassignedassert((prev) =>
-        prev.map((item) =>
-          item._id === res.data._id
-            ? { ...item, status: res.data.status, costEstimate: res.data.costEstimate }
-            : item
-        )
-      );
+      setTechnicianassignedassert(prev =>
+  prev.map(item =>
+    item._id === res.data.updated._id
+      ? {
+          ...item,
+          status: res.data.updated.status,
+          costEstimate: res.data.updated.costEstimate ?? Number(costEstimateEdit),
+        }
+      : item
+  )
+);
+
       console.log(res.data)
       setShoweditform(false);
       setCostEstimateEdit("")
