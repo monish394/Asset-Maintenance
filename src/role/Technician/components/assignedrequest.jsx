@@ -130,7 +130,7 @@ export default function AssignedRequest() {
       )}
 
 
-      <h1 className="text-2xl font-bold mb-4">Assigned Requests</h1>
+     
 
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
         Recent Assigned Requests

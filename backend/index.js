@@ -29,6 +29,8 @@ app.get("/api/findtechnicians",UserCtrl.FindAllTechnician)
 //dashboard stats
 app.get("/api/dashboardstats",AssetsCtrl.DashboardStats)
 app.get("/api/userdashboardstats",AuthenticateUser,AssetsCtrl.UserStatsDashboard)
+app.get("/api/raiserequeststats",RaiseRequestCtrl.getRaiserequestStats)
+app.get("/api/technicianstats",AuthenticateUser,RaiseRequestCtrl.getTechnicianStats)
 
 
 

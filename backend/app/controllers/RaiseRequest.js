@@ -27,7 +27,7 @@ RaiseRequestCtrl.Postissue=async (req,res) => {
 
 RaiseRequestCtrl.Getuserissue=async (req,res) => {
     try{
-        const alluserissue=await RaiseRequest.find({userid:req.userid}).populate("assetid", "assetName assetImg") .populate("assignedto", "name")
+        const alluserissue=await RaiseRequest.find({userid:req.userid}).populate("assetid", "assetName assetImg") .populate("assignedto", "name address phone")
         res.status(200).json(alluserissue)
 
     }catch(err){
@@ -50,7 +50,7 @@ RaiseRequestCtrl.Getallrequest = async (req, res) => {
       })
       .populate({
         path: 'assignedto',
-        select: 'name', 
+        select: 'name address phone', 
       });
 
     res.status(200).json(allraiserequest);
@@ -173,6 +173,40 @@ RaiseRequestCtrl.TechnicianStatusUpdate = async (req, res) => {
     res.status(400).json({ err: "Something went wrong while updating technician status!" });
   }
 };
+
+
+RaiseRequestCtrl.getRaiserequestStats=async (req,res) => {
+  try{
+    const pendingrequest=await RaiseRequest.countDocuments({status:"pending"})
+    const inprocessrequest=await RaiseRequest.countDocuments({status:"in-process"})
+    const completedrequest=await RaiseRequest.countDocuments({status:"completed"})
+
+    res.status(200).json({
+      pendingrequest,inprocessrequest,completedrequest
+    })
+
+  }catch(err){
+    console.log(err.message)
+    res.status(400).json({err:"something went wrong wile fetching Raiserequest Stats!!!"})
+  }
+  
+}
+RaiseRequestCtrl.getTechnicianStats=async (req,res) => {
+  try{
+
+    const technicianassignstats=await RaiseRequest.countDocuments({assignedto:req.userid})
+    const technicianpendingrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:"pending"})
+    const inprocessrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:["pending","assigned"]})
+    const completedrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:"completed"})
+
+    res.status(200).json({technicianassignstats,technicianpendingrequest,inprocessrequest,completedrequest})
+
+  }catch(err){
+    console.log(err.message)
+    res.status(400).json({err:"something went wrong while fetching fetchtechnician Stats!!!"})
+  }
+  
+}
 
 
 

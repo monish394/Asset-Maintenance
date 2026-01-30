@@ -128,7 +128,7 @@ const handleAssign = () => {
   {allraiserequest.map((ele) => (
     <div
       key={ele._id}
-      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 w-full"
+      className="bg-white rounded-xl shadow-md overflow-hidden hover:blue-400 transition-shadow duration-200 w-full"
     >
     
       <div className="w-full h-32 bg-gray-100 flex items-center justify-center p-3">
@@ -198,38 +198,46 @@ const handleAssign = () => {
         </tr>
       </thead>
       <tbody>
-       {allraiserequest.map((ele) => (
-  <tr key={ele._id} className="border-t border-gray-200 hover:bg-gray-50">
+{allraiserequest.map((ele, index) => (
+  <tr
+    key={ele._id}
+    className={`border-t border-gray-200 transition-colors duration-300 ${
+      index % 2 === 0
+        ? "bg-blue-100 hover:bg-blue-200"
+        : "bg-white hover:bg-gray-100"
+    }`}
+  >
     <td className="px-4 py-2 text-sm text-gray-800 break-words">
       {ele.assetid?.assetName || "Unknown Asset"}
     </td>
 
-   <td className="px-4 py-2 text-sm text-ellipsis overflow-hidden whitespace-nowrap">
-  <span
-    className={`font-semibold ${
-      ele.status === "pending"
-        ? "text-yellow-600"
-        : ele.status === "assigned"
-        ? "text-blue-600"
-        : ele.status === "in-process"
-        ? "text-purple-600"
-        : ele.status === "completed"
-        ? "text-green-600"
-        : "text-gray-500"
-    }`}
-  >
-    {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
-  </span>
-</td>
-
+    <td className="px-4 py-2 text-sm text-ellipsis overflow-hidden whitespace-nowrap">
+      <span
+        className={`font-semibold ${
+          ele.status === "pending"
+            ? "text-yellow-600"
+            : ele.status === "assigned"
+            ? "text-blue-600"
+            : ele.status === "in-process"
+            ? "text-purple-600"
+            : ele.status === "completed"
+            ? "text-green-600"
+            : "text-gray-500"
+        }`}
+      >
+        {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
+      </span>
+    </td>
 
     <td className="px-4 py-2 text-sm text-gray-600 break-words whitespace-normal">
       {ele.description || "No description"}
     </td>
 
-    <td className={`px-4 py-2 text-sm font-medium break-words whitespace-normal ${
-      ele.assignedto ? "text-blue-800" : "text-red-500"
-    }`}>
+    <td
+      className={`px-4 py-2 text-sm font-medium break-words whitespace-normal ${
+        ele.assignedto ? "text-blue-800" : "text-red-500"
+      }`}
+    >
       {ele.assignedto?.name || "Unassigned"}
     </td>
 
@@ -250,6 +258,8 @@ const handleAssign = () => {
     </td>
   </tr>
 ))}
+
+
 
       </tbody>
     </table>
