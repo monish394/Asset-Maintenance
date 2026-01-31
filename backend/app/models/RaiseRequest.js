@@ -45,6 +45,13 @@ const raiseRequestSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+
+
+
+
+    aiCategory: { type: String, default: null }, 
+  aiPriority: { type: String, default: null },  
+  aiResponse: { type: String, default: null } 
 },{timestamps:true})
 
 const RaiseRequest = mongoose.model("RaiseRequest", raiseRequestSchema)

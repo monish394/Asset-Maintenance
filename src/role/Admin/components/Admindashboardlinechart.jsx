@@ -66,14 +66,14 @@ const AdminDashboardLineBarChart = ({ stats }) => {
     plugins: {
       legend: {
         position: "bottom",
-        onClick: () => {}, // ❌ disable strike toggle
+        onClick: () => {},
         labels: {
           usePointStyle: true,
           filter: (item) => item.text !== "Pending Trend",
         },
       },
       tooltip: {
-        mode: "nearest",   // ✅ only hovered item
+        mode: "nearest", 
         intersect: true,
       },
     },

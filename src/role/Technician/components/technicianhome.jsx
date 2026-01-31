@@ -7,7 +7,7 @@ import TechnicianRequestCostChart from "./techniciancostlinechart";
 export default function TechnicianHome() {
   const [technicianstats, setTechnicianstats] = useState(null);
   const { technicianassignedassert } = TechData();
-  // console.log(technicianassignedassert)
+  console.log(technicianassignedassert)
 
   useEffect(() => {
     axios

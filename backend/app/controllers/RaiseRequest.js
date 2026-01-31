@@ -2,26 +2,84 @@ import RaiseRequest from "../models/RaiseRequest.js";
 import User from "../models/Registeruser.js";
 import Notification from "../models/NotificationUser.js";
 const RaiseRequestCtrl={};
-// creating raise request
-RaiseRequestCtrl.Postissue=async (req,res) => {
-    const {assetid,description}=req.body;
-    console.log(req.body)
-    try{
-        const userissue=new RaiseRequest({
-            assetid,
-            description,
-            userid:req.userid,
 
-        });
-        await userissue.save()
-        res.json(userissue);
 
-    }catch(err){
-        console.log(err.messsage)
-        res.json({err:"something went wrong while in Postissue api!!!"})
-    }
-    
+
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+
+RaiseRequestCtrl.Postissue = async (req, res) => {
+  const { assetid, description } = req.body;
+
+  let aiData = {
+    aiResponse: "Technician will review the issue. A technician will be assigned to this request soon.",
+    aiCategory: "General",
+    aiPriority: "medium",
+    requesttype: "repair",
+    costEstimate: null,
+  };
+
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash-lite",
+    });
+
+    const prompt = `
+You are a maintenance AI assistant.
+Respond ONLY in valid JSON:
+
+{
+  "response": "short maintenance advice",
+  "category": "asset category",
+  "priority": "low | medium | high",
+  "requestType": "repair | maintenance",
+  "costEstimate": number or null
 }
+
+Issue:
+"${description}"
+`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+
+    console.log("Gemini raw response:", text);
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      aiData.aiResponse =
+        (parsed.response || "Technician will review the issue.") +
+        " A technician will be assigned to this request soon.";
+      aiData.aiCategory = parsed.category || aiData.aiCategory;
+      aiData.aiPriority = parsed.priority || aiData.aiPriority;
+      aiData.requesttype = parsed.requestType || aiData.requesttype;
+    } else {
+      aiData.aiResponse = text + " A technician will be assigned to this request soon.";
+    }
+
+  } catch (err) {
+    console.error("Gemini AI failed:", err.message);
+  }
+
+  const newRequest = new RaiseRequest({
+    assetid,
+    description,
+    userid: req.userid,
+    ...aiData
+  });
+
+  await newRequest.save();
+  res.json(newRequest);
+};
+
+
+
+
+
 
 //get all user Raise request
 

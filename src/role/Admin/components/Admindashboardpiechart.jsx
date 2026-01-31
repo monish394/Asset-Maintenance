@@ -12,15 +12,15 @@ const AdminDashboardPieChart = ({ stats }) => {
     datasets: [
       {
         data: [stats.totalAssets, stats.workingAssets, stats.undermaintance, stats.pendingRequests],
-        backgroundColor: ["#0022ff", "#00ff6a", "#e03838", "#facc15"],
+        backgroundColor: ["#1F4ED8", "#22C55E", "#F59E0B", "#8B5CF6"],
         borderWidth: 1,
-        radius: "100%", // <-- decrease the pie size (default 100%)
+        radius: "100%",
       },
     ],
   };
 
   const options = {
-    responsive: true,           // let the container size adjust
+    responsive: true,         
     plugins: {
       legend: {
         position: "bottom",

@@ -8,6 +8,8 @@ import  AssetsCtrl  from "./app/controllers/AssetsControllers.js";
 import RaiseRequestCtrl from "./app/controllers/RaiseRequest.js";
 import { AuthenticateUser } from "./app/middlewares/AuthenticateUser.js";
 import NotificationCtrl from "./app/controllers/NotificationControllers.js";
+import PaymentCtrl from "./app/controllers/PaymentCtrl.js";
+import Payment from "./app/models/Payment.js";
 const app=express();
 app.use(cors())
 app.use(express.json())
@@ -62,7 +64,19 @@ app.get("/api/usersnotifications",AuthenticateUser,NotificationCtrl.UsersNotific
 app.get("/api/techniciansnotifications",AuthenticateUser,NotificationCtrl.TechniciansNotification)
 
 
+//payment route
 
+app.post("/api/create-order", AuthenticateUser, PaymentCtrl.createOrder);
+app.post("/api/verify-payment", AuthenticateUser, PaymentCtrl.verifyPayment);
+app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
+  try {
+    const payments = await Payment.find({ userId: req.userid }); // <- fixed
+    res.status(200).json({ payments }); // wrap in object for consistency
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to fetch payments" });
+  }
+});
 
 
 

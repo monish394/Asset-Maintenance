@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useUserAsset } from "../context/userassetprovider";
+import { FcIdea } from "react-icons/fc";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 export default function RaiseRequest() {
@@ -142,60 +143,82 @@ export default function RaiseRequest() {
 
 
    <div className="overflow-x-auto">
-  <table className="w-full border border-gray-200 text-sm">
-    <thead className="bg-gray-100">
-      <tr>
-        <th className="px-4 py-3 text-left font-medium text-gray-700">Asset Name</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700">Issue Description</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700">Status</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700">Technician</th>
+<table className="w-full border border-gray-200 text-sm rounded-lg overflow-hidden shadow-sm">
+  <thead className="bg-gray-200">
+    <tr>
+      <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">Asset Name</th>
+      <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">Issue Description</th>
+      <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">Status</th>
+      <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">Technician</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {myraiserequest.map((ele, i) => (
+      <tr
+        key={i}
+        className={`border-t border-gray-200 hover:bg-gray-50 ${
+          i % 2 === 0 ? "bg-white" : "bg-gray-50"
+        }`}
+      >
+        <td className="px-4 py-3 text-gray-900 font-medium">
+          {typeof ele.assetid === "object" ? ele.assetid.assetName : "Loading..."}
+        </td>
+
+        <td className="px-4 py-3 text-gray-700">
+          <div className="mb-2">{ele.description}</div>
+
+          {ele.aiResponse && (
+            <div className="mt-2 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg shadow-sm text-gray-800 text-sm leading-relaxed transition-transform transform hover:-translate-y-0.5 hover:shadow-md">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-yellow-500 text-lg"><FcIdea /></span>
+                <span className="font-semibold text-gray-900">AI Suggestion about the Issue:</span>
+              </div>
+
+              <div style={{fontFamily:"calibri ",fontSize:"15px"}}
+                className="whitespace-pre-wrap mb-2"
+                dangerouslySetInnerHTML={{
+                  __html: ele.aiResponse
+                    .replace(/`([^`]+)`/g, `<span class="bg-gray-200 px-1 rounded text-gray-800 font-mono">$1</span>`)
+                    .replace(/\b(Correct|Incorrect|High|Medium|Low)\b/g, `<span class="font-semibold text-blue-700">$1</span>`)
+                }}
+              />
+
+
+              </div>
+          )}
+        </td>
+
+        <td className="px-4 py-3 text-gray-700">
+          <span
+            className={`font-medium whitespace-nowrap px-3 py-1 rounded-full ${
+              ele.status === "pending"
+                ? "bg-yellow-100 text-yellow-800"
+                : ele.status === "assigned"
+                ? "bg-blue-100 text-blue-800"
+                : ele.status === "in-process"
+                ? "bg-purple-100 text-purple-800"
+                : ele.status === "completed"
+                ? "bg-green-100 text-green-800"
+                : "bg-gray-100 text-gray-500"
+            }`}
+          >
+            {ele.status}
+          </span>
+        </td>
+
+        <td className="px-4 py-3 text-gray-700">
+          {ele.assignedto ? ele.assignedto.name : "Unassigned"}
+        </td>
       </tr>
-    </thead>
-
-    <tbody>
-      {myraiserequest.map((ele, i) => (
-        <tr
-          key={i}
-          className="border-t border-gray-200 hover:bg-gray-50"
-        >
-         <td className="px-4 py-3 text-gray-900">
-  {typeof ele.assetid === "object" ? ele.assetid.assetName : "Loading..."}
-</td>
+    ))}
+  </tbody>
+</table>
 
 
-          
 
-          <td className="px-4 py-3 text-gray-700">
-            {ele.description}
-          </td>
 
-          <td className="px-4 py-3 text-gray-700">
-           <span
-  className={`font-medium whitespace-nowrap ${
-    ele.status === "pending"
-      ? "text-yellow-600"
-      : ele.status === "assigned"
-      ? "text-blue-600"
-      : ele.status === "in-process"
-      ? "text-purple-600"
-      : ele.status === "completed"
-      ? "text-green-600"
-      : "text-gray-500"
-  }`}
->
-  {ele.status}
-</span>
 
-          </td>
-
-          <td className="px-4 py-3 text-gray-700">
-  {ele.assignedto ? ele.assignedto.name : "Unassigned"}
-</td>
-
-        </tr>
-      ))}
-    </tbody>
-  </table>
 </div>
 </div>
 

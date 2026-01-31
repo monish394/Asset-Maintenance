@@ -7,7 +7,7 @@ export default function Admin() {
 const [admindashboardstats,setAdmindashboardstats]=useState(null)
 const [admindashboardraiserequeststats,setAdmindashboardraiserequeststats]=useState(null)
   
-    // made change
+    // made change includes payment
 
   const {allraiserequest} =AdminData();
   console.log(allraiserequest)
