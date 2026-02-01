@@ -153,4 +153,17 @@ UserCtrl.EditUser=async (req,res) => {
 }
 
 
+UserCtrl.GetuserInfo=async (req,res) => {
+
+    try{
+        const user=await User.findById(req.userid)
+        res.status(200).json(user)
+
+    }catch(err){
+        res.status(200).json({err:"something went wrong fetch user info!!"})
+        console.log(err.message)
+    }
+    
+}
+
 export default UserCtrl

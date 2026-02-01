@@ -3,13 +3,59 @@ import { useUserAsset } from "../context/userassetprovider";
 import { FcIdea } from "react-icons/fc";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
+import { MapContainer, TileLayer, Marker, Polyline ,Tooltip} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+
+
+import { useMap } from "react-leaflet";
+
+function FitBounds({ origin, destination }) {
+  const map = useMap();
+
+  if (origin && destination) {
+    const bounds = [
+      [origin.lat, origin.lng],
+      [destination.lat, destination.lng],
+    ];
+    map.fitBounds(bounds, { padding: [50, 50] }); // add some padding
+  }
+
+  return null;
+}
+const getDistanceKm = (origin, destination) => {
+  const toRad = (value) => (value * Math.PI) / 180;
+
+  const R = 6371; // Earth radius in km
+  const dLat = toRad(destination.lat - origin.lat);
+  const dLon = toRad(destination.lng - origin.lng);
+
+  const lat1 = toRad(origin.lat);
+  const lat2 = toRad(destination.lat);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return (R * c).toFixed(2); // returns distance in km
+};
+
+
 export default function RaiseRequest() {
     const [assetid,setAssetid]=useState("")
+    const [trackingCoords, setTrackingCoords] = useState(null); // will store origin & destination
+    const [showMap, setShowMap] = useState(false)
     
     console.log(assetid)
     const [assetdescription,setAssetdescription]=useState("")
 
-    const { myasset,myraiserequest,setMyraiserequest } = useUserAsset();
+    const { myasset,myraiserequest,setMyraiserequest,userinfo } = useUserAsset();
+    console.log(userinfo)
+
+
+    console.log(myraiserequest)
     console.log("User assets raise request page:", myasset);
     console.log("my raise request -",myraiserequest)
     const [showform, setShowform] = useState(false)
@@ -61,12 +107,149 @@ export default function RaiseRequest() {
   }
 };
 
+const getLatLng = async (address) => {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`
+    );
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return {
+        lat: parseFloat(data[0].lat),
+        lng: parseFloat(data[0].lon),
+      };
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log("Geocoding error:", err);
+    return null;
+  }
+};
+
+
+
+
+
+
+const handleTrack = async (ele) => {
+  const userCoords = await getLatLng(userinfo.address);
+  const techCoords = await getLatLng(ele.assignedto.address);
+
+  if (!userCoords || !techCoords) {
+    alert("Unable to get coordinates for route");
+    return;
+  }
+
+  setTrackingCoords({ origin: userCoords, destination: techCoords });
+  setShowMap(true); // open modal
+};
+
+// User icon (green)
+const userIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+  iconSize: [35, 35],
+  iconAnchor: [17, 35],
+});
+
+// Technician icon (blue)
+const techIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149059.png",
+  iconSize: [35, 35],
+  iconAnchor: [17, 35],
+});
+
+
+
+
     return (
         <div>
+
+
+          
             <div>
             </div>
             <div>
       
+
+{showMap && trackingCoords && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white w-full max-w-[600px] h-[450px] rounded-xl shadow-lg relative overflow-hidden">
+
+      {/* Close button */}
+      <button
+        className="absolute top-3 right-3 z-[9999] text-white bg-red-500 rounded-full w-8 h-8 flex items-center justify-center font-bold hover:bg-red-600 transition"
+        onClick={() => setShowMap(false)}
+      >
+        ✕
+      </button>
+
+      {/* Distance display */}
+      <div className="absolute top-3 left-3 z-[9999] bg-white px-3 py-1 rounded-lg shadow-md font-medium text-gray-800">
+        Distance: {getDistanceKm(trackingCoords.origin, trackingCoords.destination)} km
+      </div>
+
+      {/* Map */}
+      <MapContainer
+        center={[trackingCoords.origin.lat, trackingCoords.origin.lng]}
+        zoom={7}
+        scrollWheelZoom={true}
+        className="w-full h-full rounded-xl z-0"
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        {/* User marker with tooltip */}
+        <Marker
+          position={[trackingCoords.origin.lat, trackingCoords.origin.lng]}
+          icon={userIcon}
+        >
+          <Tooltip
+            permanent
+            direction="top"
+            offset={[0, -20]} // move tooltip above marker
+            className="font-semibold bg-white px-2 py-1 rounded shadow"
+          >
+            Your Location
+          </Tooltip>
+        </Marker>
+
+        {/* Technician marker with tooltip */}
+        <Marker
+          position={[trackingCoords.destination.lat, trackingCoords.destination.lng]}
+          icon={techIcon}
+        >
+          <Tooltip
+            permanent
+            direction="top"
+            offset={[0, -20]} // move tooltip above marker
+            className="font-semibold bg-white px-2 py-1 rounded shadow"
+          >
+            Technician
+          </Tooltip>
+        </Marker>
+
+        {/* Line between them */}
+        <Polyline
+          positions={[
+            [trackingCoords.origin.lat, trackingCoords.origin.lng],
+            [trackingCoords.destination.lat, trackingCoords.destination.lng],
+          ]}
+          color="blue"
+        />
+
+        {/* Fit map to show both points */}
+        <FitBounds origin={trackingCoords.origin} destination={trackingCoords.destination} />
+      </MapContainer>
+    </div>
+  </div>
+)}
+
+
+
+
+
+
+
 
 
 
@@ -219,8 +402,68 @@ export default function RaiseRequest() {
 
 
 
+
+
+
+
+
 </div>
 </div>
+
+<div className="mt-10">
+  <h2 className="text-2xl font-bold mb-6 text-gray-800" style={{ fontFamily: "Poppins, sans-serif" }}>
+    Assigned Technicians
+  </h2>
+
+  <div className="flex flex-wrap gap-6">
+    {myraiserequest.length > 0 ? (
+      myraiserequest.map((ele) => {
+        const tech = ele.assignedto;
+        if (!tech) return null;
+
+        return (
+          <div
+            key={ele._id}
+            className="w-[280px] bg-white border border-gray-200 rounded-xl shadow-lg p-5 hover:shadow-2xl transition-shadow duration-300"
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">
+                {tech.name?.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{tech.name}</h3>
+                <p className="text-sm text-gray-500">{tech.phone || "No Phone"}</p>
+              </div>
+            </div>
+
+            <p className="text-gray-600 text-sm mb-2 truncate">
+              <span className="font-semibold text-gray-800">Address:</span> {tech.address || "Not Provided"}
+            </p>
+
+            <p className="text-gray-700 text-sm mb-1">
+              <span className="font-semibold">Asset:</span> {ele.assetid?.assetName || "N/A"}
+            </p>
+
+            <p className="text-gray-700 text-sm mb-3">
+              <span className="font-semibold">Status:</span> {ele.status.replace("-", " ")}
+            </p>
+
+            <button
+              onClick={() =>handleTrack(ele) }
+              className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+            >
+              Track Technician
+            </button>
+          </div>
+        );
+      })
+    ) : (
+      <p className="text-gray-500 text-sm">No assigned technicians available yet.</p>
+    )}
+  </div>
+</div>
+
 
   </div>
 

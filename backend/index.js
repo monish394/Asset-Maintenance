@@ -28,6 +28,7 @@ app.get("/api/findusers",UserCtrl.FindAllUser)
 app.get("/api/findtechnicians",UserCtrl.FindAllTechnician)
 app.delete("/api/deleteuser/:id",UserCtrl.DeleteUser)
 app.put("/api/updateuser/:id",UserCtrl.EditUser)
+app.get("/api/userinfo",AuthenticateUser,UserCtrl.GetuserInfo)
 
 
 //dashboard stats

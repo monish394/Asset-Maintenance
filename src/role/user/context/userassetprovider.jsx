@@ -4,6 +4,11 @@ import axios from "axios";
 const UserAssetContext = createContext();
 
 export const UserAssetProvider = ({ children }) => {
+  const [userinfo,setUserinfo]=useState(null)
+
+  // console.log(userinfo)
+
+  
   const token=localStorage.getItem("token")
   const [myasset, setMyasset] = useState([]);
   const [myraiserequest,setMyraiserequest]=useState([])
@@ -37,9 +42,18 @@ export const UserAssetProvider = ({ children }) => {
   })
 
 },[])
+useEffect(() => {
+  axios.get("http://localhost:5000/api/userinfo", {
+    headers: {
+      Authorization: token
+    }
+  })
+  .then(res => setUserinfo(res.data))
+  .catch(err => console.log(err.message))
+}, [])
 
   return (
-    <UserAssetContext.Provider value={{ myasset, setMyasset,myraiserequest,setMyraiserequest,usernotifications,setUsernotifications }}>
+    <UserAssetContext.Provider value={{ myasset, setMyasset,myraiserequest,setMyraiserequest,usernotifications,setUsernotifications,userinfo,setUserinfo }}>
       {children}
     </UserAssetContext.Provider>
   );
