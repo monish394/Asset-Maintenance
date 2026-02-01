@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Assets() {
+  const [statusFilter, setStatusFilter] = useState("all");
+
   const [original_asset, set_original_asset] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -33,9 +35,19 @@ export default function Assets() {
       .catch(err => console.log(err.message));
   }, []);
 
-  const filtereddata = assets.filter(i =>
-    i.assetName.toLowerCase().includes(btnsearch.toLowerCase())
-  );
+const filtereddata = assets.filter((asset) => {
+  const matchesSearch = asset.assetName
+    ? asset.assetName.toLowerCase().includes(btnsearch.toLowerCase())
+    : false;
+
+  const assetStatus = asset.status ? asset.status.toLowerCase() : "";
+
+  const matchesStatus =
+    statusFilter === "all" || assetStatus === statusFilter.toLowerCase();
+
+  return matchesSearch && matchesStatus;
+});
+
 
   const handleSearch = () => setBtnsearch(txt);
 
@@ -129,6 +141,9 @@ export default function Assets() {
       console.error(err.message);
     }
   };
+
+
+
 
   return (
     <>
@@ -343,18 +358,57 @@ export default function Assets() {
           <h1 className="text-2xl"><u>Assets Page</u></h1>
         </div>
 
-        <div className="flex items-center ml-64 mt-4">
-          <input
-            value={txt}
-            onChange={(e) => setTxt(e.target.value)}
-            type="text"
-            placeholder="Search"
-            className="h-12 w-72 rounded-lg border border-gray-300 bg-white px-4 text-xl text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-          />
-          <button onClick={handleSearch} className="ml-3 h-12 px-6 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
-            Search
-          </button>
-        </div>
+ <div className="flex items-center gap-4 ml-64 mt-6">
+  {/* Search Input */}
+  <div className="relative">
+    <input
+      value={txt}
+      onChange={(e) => setTxt(e.target.value)}
+      type="text"
+      placeholder="Search assets..."
+      className="h-12 w-72 rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-lg text-gray-700 placeholder-gray-400 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-200"
+    />
+    <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 text-lg pointer-events-none">
+      🔍
+    </span>
+  </div>
+
+  {/* Search Button */}
+  <button
+    onClick={handleSearch}
+    className="h-12 px-6 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-md transition-all duration-200"
+  >
+    Search
+  </button>
+
+  {/* Status Dropdown */}
+  <div className="relative">
+    <select
+      value={statusFilter}
+      onChange={(e) => setStatusFilter(e.target.value)}
+      className="h-12 w-64 rounded-lg border border-gray-300 bg-white px-4 text-gray-700 font-medium text-sm appearance-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none shadow-sm cursor-pointer transition-all duration-200"
+    >
+      <option value="all" style={{ color: "#374151", fontWeight: 500 }}>
+        All Assets
+      </option>
+      <option value="assigned" style={{ color: "#2563EB", fontWeight: 600 }}>
+        Assigned
+      </option>
+      <option value="unassigned" style={{ color: "#16A34A", fontWeight: 600 }}>
+        Unassigned
+      </option>
+      <option value="undermaintenance" style={{ color: "#DC2626", fontWeight: 600 }}>
+        Under Maintenance
+      </option>
+    </select>
+    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400 text-sm">
+      ▼
+    </span>
+  </div>
+</div>
+
+
+
 
         <div className="flex flex-wrap gap-4 justify-start p-4 ml-64">
           {filtereddata.length > 0 ? filtereddata.reverse().map(asset => (

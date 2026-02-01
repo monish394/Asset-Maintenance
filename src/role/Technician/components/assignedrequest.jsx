@@ -145,6 +145,8 @@ export default function AssignedRequest() {
         <th className="px-4 py-3 text-left font-medium text-gray-700 w-2/6">Issue</th>
         <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/6">Raised By</th>
         <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/6">Address</th>
+        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/12">Priority</th>
+
         <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/12">Status</th>
         <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/12">Assigned At</th>
 <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/6">Cost</th>
@@ -152,68 +154,89 @@ export default function AssignedRequest() {
       </tr>
     </thead>
     <tbody>
-      {technicianassignedassert.map((ele, i) => (
-        <tr
-          key={ele._id}
-          className={`border-t border-gray-200 align-middle ${i % 2 === 0 ? "bg-white" : "bg-blue-50"} hover:bg-gray-100 transition`}
+  {technicianassignedassert.map((ele, i) => (
+    <tr
+      key={ele._id}
+      className={`border-t border-gray-200 align-middle ${i % 2 === 0 ? "bg-white" : "bg-blue-50"} hover:bg-gray-100 transition`}
+    >
+      <td className="px-4 py-3 font-medium text-gray-900 align-middle">{ele.assetid?.assetName || "N/A"}</td>
+      <td className="px-4 py-3 text-gray-700 align-middle break-words max-w-[400px]">{ele.description}</td>
+      <td className="px-4 py-3 text-gray-700 align-middle">{ele.userid?.name || "N/A"}</td>
+      <td className="px-4 py-3 text-gray-700 align-middle">{ele.userid?.address || "N/A"}</td>
+
+<td className="px-4 py-3 align-middle">
+  <span
+    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+      ele.aiPriority === "high"
+        ? "bg-red-100 text-red-800"
+        : ele.aiPriority === "medium"
+        ? "bg-yellow-100 text-yellow-800"
+        : ele.aiPriority === "low"
+        ? "bg-green-100 text-green-800"
+        : "bg-gray-100 text-gray-800"
+    }`}
+  >
+    {ele.aiPriority || "N/A"}
+  </span>
+</td>
+
+
+      <td className="px-4 py-3 align-middle">
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+            ele.status === "pending"
+              ? "bg-yellow-100 text-yellow-800"
+              : ele.status === "assigned"
+              ? "bg-blue-100 text-blue-800"
+              : ele.status === "in-process"
+              ? "bg-purple-100 text-purple-800"
+              : ele.status === "completed"
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-800"
+          }`}
         >
-          <td className="px-4 py-3 font-medium text-gray-900 align-middle">{ele.assetid?.assetName || "N/A"}</td>
-          <td className="px-4 py-3 text-gray-700 align-middle break-words max-w-[400px]">{ele.description}</td>
-          <td className="px-4 py-3 text-gray-700 align-middle">{ele.userid?.name || "N/A"}</td>
-          <td className="px-4 py-3 text-gray-700 align-middle">{ele.userid?.address || "N/A"}</td>
-          <td className="px-4 py-3 align-middle">
-            <span
-              className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                ele.status === "pending"
-                  ? "bg-yellow-100 text-yellow-800"
-                  : ele.status === "assigned"
-                  ? "bg-blue-100 text-blue-800"
-                  : ele.status === "in-process"
-                  ? "bg-purple-100 text-purple-800"
-                  : ele.status === "completed"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-gray-100 text-gray-800"
-              }`}
-            >
-              {ele.status}
-            </span>
-          </td>
-          <td className="px-4 py-3 text-gray-700 align-middle">
-            {ele.assignAt
-              ? new Date(ele.assignAt).toLocaleString("en-US", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "Not Assigned"}
-          </td>
-          <td className="px-4 py-3 text-gray-700 align-middle">
-            {ele.costEstimate ? `$${ele.costEstimate}` : "N/A"}
-          </td>
-          <td className="px-4 py-3 align-middle space-x-2">
-            {ele.status === "pending" && (
-              <button
-                className=" px-3 py-1 text-sm font-semibold bg-green-600 text-white rounded hover:bg-green-700 transition"
-                onClick={() => handleAccept(ele._id)}
-                disabled={ele.status !== "pending"}
-              >
-                Accept
-              </button>
-            )}
-            {["assigned", "in-process", "completed"].includes(ele.status) && (
-              <button
-                className="px-3 py-1 text-sm font-semibold bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-                onClick={() => handleEdit(ele)}
-              >
-                Edit
-              </button>
-            )}
-          </td>
-        </tr>
-      ))}
-    </tbody>
+          {ele.status}
+        </span>
+      </td>
+      <td className="px-4 py-3 text-gray-700 align-middle">
+        {ele.assignAt
+          ? new Date(ele.assignAt).toLocaleString("en-US", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "Not Assigned"}
+      </td>
+      <td className="px-4 py-3 text-gray-700 align-middle flex items-center gap-1">
+        <span>₹</span>
+        {ele.costEstimate ? ele.costEstimate : "N/A"}
+      </td>
+
+      <td className="px-4 py-3 align-middle space-x-2">
+        {ele.status === "pending" && (
+          <button
+            className=" px-3 py-1 text-sm font-semibold bg-green-600 text-white rounded hover:bg-green-700 transition"
+            onClick={() => handleAccept(ele._id)}
+            disabled={ele.status !== "pending"}
+          >
+            Accept
+          </button>
+        )}
+        {["assigned", "in-process", "completed"].includes(ele.status) && (
+          <button
+            className="px-3 py-1 text-sm font-semibold bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+            onClick={() => handleEdit(ele)}
+          >
+            Edit
+          </button>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
   </table>
 </div>
 

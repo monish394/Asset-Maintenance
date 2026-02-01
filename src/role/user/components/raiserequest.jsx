@@ -154,7 +154,7 @@ export default function RaiseRequest() {
   </thead>
 
   <tbody>
-    {myraiserequest.map((ele, i) => (
+    {myraiserequest.reverse().map((ele, i) => (
       <tr
         key={i}
         className={`border-t border-gray-200 hover:bg-gray-50 ${

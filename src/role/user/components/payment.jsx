@@ -84,7 +84,7 @@ useEffect(() => {
             );
 
             if (verifyRes.data.success) {
-              alert("Payment successful 🎉");
+             
               setPaidRequests((prev) => [...prev, request._id]);
             } else {
               alert("Payment verification failed ❌");
@@ -131,28 +131,51 @@ useEffect(() => {
       No completed requests available for payment.
     </p>
   ) : (
-    <table
-      style={{
-        width: "100%",
-        borderCollapse: "collapse",
-        fontSize: 14,
-        color: "#555",
-      }}
-    >
+   <table
+  style={{
+    width: "100%",
+    borderCollapse: "collapse",
+    tableLayout: "fixed",  
+    fontSize: 14,
+    color: "#555",
+  }}
+>
+
       <thead>
         <tr style={{ backgroundColor: "#f0f0f0" }}>
           <th style={{ padding: "12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
             Asset
           </th>
-          <th style={{ padding: "12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
-            Description
-          </th>
+          <th
+  style={{
+    padding: "12px",
+    textAlign: "left",
+    borderBottom: "2px solid #ddd",
+    width: "30%",          
+  }}
+>
+  Description
+</th>
+
           <th style={{ padding: "12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
             Status
           </th>
           <th style={{ padding: "12px", textAlign: "left", borderBottom: "2px solid #ddd" }}>
             Amount
           </th>
+     <th
+  style={{
+    padding: "12px",
+    textAlign: "center",
+    borderBottom: "2px solid #ddd",
+    width: 120,
+    whiteSpace: "nowrap",
+  }}
+>
+  Payment
+</th>
+
+
           <th style={{ padding: "12px", textAlign: "center", borderBottom: "2px solid #ddd" }}>
             Action
           </th>
@@ -200,6 +223,38 @@ useEffect(() => {
               </td>
               <td style={{ padding: "10px" }}>₹{request.costEstimate}</td>
               <td style={{ padding: "10px", textAlign: "center" }}>
+  {paidRequests.includes(request._id) ? (
+    <span
+      style={{
+        padding: "4px 12px",
+        borderRadius: 12,
+        backgroundColor: "#e8f5e9",
+        color: "#2e7d32",
+        fontWeight: 600,
+        fontSize: 13,
+        whiteSpace: "nowrap",  
+      }}
+    >
+      Success ✅
+    </span>
+  ) : (
+    <span
+      style={{
+        padding: "4px 12px",
+        borderRadius: 12,
+        backgroundColor: "#fff3e0",
+        color: "#ef6c00",
+        fontWeight: 600,
+        fontSize: 13,
+        whiteSpace: "nowrap",   
+      }}
+    >
+      Pending ⏳
+    </span>
+  )}
+</td>
+
+              <td style={{ padding: "10px", textAlign: "center" }}>
                 <button
                   onClick={() => handlePayment(request)}
                   disabled={
@@ -214,9 +269,9 @@ useEffect(() => {
                       !razorpayLoaded ||
                       loadingId === request._id ||
                       paidRequests.includes(request._id)
-                        ? "#298f0c"
-                        : "#0048ff",
-                    color: "#dddddd",
+                        ? "#74d659"
+                        : "#5a57e1",
+                    color: "#f8f6f6",
                     border: "none",
                     borderRadius: 6,
                     cursor:

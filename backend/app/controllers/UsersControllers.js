@@ -122,4 +122,35 @@ UserCtrl.FindAllTechnician=async (req,res) => {
     }
     
 }
+
+UserCtrl.DeleteUser=async (req,res) => {
+    const id=req.params.id;
+    try{
+        const deleteuser=await User.findByIdAndDelete(id)
+        res.status(200).json(deleteuser)
+
+    }catch(err){
+        console.log(err)
+        res.status(400).json({err:"something went wrong while deleting user!!"})
+    }
+    
+}
+
+
+UserCtrl.EditUser=async (req,res) => {
+    const id=req.params.id;
+    const {name,email,phone,address}=req.body;
+
+    try{
+        const updateduser=await User.findByIdAndUpdate(id,{name,email,phone,address},{new:true})
+        res.status(200).json(updateduser)
+
+    }catch(err){
+        console.log(err.message)
+        res.status(400).josn({err:"something went wrong wile edit user!!"})
+    }
+    
+}
+
+
 export default UserCtrl

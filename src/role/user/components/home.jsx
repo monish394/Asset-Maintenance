@@ -6,6 +6,7 @@ import axios from "axios";
 import { FaBoxOpen } from "react-icons/fa6";
 import { AiFillSetting } from "react-icons/ai";
 import { IoMdClock } from "react-icons/io";
+import { PiCurrencyInrLight } from "react-icons/pi";
 import { MdDone } from "react-icons/md";
 
 
@@ -244,12 +245,20 @@ export default function UserHome() {
               </td>
 
               <td className="px-6 py-4 text-gray-700 font-medium">
-                {req.assignedto?.name || "N/A"}
+                {req.assignedto?.name || "Not Assigned"}
               </td>
 
               <td className="px-6 py-4 text-gray-700 font-medium">
-                {req.costEstimate ? `$${req.costEstimate}` : "N/A"}
-              </td>
+  {req.costEstimate ? (
+    <>
+      <PiCurrencyInrLight className="inline mr-1" />
+      {req.costEstimate}
+    </>
+  ) : (
+    "Not Assigned"
+  )}
+</td>
+
 
               <td className="px-6 py-4 text-gray-600 max-w-[400px] break-words">
                 {req.description}
@@ -316,7 +325,7 @@ export default function UserHome() {
               </td>
 
               <td className="px-6 py-4 text-gray-700">
-                {req.assignedto?.address || "N/A"}
+                {req.assignedto?.address || "Not Assigned"}
               </td>
 
              

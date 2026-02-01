@@ -44,7 +44,7 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
         callbacks: {
           label: (context) => {
             const req = technicianassignedassert[context.dataIndex];
-            return `${req.assetid.assetName}: $${req.costEstimate || 0} (${req.status})`;
+            return `${req.assetid.assetName}: ₹${req.costEstimate || 0} (${req.status})`;
           },
         },
       },

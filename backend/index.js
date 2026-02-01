@@ -26,6 +26,8 @@ app.post("/api/userslogin",UserCtrl.Loginuser)
 app.get("/api/dashboardroute",AuthenticateUser,UserCtrl.dashboardRoute)
 app.get("/api/findusers",UserCtrl.FindAllUser)
 app.get("/api/findtechnicians",UserCtrl.FindAllTechnician)
+app.delete("/api/deleteuser/:id",UserCtrl.DeleteUser)
+app.put("/api/updateuser/:id",UserCtrl.EditUser)
 
 
 //dashboard stats
