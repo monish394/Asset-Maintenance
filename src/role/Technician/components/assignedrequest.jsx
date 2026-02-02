@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
 import axios from "axios";
+import OSMTrackMap from "./techniciantrack";
 
 export default function AssignedRequest() {
+const [showMap, setShowMap] = useState(false);
+const [trackAddress, setTrackAddress] = useState("");
+
+
   const [costEstimateEdit, setCostEstimateEdit] = useState("");
   const [requestid, setRequestid] = useState("")
   const [statusedit, setStatusedit] = useState("")
@@ -70,6 +75,13 @@ export default function AssignedRequest() {
     }
   };
 
+const handleTrack = (address) => {
+  if (!address) return alert("User address not available");
+  setTrackAddress(address);
+  setShowMap(true);
+};
+
+
 
 
   return (
@@ -128,6 +140,14 @@ export default function AssignedRequest() {
           </div>
         </div>
       )}
+
+     {showMap && trackAddress && (
+  <OSMTrackMap
+    userAddress={trackAddress}
+    onClose={() => setShowMap(false)}
+  />
+)}
+
 
 
      
@@ -239,6 +259,59 @@ export default function AssignedRequest() {
 
   </table>
 </div>
+<div className="p-6 pb-12 bg-gray-100 font-sans">
+
+  <h1 className="text-2xl font-bold text-gray-800 mb-6">Requests</h1>
+
+  {technicianassignedassert.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      {technicianassignedassert.map((item) => (
+        <div
+          key={item._id}
+          className="bg-white rounded-xl shadow-lg p-4 flex flex-col justify-between hover:shadow-2xl transition"
+        >
+          <div className="mb-2">
+            <h4 className="text-gray-800 font-semibold text-lg truncate">User: {item.userid.name}</h4>
+          </div>
+
+          <div className="mb-2 text-xs text-gray-600 space-y-1">
+            <p>
+              <span className="font-medium">Phone:</span>{" "}
+              <a href={`tel:${item.userid.phone}`} className="text-blue-600 hover:underline">
+                {item.userid.phone}
+              </a>
+            </p>
+            <p>
+              <span className="font-medium">Address:</span> {item.userid.address}
+            </p>
+          </div>
+
+          <div className="mb-2 text-xs text-gray-700">
+            <p>
+              <span className="font-medium">Asset:</span> {item.assetid.assetName}
+            </p>
+          </div>
+
+          <div className="mb-4 text-xs text-gray-700 truncate">
+            <p>
+              <span className="font-medium">Issue:</span> {item.description}
+            </p>
+          </div>
+
+          <button
+            onClick={() => handleTrack(item.userid.address)}
+            className="w-full px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
+          >
+            Track
+          </button>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-gray-500 text-sm">No assigned requests yet.</p>
+  )}
+</div>
+
 
       </div>
     </div>

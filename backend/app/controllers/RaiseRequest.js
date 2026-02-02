@@ -21,7 +21,7 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
   };
 
   try {
-    const genAI = new GoogleGenerativeAI("AIzaSyB1F4bcqhZmquosYtODrsgGsRhtWsF1fG8");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash-lite",
@@ -104,7 +104,7 @@ RaiseRequestCtrl.Getallrequest = async (req, res) => {
       })
       .populate({
         path: 'userid', 
-        select: 'name',  
+        select: 'name phone',  
       })
       .populate({
         path: 'assignedto',
@@ -166,7 +166,7 @@ RaiseRequestCtrl.getTechnicianrequests = async (req, res) => {
 
    const requests = await RaiseRequest.find({ assignedto: technicianId })
   .populate({ path: "assetid", select: "assetName assetImg" })
-  .populate({ path: "userid", select: "name address" }); 
+  .populate({ path: "userid", select: "name address phone" }); 
 
     res.status(200).json(requests);
   } catch (err) {

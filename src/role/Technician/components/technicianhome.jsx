@@ -33,7 +33,6 @@ export default function TechnicianHome() {
 
       {technicianstats && (
         <div className="flex flex-wrap gap-8 justify-center mt-10 mb-10">
-          {/* My Assigned Assets */}
           <div className="w-[240px] h-[160px] bg-white border border-gray-300 rounded-2xl px-6 py-5 flex flex-col justify-between shadow-md hover:shadow-xl transition-shadow duration-300">
             <div>
               <p className="text-lg font-medium text-gray-500">My Assigned Assets</p>
@@ -85,13 +84,11 @@ export default function TechnicianHome() {
       )}
 
 
-      <div className="flex flex-col lg:flex-row justify-center items-start gap-6 mt-20">
-  {/* Pie Chart */}
+      <div className="flex flex-col lg:flex-row justify-center items-start gap-6 mt-10">
   <div className="flex-1 min-w-[300px] max-w-md mt-8">
     <TechnicianStatusPieChart stats={technicianstats} />
   </div>
 
-  {/* Request Cost Chart */}
   <div className="flex-1 min-w-[300px] max-w-2xl">
     <TechnicianRequestCostChart technicianassignedassert={technicianassignedassert} />
   </div>

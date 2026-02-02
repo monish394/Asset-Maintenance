@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { BsSearch } from "react-icons/bs";
 
 export default function Assets() {
   const [statusFilter, setStatusFilter] = useState("all");
@@ -359,7 +360,7 @@ const filtereddata = assets.filter((asset) => {
         </div>
 
  <div className="flex items-center gap-4 ml-64 mt-6">
-  {/* Search Input */}
+
   <div className="relative">
     <input
       value={txt}
@@ -369,11 +370,10 @@ const filtereddata = assets.filter((asset) => {
       className="h-12 w-72 rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-lg text-gray-700 placeholder-gray-400 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-200"
     />
     <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 text-lg pointer-events-none">
-      🔍
+     <BsSearch />
     </span>
   </div>
 
-  {/* Search Button */}
   <button
     onClick={handleSearch}
     className="h-12 px-6 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-md transition-all duration-200"
@@ -381,7 +381,6 @@ const filtereddata = assets.filter((asset) => {
     Search
   </button>
 
-  {/* Status Dropdown */}
   <div className="relative">
     <select
       value={statusFilter}

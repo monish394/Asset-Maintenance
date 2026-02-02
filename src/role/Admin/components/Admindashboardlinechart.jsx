@@ -63,6 +63,10 @@ const AdminDashboardLineBarChart = ({ stats }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 1300,
+      easing: "easeOutCubic",
+    },
     plugins: {
       legend: {
         position: "bottom",
@@ -73,7 +77,7 @@ const AdminDashboardLineBarChart = ({ stats }) => {
         },
       },
       tooltip: {
-        mode: "nearest", 
+        mode: "nearest",
         intersect: true,
       },
     },

@@ -19,36 +19,38 @@ const AdminDashboardPieChart = ({ stats }) => {
     ],
   };
 
-  const options = {
-    responsive: true,         
-    plugins: {
-      legend: {
-        position: "bottom",
-        align: "start",
-        labels: {
-          boxWidth: 15,
-          padding: 12,
-          font: {
-            size: 15,
-            family: "Inter, calibri",
-          },
-          usePointStyle: true,
+ const options = {
+  responsive: true,
+  animation: {
+    animateRotate: true,
+    animateScale: true,
+    duration: 1300,
+    easing: "easeOutCubic",
+  },
+  plugins: {
+    legend: {
+      position: "bottom",
+      align: "start",
+      labels: {
+        boxWidth: 15,
+        padding: 12,
+        font: {
+          size: 15,
+          family: "Inter, calibri",
         },
-        maxWidth: 150, 
-        animation: {
-          duration: 3000,
-          easing: "easeOutCubic",
-        },// wrap to 2 labels per row
+        usePointStyle: true,
       },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            return `${context.label}: ${context.raw}`;
-          },
+    },
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          return `${context.label}: ${context.raw}`;
         },
       },
     },
-  };
+  },
+};
+
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md w-100 max-w-md">

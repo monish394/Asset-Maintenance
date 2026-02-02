@@ -5,9 +5,12 @@ import AdminDashboardPieChart from "./Admindashboardpiechart";
 import AdminDashboardLineBarChart from "./Admindashboardlinechart";
 
 export default function Admin() {
+  const [assets,setAssets]=useState([])
+  console.log(assets)
   const [admindashboardstats, setAdmindashboardstats] = useState(null);
   const [admindashboardraiserequeststats, setAdmindashboardraiserequeststats] = useState(null);
   const { allraiserequest } = AdminData();
+  console.log(allraiserequest)
   const [showdetails, setShowdetails] = useState(false);
   const [requestid, setRequestid] = useState("");
   console.log(requestid)
@@ -32,6 +35,18 @@ export default function Admin() {
       .then((res) => setAdmindashboardraiserequeststats(res.data))
       .catch((err) => console.log(err.message));
   }, []);
+    useEffect(() => {
+    axios.get("http://localhost:5000/api/assets")
+      .then(res => setAssets(res.data))
+      .catch(err => console.log(err));
+  }, []);
+
+
+  
+const recentAssigned = allraiserequest
+  .filter(a => a.assignAt) 
+  .sort((a, b) => new Date(b.assignAt) - new Date(a.assignAt)) 
+  .slice(0, 5);
 
   return (
     <div>
@@ -41,7 +56,7 @@ export default function Admin() {
       </div>
 
       {admindashboardstats && (
-        <div className="inline-block bg-grey-100 p-8 rounded-xl border border-slate-200 ml-70 mt-6">
+        <div className="inline-block bg-grey-100 p-8 rounded-xl border border-slate-200 ml-70 ">
           <h1 className="text-2xl text-gray-800 tracking-wide text-center mr-200">
             Assets Overview
           </h1>
@@ -99,16 +114,7 @@ export default function Admin() {
         </div>
       )}
 
-      <div className="ml-40 mt-12 mb-6 max-w-4xl">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2 ml-45">
-          Maintenance & Service Analytics
-        </h2>
-        <p className="text-xl text-gray-600 ml-45 ">
-          Visual analytics showing asset maintenance distribution and service
-          request trends. These insights help identify recurring issues,
-          workload patterns, and overall system performance.
-        </p>
-      </div>
+      
 
       <div className="mt-6 px-4">
         {admindashboardstats && admindashboardraiserequeststats && (
@@ -253,7 +259,7 @@ export default function Admin() {
               setShowdetails(true);
               handleRequestid(ele._id);
             }}
-            className="px-3 py-1 bg-green-400 text-white rounded-md hover:bg-green-700 transition text-xs font-medium mt-3"
+            className="p-4 py-2.5 py-1 bg-green-400 text-white rounded-md hover:bg-green-700 transition text-xs font-medium mt-3"
           >
             View
           </button>
@@ -266,6 +272,132 @@ export default function Admin() {
   </div>
         </div>
       </div>
+
+
+
+
+
+
+   <div className="p-6 overflow-x-auto bg-white rounded-xl shadow-lg ml-64 mt-10 m-5">
+  <h2 className="text-2xl font-semibold mb-6 text-gray-900">Recently Added Assets</h2>
+  <table className="w-full table-auto text-sm border-collapse">
+    <thead>
+      <tr className="bg-gray-100">
+        <th className="px-4 py-3 text-left font-medium">Asset</th>
+        <th className="px-4 py-3 text-left font-medium">Image</th>
+        <th className="px-4 py-3 text-left font-medium">Category</th>
+        <th className="px-4 py-3 text-left font-medium">Assigned To</th>
+        <th className="px-4 py-3 text-left font-medium w-[400px]">Description</th>
+        <th className="px-4 py-3 text-left font-medium">Status</th>
+        <th className="px-4 py-3 text-left font-medium">Created At</th>
+        <th className="px-4 py-3 text-left font-medium">Updated At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {assets.slice(-5).reverse().map((ele, index) => (
+        <tr
+          key={ele._id}
+                    className={`align-top ${index % 2 === 0 ? "bg-gray-50" : "bg-blue"} hover:bg-gray-100`}
+
+        >
+          <td className="px-4 py-3 font-medium">{ele.assetName}</td>
+          <td className="px-4 py-3">
+            <img
+              src={ele.assetImg}
+              alt={ele.assetName}
+              className="w-20 h-20 object-cover rounded-lg"
+            />
+          </td>
+          <td className="px-4 py-3">{ele.category}</td>
+          <td className="px-4 py-3">{ele.assignedTo?.name || "Not Assigned"}</td>
+          <td className="px-4 py-3 break-words w-[400px]">{ele.description}</td>
+          <td className="px-4 py-3">
+            <span
+              className={`inline-block px-3 py-1 rounded text-xs font-medium whitespace-nowrap ${
+                ele.status === "assigned"
+                  ? "bg-blue-100 text-blue-800"
+                  : ele.status === "available"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {ele.status}
+            </span>
+          </td>
+          <td className="px-4 py-3">{new Date(ele.createdAt).toLocaleDateString()}</td>
+          <td className="px-4 py-3">{new Date(ele.updatedAt).toLocaleDateString()}</td>
+        </tr>
+      ))}
+      {assets.length === 0 && (
+        <tr>
+          <td  className="text-center px-4 py-6 text-gray-500">
+            No assets to display
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+
+
+ <div className="p-6 overflow-x-auto bg-white rounded-xl shadow-lg ml-64">
+  <h2 className="text-2xl font-semibold mb-4 text-gray-900">Recently Assigned Work Orders</h2>
+  <table className="min-w-full text-sm table-auto border-collapse">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="px-4 py-2 border text-left">Asset</th>
+        <th className="px-4 py-2 border text-left">Image</th>
+        <th className="px-4 py-2 border text-left">Assigned To</th>
+        <th className="px-4 py-2 border text-left">Category</th>
+        <th className="px-4 py-2 border text-left">Status</th>
+        <th className="px-4 py-2 border text-left w-[400px]">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {recentAssigned.map((asset, index) => (
+        <tr
+          key={asset._id}
+          className={`align-top ${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
+        >
+          <td className="px-4 py-2 border font-medium">{asset.assetid.assetName}</td>
+          <td className="px-4 py-2 border">
+            <img
+              src={asset.assetid.assetImg}
+              alt={asset.assetid.assetName}
+              className="w-16 h-16 object-cover rounded-lg"
+            />
+          </td>
+          <td className="px-4 py-2 border">{asset.assignedto?.name || "Not Assigned"}</td>
+          <td className="px-4 py-2 border">{asset.aiCategory}</td>
+          <td className="px-4 py-2 border">
+            <span
+              className={`inline-block px-3 py-1 rounded text-xs font-medium whitespace-nowrap ${
+                asset.status === "assigned"
+                  ? "bg-blue-100 text-blue-800"
+                  : asset.status === "pending"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : asset.status === "in-process"
+                  ? "bg-purple-100 text-purple-800"
+                  : "bg-green-100 text-green-800"
+              }`}
+            >
+              {asset.status}
+            </span>
+          </td>
+          <td className="px-4 py-2 border break-words w-[400px]">{asset.description}</td>
+        </tr>
+      ))}
+      {recentAssigned.length === 0 && (
+        <tr>
+          <td colSpan={6} className="text-center px-4 py-6 text-gray-500">
+            No recently assigned work orders
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 }

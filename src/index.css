@@ -1,6 +1,13 @@
+@import url("https://unpkg.com/leaflet/dist/leaflet.css");
+
+:root {
+  --radius: 0.625rem;
+}
+
+
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url("https://unpkg.com/leaflet/dist/leaflet.css");
+
 
 
 @custom-variant dark (&:is(.dark *));

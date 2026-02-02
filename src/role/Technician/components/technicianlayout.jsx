@@ -9,7 +9,6 @@ export default function TechnicianLayout() {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    //not tech navigate to login
     if (!token || role !== "technician") {
       navigate("/", { replace: true });
     }

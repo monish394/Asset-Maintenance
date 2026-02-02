@@ -5,6 +5,7 @@ const AdminDataMaintenance = createContext();
 
 export const AdminDataProvider = ({ children }) => {
     const[allraiserequest,setAllraiserequest]=useState([])
+    // console.log(allraiserequest)
     const[alltechnicians,setAlltechnicians]=useState([])
     useEffect(()=>{
         axios.get("http://localhost:5000/api/allraiserequest")
