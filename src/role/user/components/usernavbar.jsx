@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { useUserAsset } from "../context/userassetprovider";
 export default function UserNavbar() {
-  const {usernotifications}=useUserAsset();
+  const {usernotifications,userinfo}=useUserAsset();
   console.log(usernotifications)
   const navigate = useNavigate();
 
@@ -72,17 +72,6 @@ export default function UserNavbar() {
           ))}
       </ul>
     )}
-
-    {/* {usernotifications.length > 5 && (
-      <div className="mt-2 text-center">
-        <button
-          className="text-blue-500 text-sm hover:underline"
-          onClick={() => navigate("/notifications")}
-        >
-          See all notifications
-        </button>
-      </div>
-    )} */}
   </div>
 )}
 
@@ -98,38 +87,56 @@ export default function UserNavbar() {
         >
           <FaUser size={23} />
 
-          {showUsermenu && (
-            <div className="absolute right-0 mt-5 w-40 bg-blue-100 shadow-lg rounded-lg p-3 z-500">
-              <p className="cursor-pointer hover:text-blue-600">Profile</p><br />
-                  <button onClick={()=>{
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+        {showUsermenu && (
+ <div className="absolute right-0 mt-5 w-80 bg-white shadow-2xl rounded-2xl p-4 z-50 border border-gray-200">
 
-    navigate("/")
-    return;
-    
-  }}
-  className="
-    h-10 w-28
-    px-4
-    rounded-lg
-    bg-blue-600
-    text-white
-    font-semibold
-    shadow-md
-    hover:bg-blue-800
-    transition
-    duration-200
-    ease-in-out
-    focus:outline-none
-    focus:ring-2
-    focus:ring-blue-400
-  "
->
-  Logout
-</button>
-            </div>
-          )}
+  <div className="flex items-center gap-3 border-b pb-3 mb-3">
+    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+      {userinfo.name?.charAt(0)}
+    </div>
+
+    <div>
+      <p className="font-semibold text-gray-800">{userinfo.name}</p>
+      <p className="text-xs text-gray-500">{userinfo.email}</p>
+      <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+        {userinfo.role}
+      </span>
+    </div>
+  </div>
+
+  <div className="text-sm text-gray-700 space-y-2 mb-4">
+    <div className="flex justify-between">
+      <span className="text-gray-500">Phone</span>
+      <span>{userinfo.phone}</span>
+    </div>
+
+    <div className="flex justify-between">
+      <span className="text-gray-500">Address</span>
+      <span className="text-right max-w-[140px] truncate">
+        {userinfo.address}
+      </span>
+    </div>
+
+    <p className="text-xs text-gray-400 mt-2">
+      Joined on {new Date(userinfo.createdAt).toLocaleDateString()}
+    </p>
+  </div>
+
+  <button
+    onClick={() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      navigate("/");
+    }}
+    className="w-full h-10 rounded-xl bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+  >
+    Logout
+  </button>
+
+</div>
+
+)}
+
         </li>
 
        

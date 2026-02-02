@@ -18,15 +18,15 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
         backgroundColor: technicianassignedassert.map((req) => {
           switch (req.status.toLowerCase()) {
             case "completed":
-              return "#22c55e"; // green
+              return "#22c55e"; 
             case "in-process":
-              return "#3b82f6"; // blue
+              return "#3b82f6";
             case "pending":
-              return "#f97316"; // orange
+              return "#f97316";
             case "assigned":
-              return "#f1cb33"; // yellow
+              return "#f1cb33"; 
             default:
-              return "#fa4134"; // gray
+              return "#fa4134";
           }
         }),
         borderRadius: 6,
@@ -35,7 +35,7 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
   };
 
   const options = {
-    indexAxis: "y", // horizontal bars
+    indexAxis: "y", 
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -57,7 +57,7 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
       x: {
         beginAtZero: true,
         ticks: {
-          callback: (val) => `$${val}`,
+          callback: (val) => `₹${val}`,
         },
       },
       y: {

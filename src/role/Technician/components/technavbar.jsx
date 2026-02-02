@@ -6,7 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { TechData } from "../context/Techniciandatamaintenance";
 
 export default function TechnicianNavbar() {
-  const{techniciansnotifications}=TechData();
+  const{techniciansnotifications,techinfo}=TechData();
+  console.log(techinfo)
   // console.log(techniciansnotifications)
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -91,21 +92,55 @@ export default function TechnicianNavbar() {
           }}
         >
           <FaUser size={23} />
-          {showUserMenu && (
-            <div className="absolute right-0 mt-3 w-40 bg-white shadow-lg rounded-lg p-3 z-50 flex flex-col gap-2">
-              <p className="cursor-pointer hover:text-blue-600">Profile</p>
-              <button
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  localStorage.removeItem("role");
-                  navigate("/");
-                }}
-                className="h-10 w-full px-4 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-800 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
-              >
-                Logout
-              </button>
-            </div>
-          )}
+         {showUserMenu && (
+  <div className="absolute right-0 mt-3 w-80 bg-white shadow-2xl rounded-xl p-4 z-50 border border-gray-200">
+
+    <div className="flex items-center gap-3 border-b pb-3 mb-3">
+      <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+        {techinfo.name?.charAt(0)}
+      </div>
+
+      <div>
+        <p className="font-semibold text-gray-800">{techinfo.name}</p>
+        <p className="text-xs text-gray-500">{techinfo.email}</p>
+        <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+          {techinfo.role}
+        </span>
+      </div>
+    </div>
+
+    <div className="text-sm text-gray-700 space-y-2 mb-4">
+      <div className="flex justify-between">
+        <span className="text-gray-500">Phone</span>
+        <span>{techinfo.phone}</span>
+      </div>
+
+      <div className="flex justify-between">
+        <span className="text-gray-500">Address</span>
+        <span className="text-right max-w-[150px] truncate">
+          {techinfo.address}
+        </span>
+      </div>
+
+      <p className="text-xs text-gray-400 mt-2">
+        Joined on {new Date(techinfo.createdAt).toLocaleDateString()}
+      </p>
+    </div>
+
+    <button
+      onClick={() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        navigate("/");
+      }}
+      className="h-10 w-full px-4 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-800 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      Logout
+    </button>
+
+  </div>
+)}
+
         </li>
       </ul>
     </div>

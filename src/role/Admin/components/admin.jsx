@@ -4,7 +4,11 @@ import axios from "axios";
 import AdminDashboardPieChart from "./Admindashboardpiechart";
 import AdminDashboardLineBarChart from "./Admindashboardlinechart";
 
+
 export default function Admin() {
+  const [userinfo,setUserinfo]=useState(null)
+
+
   const [assets,setAssets]=useState([])
   console.log(assets)
   const [admindashboardstats, setAdmindashboardstats] = useState(null);
@@ -40,6 +44,7 @@ export default function Admin() {
       .then(res => setAssets(res.data))
       .catch(err => console.log(err));
   }, []);
+
 
 
   

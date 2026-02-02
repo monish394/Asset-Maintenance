@@ -4,9 +4,22 @@ import { FaBox, FaUsers, FaUserAlt } from "react-icons/fa";
 import { GiAutoRepair } from "react-icons/gi";
 import { GrHostMaintenance } from "react-icons/gr";
 import logo from "../assets/logo.png";
-import { useState, useRef } from "react";
+import { useState, useRef ,useEffect} from "react";
+import axios from "axios";
 
 export default function Navbar() {
+  const [userinfo,setUserinfo]=useState(null)
+  console.log(userinfo)
+
+      useEffect(() => {
+  axios.get("http://localhost:5000/api/userinfo", {
+    headers: {
+      Authorization: localStorage.getItem("token")
+    }
+  })
+  .then(res => setUserinfo(res.data))
+  .catch(err => console.log(err.message))
+}, [])
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const [showProfilePopup, setShowProfilePopup] = useState(false);
@@ -41,23 +54,40 @@ export default function Navbar() {
               <FaUserAlt size={25} className="text-gray-500" />
             </span>
 
-            {showProfilePopup && (
-              <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
-                <ul className="flex flex-col">
+           {showProfilePopup && (
+  <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
+    <div className="p-4 border-b">
+      <p className="font-semibold text-gray-800">{userinfo.name}</p>
+      <p className="text-sm text-gray-500">{userinfo.email}</p>
+      <span className="inline-block mt-1 text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
+        {userinfo.role}
+      </span>
+    </div>
 
-                  <li
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 font-medium"
-                    onClick={() => {
-                      // alert("Profile clicked");
-                      setShowProfilePopup(false);
-                    }}
-                  >
-                    Profile
-                  </li>
-                  <button onClick={() => { localStorage.removeItem("token"); localStorage.removeItem("role"); navigate("/"); }} className="ml-2 h-10 w-28 px-4 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-800 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 ml-5 mb-1" > Logout </button>
-                </ul>
-              </div>
-            )}
+    <div className="p-4 text-sm text-gray-700 space-y-1">
+      <p><strong>Phone:</strong> {userinfo.phone}</p>
+      <p><strong>Address:</strong> {userinfo.address}</p>
+      <p>
+        <strong>Joined:</strong>{" "}
+        {new Date(userinfo.createdAt).toLocaleDateString()}
+      </p>
+    </div>
+
+    <div className="p-3 border-t flex justify-center">
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+          navigate("/");
+        }}
+        className="h-9 w-full rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-800 transition"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+)}
+
           </div>
         </div>
       </div>

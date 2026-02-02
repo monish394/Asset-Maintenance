@@ -39,13 +39,13 @@ const getDistanceKm = (origin, destination) => {
     Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return (R * c).toFixed(2); // returns distance in km
+  return (R * c).toFixed(2);
 };
 
 
 export default function RaiseRequest() {
     const [assetid,setAssetid]=useState("")
-    const [trackingCoords, setTrackingCoords] = useState(null); // will store origin & destination
+    const [trackingCoords, setTrackingCoords] = useState(null); 
     const [showMap, setShowMap] = useState(false)
     
     console.log(assetid)

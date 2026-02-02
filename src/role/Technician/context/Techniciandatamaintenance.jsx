@@ -6,6 +6,7 @@ const TechDataMaintain = createContext();
 export const TechDataProvider = ({ children }) => {
      const[technicianassignedassert,setTechnicianassignedassert]=useState([])
      const[techniciansnotifications,setTechniciansnotifications]=useState([])
+     const [techinfo,setTechinfo]=useState(null)
     
         useEffect(() => {
       axios
@@ -33,6 +34,15 @@ export const TechDataProvider = ({ children }) => {
       })
 
     },[])
+    useEffect(() => {
+  axios.get("http://localhost:5000/api/userinfo", {
+    headers: {
+      Authorization: localStorage.getItem("token")
+    }
+  })
+  .then(res => setTechinfo(res.data))
+  .catch(err => console.log(err.message))
+}, [])
 
 
     
@@ -40,7 +50,7 @@ export const TechDataProvider = ({ children }) => {
     
 
   return (
-    <TechDataMaintain.Provider value={{technicianassignedassert,setTechnicianassignedassert,techniciansnotifications}}>
+    <TechDataMaintain.Provider value={{technicianassignedassert,setTechnicianassignedassert,techniciansnotifications,techinfo}}>
       {children}
     </TechDataMaintain.Provider>
   );
