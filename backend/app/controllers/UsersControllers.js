@@ -21,7 +21,7 @@ UserCtrl.Registeruser = async (req, res) => {
     try {
         const Emailpresent =await User.findOne({ email: value.email })
         if (Emailpresent) {
-            res.json({ err: "Email already taken enter uniqueone!!!" })
+            return res.json({ err: "Email already taken enter uniqueone!!!" })
         }
         const countdoc = await User.countDocuments()
         if (countdoc === 0) {

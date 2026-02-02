@@ -271,35 +271,35 @@ const handleTrack = (address) => {
           className="bg-white rounded-xl shadow-lg p-4 flex flex-col justify-between hover:shadow-2xl transition"
         >
           <div className="mb-2">
-            <h4 className="text-gray-800 font-semibold text-lg truncate">User: {item.userid.name}</h4>
+            <h4 className="text-gray-800 font-semibold text-lg truncate">User: {item.userid?.name}</h4>
           </div>
 
           <div className="mb-2 text-xs text-gray-600 space-y-1">
             <p>
               <span className="font-medium">Phone:</span>{" "}
-              <a href={`tel:${item.userid.phone}`} className="text-blue-600 hover:underline">
-                {item.userid.phone}
+              <a href={`tel:${item.userid?.phone}`} className="text-blue-600 hover:underline">
+                {item.userid?.phone}
               </a>
             </p>
             <p>
-              <span className="font-medium">Address:</span> {item.userid.address}
+              <span className="font-medium">Address:</span> {item.userid?.address}
             </p>
           </div>
 
           <div className="mb-2 text-xs text-gray-700">
             <p>
-              <span className="font-medium">Asset:</span> {item.assetid.assetName}
+              <span className="font-medium">Asset:</span> {item.assetid?.assetName}
             </p>
           </div>
 
           <div className="mb-4 text-xs text-gray-700 truncate">
             <p>
-              <span className="font-medium">Issue:</span> {item.description}
+              <span className="font-medium">Issue:</span> {item?.description}
             </p>
           </div>
 
           <button
-            onClick={() => handleTrack(item.userid.address)}
+            onClick={() => handleTrack(item.userid?.address)}
             className="w-full px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
           >
             Track

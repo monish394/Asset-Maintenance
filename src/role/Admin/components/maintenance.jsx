@@ -101,7 +101,7 @@ export default function Maintenance() {
           </thead>
           <tbody>
             {allraiserequest
-              .filter((req) => req.status === "pending" || req.status === "in-process")
+              .filter((req) => req.status === "assigned" || req.status === "in-process")
               .map((req) => (
                 <tr key={req._id} className="hover:bg-gray-50 align-top">
                   <td className="px-4 py-2 border font-medium">{req.assetid?.assetName || "N/A"}</td>
