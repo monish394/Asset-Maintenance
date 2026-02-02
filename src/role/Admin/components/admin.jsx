@@ -6,7 +6,7 @@ import AdminDashboardLineBarChart from "./Admindashboardlinechart";
 
 
 export default function Admin() {
-  const [userinfo,setUserinfo]=useState(null)
+  // const [userinfo,setUserinfo]=useState(null)
 
 
   const [assets,setAssets]=useState([])
