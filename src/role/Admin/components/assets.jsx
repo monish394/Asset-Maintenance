@@ -3,7 +3,12 @@ import axios from "axios";
 import { BsSearch } from "react-icons/bs";
 
 export default function Assets() {
+  const [showstatus, setShowstatus] = useState(false)
+  const [requeststatusid, setRequeststatusid] = useState("")
+  // console.log(requeststatusid)
+  const [requeststatus, setRequeststatus] = useState("")
   const [statusFilter, setStatusFilter] = useState("all");
+  const [requestasset, setRequestasset] = useState([])
 
   const [original_asset, set_original_asset] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
@@ -36,18 +41,18 @@ export default function Assets() {
       .catch(err => console.log(err.message));
   }, []);
 
-const filtereddata = assets.filter((asset) => {
-  const matchesSearch = asset.assetName
-    ? asset.assetName.toLowerCase().includes(btnsearch.toLowerCase())
-    : false;
+  const filtereddata = assets.filter((asset) => {
+    const matchesSearch = asset.assetName
+      ? asset.assetName.toLowerCase().includes(btnsearch.toLowerCase())
+      : false;
 
-  const assetStatus = asset.status ? asset.status.toLowerCase() : "";
+    const assetStatus = asset.status ? asset.status.toLowerCase() : "";
 
-  const matchesStatus =
-    statusFilter === "all" || assetStatus === statusFilter.toLowerCase();
+    const matchesStatus =
+      statusFilter === "all" || assetStatus === statusFilter.toLowerCase();
 
-  return matchesSearch && matchesStatus;
-});
+    return matchesSearch && matchesStatus;
+  });
 
 
   const handleSearch = () => setBtnsearch(txt);
@@ -64,41 +69,41 @@ const filtereddata = assets.filter((asset) => {
     setShowassign(true);
   };
 
- const handleAssignTo = async () => {
-  if (!assignuser || !selectedassetid) {
-    alert("Select a user to assign");
-    return;
-  }
-
-  try {
-    const res = await axios.put(
-      `http://localhost:5000/api/assets/${selectedassetid}`,
-      { userid: assignuser }
-    );
-
-    setAssets(prev =>
-      prev.map(asset =>
-        asset._id === selectedassetid ? res.data : asset
-      )
-    );
-
-    if (editAssetId === selectedassetid) {
-      setEditForm(prev => ({
-        ...prev,
-        assignedTo: assignuser,  
-        status: "assigned"       
-            }));
+  const handleAssignTo = async () => {
+    if (!assignuser || !selectedassetid) {
+      alert("Select a user to assign");
+      return;
     }
 
-    setShowassign(false);
-    setAssignuser("");
-    setSelectedassetid("");
-    set_original_asset(null);
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/assets/${selectedassetid}`,
+        { userid: assignuser }
+      );
 
-  } catch (err) {
-    console.error(err.message);
-  }
-};
+      setAssets(prev =>
+        prev.map(asset =>
+          asset._id === selectedassetid ? res.data : asset
+        )
+      );
+
+      if (editAssetId === selectedassetid) {
+        setEditForm(prev => ({
+          ...prev,
+          assignedTo: assignuser,
+          status: "assigned"
+        }));
+      }
+
+      setShowassign(false);
+      setAssignuser("");
+      setSelectedassetid("");
+      set_original_asset(null);
+
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
 
   const handleEdit = (asset) => {
@@ -145,10 +150,147 @@ const filtereddata = assets.filter((asset) => {
 
 
 
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/getallrequestasset")
+      .then((res) => {
+        console.log(res.data)
+        setRequestasset(res.data)
+      })
+      .catch((err) => {
+        console.log(err.message)
+      })
+
+  }, [])
+
+  const handleStatusEdit = (id) => {
+    setRequeststatusid(id)
+    setRequeststatus("")
+    setShowstatus(true)
+  }
+
+
+
+  const handleeditrequeststatus = () => {
+
+
+    axios.put(`http://localhost:5000/api/updaterequeststatus/${requeststatusid}`, { status: requeststatus })
+      .then((res) => {
+        const updatedRequest = res.data;
+
+        setRequestasset(prev =>
+          prev.map(req =>
+            req._id === updatedRequest._id ? updatedRequest : req
+          )
+        );
+        console.log(res.data)
+        setShowstatus(false)
+      })
+      .catch((err) => console.log(err.message))
+
+
+  }
+
+
 
   return (
     <>
+
+
+
       <div>
+        <div className="mt-10 mx-4 overflow-x-auto ml-64">
+          <table className="min-w-full border border-gray-200 text-sm rounded-lg overflow-hidden shadow-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2 text-left font-semibold text-gray-700 uppercase">Request For Asset By User</th>
+                <th className="px-4 py-2 text-left font-semibold text-gray-700 uppercase">Requested By</th>
+                <th className="px-4 py-2 text-left font-semibold text-gray-700 uppercase">Status</th>
+                <th className="px-4 py-2 text-left font-semibold text-gray-700 uppercase">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {requestasset.map((ele) => (
+                <tr
+                  key={ele._id}
+                  className="border-t border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-2 text-gray-900">{ele.name}</td>
+                  <td className="px-4 py-2 text-gray-700">{ele.requestedBy.name}</td>
+                  <td className="px-4 py-2">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${ele.status === "pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : ele.status === "approved"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-500"
+                        }`}
+                    >
+                      {ele.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-gray-500">
+                    <button
+                      onClick={() => handleStatusEdit(ele._id)}
+                      className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
+                    >
+                      Edit
+                    </button>
+
+
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {showstatus && (
+          <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-50 z-50">
+            <div className="bg-white rounded-lg shadow-lg w-96 p-6">
+
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                Admin Action Required
+              </h2>
+
+              <p className="text-sm text-gray-600 mb-4">
+                Please approve or reject the user request.
+              </p>
+
+              <select value={requeststatus}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => setRequeststatus(e.target.value)}
+
+              >
+                <option value="" disabled>
+                  Select an option
+                </option>
+                <option value="approved">Approve</option>
+                <option value="rejected">Reject</option>
+              </select>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowstatus(false)}
+                  className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleeditrequeststatus}
+                  className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
+
         {showEdit && (
           <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black/20">
             <form
@@ -354,57 +496,57 @@ const filtereddata = assets.filter((asset) => {
             </div>
           </div>
         )}
-        
+
         <div className="p-8 ml-64">
-          <h1 className="text-2xl"><u>Assets Page</u></h1>
+          <h1 className="text-2xl"><u>All Assets</u></h1>
         </div>
 
- <div className="flex items-center gap-4 ml-64 mt-6">
+        <div className="flex items-center gap-4 ml-64 mt-6">
 
-  <div className="relative">
-    <input
-      value={txt}
-      onChange={(e) => setTxt(e.target.value)}
-      type="text"
-      placeholder="Search assets..."
-      className="h-12 w-72 rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-lg text-gray-700 placeholder-gray-400 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-200"
-    />
-    <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 text-lg pointer-events-none">
-     <BsSearch />
-    </span>
-  </div>
+          <div className="relative">
+            <input
+              value={txt}
+              onChange={(e) => setTxt(e.target.value)}
+              type="text"
+              placeholder="Search assets..."
+              className="h-12 w-72 rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-lg text-gray-700 placeholder-gray-400 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all duration-200"
+            />
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 text-lg pointer-events-none">
+              <BsSearch />
+            </span>
+          </div>
 
-  <button
-    onClick={handleSearch}
-    className="h-12 px-6 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-md transition-all duration-200"
-  >
-    Search
-  </button>
+          <button
+            onClick={handleSearch}
+            className="h-12 px-6 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-md transition-all duration-200"
+          >
+            Search
+          </button>
 
-  <div className="relative">
-    <select
-      value={statusFilter}
-      onChange={(e) => setStatusFilter(e.target.value)}
-      className="h-12 w-64 rounded-lg border border-gray-300 bg-white px-4 text-gray-700 font-medium text-sm appearance-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none shadow-sm cursor-pointer transition-all duration-200"
-    >
-      <option value="all" style={{ color: "#374151", fontWeight: 500 }}>
-        All Assets
-      </option>
-      <option value="assigned" style={{ color: "#2563EB", fontWeight: 600 }}>
-        Assigned
-      </option>
-      <option value="unassigned" style={{ color: "#16A34A", fontWeight: 600 }}>
-        Unassigned
-      </option>
-      <option value="undermaintenance" style={{ color: "#DC2626", fontWeight: 600 }}>
-        Under Maintenance
-      </option>
-    </select>
-    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400 text-sm">
-      ▼
-    </span>
-  </div>
-</div>
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-12 w-64 rounded-lg border border-gray-300 bg-white px-4 text-gray-700 font-medium text-sm appearance-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none shadow-sm cursor-pointer transition-all duration-200"
+            >
+              <option value="all" style={{ color: "#374151", fontWeight: 500 }}>
+                All Assets
+              </option>
+              <option value="assigned" style={{ color: "#2563EB", fontWeight: 600 }}>
+                Assigned
+              </option>
+              <option value="unassigned" style={{ color: "#16A34A", fontWeight: 600 }}>
+                Unassigned
+              </option>
+              <option value="undermaintenance" style={{ color: "#DC2626", fontWeight: 600 }}>
+                Under Maintenance
+              </option>
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400 text-sm">
+              ▼
+            </span>
+          </div>
+        </div>
 
 
 

@@ -15,23 +15,23 @@ export default function UserNavbar() {
   return (
     <div className="w-full h-24 flex items-center justify-between px-8 shadow-lg bg-white fixed top-0 left-0 z-50">
       <div>
-        <img src={logo} alt="Logo" className="h-16 w-auto ml-4" />
+        <img style={{cursor:"pointer"}} onClick={()=>navigate("/user/home")} src={logo} alt="Logo" className="h-16 w-auto ml-4" />
       </div>
 
       <ul className="flex items-center gap-8 text-gray-700 font-medium text-base relative">
-        <li className="cursor-pointer hover:text-blue-600 transition">
+        <li style={{fontSize:"20px",fontFamily:"calibri"}} className="cursor-pointer hover:text-blue-600 transition">
           <Link to="/user/home">Home</Link>
         </li>
 
-        <li className="cursor-pointer hover:text-blue-600 transition">
+        <li style={{fontSize:"20px",fontFamily:"calibri"}} className="cursor-pointer hover:text-blue-600 transition">
           <Link to="/user/raiserequest">RaiseRequest</Link>
         </li>
 
-        <li className="cursor-pointer hover:text-blue-600 transition">
+        <li style={{fontSize:"20px",fontFamily:"calibri"}}className="cursor-pointer hover:text-blue-600 transition">
           <Link to="/user/payment">Payment</Link>
         </li>
 
-        <li className="cursor-pointer hover:text-blue-600 transition">
+        <li style={{fontSize:"18px",fontFamily:"calibri"}} className="cursor-pointer hover:text-blue-600 transition">
           <Link to="/user/workorderrequest">WorkOrder Request</Link>
         </li>
 

@@ -9,6 +9,7 @@ import RaiseRequestCtrl from "./app/controllers/RaiseRequest.js";
 import { AuthenticateUser } from "./app/middlewares/AuthenticateUser.js";
 import NotificationCtrl from "./app/controllers/NotificationControllers.js";
 import PaymentCtrl from "./app/controllers/PaymentCtrl.js";
+import RequestCtrl from "./app/controllers/RequestAssetCtrl.js";
 import Payment from "./app/models/Payment.js";
 const app=express();
 app.use(cors())
@@ -73,8 +74,8 @@ app.post("/api/create-order", AuthenticateUser, PaymentCtrl.createOrder);
 app.post("/api/verify-payment", AuthenticateUser, PaymentCtrl.verifyPayment);
 app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
   try {
-    const payments = await Payment.find({ userId: req.userid }); // <- fixed
-    res.status(200).json({ payments }); // wrap in object for consistency
+    const payments = await Payment.find({ userId: req.userid }); 
+    res.status(200).json({ payments }); 
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Failed to fetch payments" });
@@ -84,6 +85,13 @@ app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
 
 
 
+// Request for Assets
+
+
+app.post("/api/requestasset",AuthenticateUser,RequestCtrl.CreateRequest)
+app.get("/api/getallrequestasset",RequestCtrl.GetAllRequests)
+app.put("/api/updaterequeststatus/:id",RequestCtrl.StausUpdate)
+app.get("/api/getusersrequest",AuthenticateUser,RequestCtrl.GetUsersRequest)
 
 
 

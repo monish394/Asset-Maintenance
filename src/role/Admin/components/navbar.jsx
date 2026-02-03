@@ -38,7 +38,7 @@ export default function Navbar() {
     <>
       <div style={{fontFamily:"calibri"}} className="w-full h-24 flex items-center justify-between px-8 shadow-lg bg-white fixed top-0 left-0 z-50 font-sans">
         <div>
-          <img className="h-16 w-auto ml-10" src={logo} alt="Logo" />
+          <img style={{cursor:"pointer"}} onClick={()=>navigate("/admin/dashboard")} className="h-16 w-auto ml-10" src={logo} alt="Logo" />
         </div>
 
         <div className="flex items-center gap-6 text-gray-700 font-medium text-base relative">

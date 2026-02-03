@@ -21,7 +21,7 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
   };
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI("AIzaSyDw2hrK_e_86QOAVNBl9vNDOf80CfgXVGc");
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash-lite",

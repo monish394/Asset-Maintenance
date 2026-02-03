@@ -16,7 +16,7 @@ export default function TechnicianNavbar() {
   return (
     <div className="w-full h-24 flex items-center justify-between px-8 shadow-lg bg-white fixed top-0 left-0 z-50">
       <div>
-        <img src={logo} alt="Logo" className="h-16 w-auto" />
+        <img style={{cursor:"pointer"}} onClick={()=>navigate("/technician/home")} src={logo} alt="Logo" className="h-16 w-auto" />
       </div>
 
       <ul className="flex items-center gap-6 text-gray-700 font-medium text-base relative">

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useUserAsset } from "../context/userassetprovider";
 import { FcIdea } from "react-icons/fc";
 import { FaPlus } from "react-icons/fa6";
@@ -6,6 +6,8 @@ import axios from "axios";
 import { MapContainer, TileLayer, Marker, Polyline ,Tooltip} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+
+import RequestAssetForm from "./requestforasset";
 
 
 
@@ -19,7 +21,7 @@ function FitBounds({ origin, destination }) {
       [origin.lat, origin.lng],
       [destination.lat, destination.lng],
     ];
-    map.fitBounds(bounds, { padding: [50, 50] }); // add some padding
+    map.fitBounds(bounds, { padding: [50, 50] }); 
   }
 
   return null;
@@ -27,7 +29,7 @@ function FitBounds({ origin, destination }) {
 const getDistanceKm = (origin, destination) => {
   const toRad = (value) => (value * Math.PI) / 180;
 
-  const R = 6371; // Earth radius in km
+  const R = 6371;
   const dLat = toRad(destination.lat - origin.lat);
   const dLon = toRad(destination.lng - origin.lng);
 
@@ -44,6 +46,10 @@ const getDistanceKm = (origin, destination) => {
 
 
 export default function RaiseRequest() {
+  const [showForm, setShowForm] = useState(false);
+  const [usersrequestasset,setUsersrequestasset]=useState([])
+  const [name,setName]=useState("")
+  const [category,setCategory]=useState("Electronics")
     const [assetid,setAssetid]=useState("")
     const [trackingCoords, setTrackingCoords] = useState(null); 
     const [showMap, setShowMap] = useState(false)
@@ -69,6 +75,8 @@ export default function RaiseRequest() {
         handleShowform()
 
     }
+
+
 
    const handleSubmit = async () => {
   if (!assetid ) {
@@ -142,22 +150,44 @@ const handleTrack = async (ele) => {
   }
 
   setTrackingCoords({ origin: userCoords, destination: techCoords });
-  setShowMap(true); // open modal
+  setShowMap(true);
 };
 
-// User icon (green)
+
 const userIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
   iconSize: [35, 35],
   iconAnchor: [17, 35],
 });
 
-// Technician icon (blue)
+
 const techIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149059.png",
   iconSize: [35, 35],
   iconAnchor: [17, 35],
 });
+
+
+// const handleRequestAsset = (e) => {
+//   e.preventDefault();
+//   onsubmit(name,category)
+//   console.log("Request Asset:", name, category);
+
+// };
+useEffect(()=>{
+  axios.get("http://localhost:5000/api/getusersrequest",{
+    headers:{
+    Authorization:localStorage.getItem("token")
+    }
+  })
+  .then((res)=>{
+    console.log(res.data)
+    setUsersrequestasset(res.data)
+  })
+  .catch((err)=>console.log(err.message))
+
+},[])
+
 
 
 
@@ -462,9 +492,123 @@ const techIcon = new L.Icon({
       <p className="text-gray-500 text-sm">No assigned technicians available yet.</p>
     )}
   </div>
+
+
+
 </div>
 
 
+
+<hr />
+
+
+{showForm && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div className="bg-white max-w-sm w-full p-6 rounded-xl shadow-lg relative animate-fadeIn ml-50">
+  
+      <button
+        onClick={() => setShowForm(false)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition text-xl font-bold"
+      >
+        ✕
+      </button>
+
+      <h2 className="text-2xl font-semibold mb-4 text-center">
+        Request For New Asset
+      </h2>
+
+      <RequestAssetForm
+        onSubmit={(name, category) => {
+          console.log(name, category);
+          setShowForm(false); 
+        }}
+      />
+    </div>
+  </div>
+)}
+
+
+  <div className="p-6">
+    <h2>Request for New Asset</h2>
+
+    
+      <div className=" mt-6">
+        <button
+          onClick={() => setShowForm((prev) => !prev)}
+          className=" px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          Request for Asset
+        </button>
+      </div>
+<div className="mt-10 mx-4 overflow-x-auto">
+  <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden shadow-sm text-sm">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
+          Request
+        </th>
+        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
+          Category
+        </th>
+        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
+          Status
+        </th>
+        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
+          Created At
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {usersrequestasset.map((ele) => (
+        <tr
+          key={ele._id}
+          className="border-t border-gray-200 hover:bg-gray-50 transition"
+        >
+          <td className="px-4 py-3 text-sm font-medium text-gray-800 whitespace-nowrap">
+            {ele.name}
+          </td>
+          <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+            {ele.category}
+          </td>
+          <td className="px-4 py-3">
+            <div className="flex items-center min-h-[24px]">
+              {ele.status === "pending" && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                  Pending
+                </span>
+              )}
+              {ele.status === "approved" && (
+                <span className="inline-flex items-center gap-2 text-sm font-medium text-green-700">
+                  <span className="h-2 w-2 rounded-full bg-green-600"></span>
+                  Info: Your request will be assigned to you soon
+                </span>
+              )}
+              {ele.status === "rejected" && (
+                <span className="inline-flex items-center gap-2 text-sm font-medium text-red-600">
+                  <span className="h-2 w-2 rounded-full bg-red-600"></span>
+                  Sorry, product is not available
+                </span>
+              )}
+            </div>
+          </td>
+          <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+            {new Date(ele.createdAt).toLocaleDateString()}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+
+
+
+
+
+
+
+  </div>
   </div>
 
     )
