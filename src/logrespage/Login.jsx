@@ -63,11 +63,11 @@ export default function Login() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div style={{fontFamily:"calibri"}} className="min-h-screen flex items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md border border-gray-200 shadow-lg rounded-lg">
-        <CardHeader className="text-center">
-          <CardTitle>Login</CardTitle>
-          <CardDescription>
+        <CardHeader className="text-center text-2xl">
+          <CardTitle >Login</CardTitle>
+          <CardDescription >
             Enter your email and password
           </CardDescription>
         </CardHeader>

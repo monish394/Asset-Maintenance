@@ -48,8 +48,8 @@ const getDistanceKm = (origin, destination) => {
 export default function RaiseRequest() {
   const [showForm, setShowForm] = useState(false);
   const [usersrequestasset,setUsersrequestasset]=useState([])
-  const [name,setName]=useState("")
-  const [category,setCategory]=useState("Electronics")
+  // const [name,setName]=useState("")
+  // const [category,setCategory]=useState("Electronics")
     const [assetid,setAssetid]=useState("")
     const [trackingCoords, setTrackingCoords] = useState(null); 
     const [showMap, setShowMap] = useState(false)
@@ -503,8 +503,8 @@ useEffect(()=>{
 
 
 {showForm && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div className="bg-white max-w-sm w-full p-6 rounded-xl shadow-lg relative animate-fadeIn ml-50">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm ">
+    <div className="bg-white max-w-sm w-full p-6 rounded-xl shadow-lg relative animate-fadeIn ">
   
       <button
         onClick={() => setShowForm(false)}

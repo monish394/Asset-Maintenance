@@ -4,7 +4,8 @@ export default function Maintenance() {
   const { allraiserequest } = AdminData();
 
   return (
-    <div className="flex-1 p-8 ml-64 space-y-8">
+    <div className="ml-5">
+    <div className="flex-1 p-8 ml-50 space-y-8">
 
       <div className="p-6 overflow-x-auto bg-white rounded-xl shadow-lg">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900">All Issue Requests</h2>
@@ -228,6 +229,7 @@ export default function Maintenance() {
         </table>
       </div>
 
+    </div>
     </div>
   );
 }

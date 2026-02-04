@@ -1,6 +1,7 @@
 
 import Asset from "../models/AssertSchema.js";
 import RaiseRequest from "../models/RaiseRequest.js";
+import Notification from "../models/NotificationUser.js";
 const AssetsCtrl = {}
 
 AssetsCtrl.CreateAsset = async (req, res) => {
@@ -31,20 +32,36 @@ AssetsCtrl.GetAsset = async (req, res) => {
 //assign asset to user by admin
 
 AssetsCtrl.Assignuser = async (req, res) => {
-    const { assetid } = req.params;
-    const { userid } = req.body;
+  const { assetid } = req.params
+  const { userid } = req.body
 
+  try {
+    const assignedAsset = await Asset.findByIdAndUpdate(
+      assetid,
+      { assignedTo: userid, status: "assigned" },
+      { new: true }
+    ).populate("assignedTo", "name")
 
-    try {
-        const assinguser = await Asset.findByIdAndUpdate(assetid, { assignedTo: userid, status: "assigned" }, { new: true }).populate("assignedTo", "name");
-        res.json(assinguser)
-
-    } catch (err) {
-        console.log(err.message);
-        res.status(400).josn({ err: "somthing went wrong!!!" })
+    if (!assignedAsset) {
+      return res.status(404).json({ err: "Asset not found" })
     }
 
+    await Notification.create({
+      userid:assignedAsset.assignedTo._id,
+      message: `The asset "${assignedAsset.assetName}" has been assigned to you by the administrator.`
+    })
+
+    res.status(200).json({
+      message: "Asset assigned successfully",
+      asset: assignedAsset
+    })
+
+  } catch (err) {
+    console.error(err.message)
+    res.status(400).json({ err: "Something went wrong!" })
+  }
 }
+
 
 //user view asset
 

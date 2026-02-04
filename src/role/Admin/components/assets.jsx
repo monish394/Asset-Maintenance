@@ -78,7 +78,11 @@ export default function Assets() {
     try {
       const res = await axios.put(
         `http://localhost:5000/api/assets/${selectedassetid}`,
-        { userid: assignuser }
+        { userid: assignuser },{
+          headers:{
+            Authorization:localStorage.getItem("token")
+          }
+        }
       );
 
       setAssets(prev =>
@@ -94,7 +98,7 @@ export default function Assets() {
           status: "assigned"
         }));
       }
-
+      console.log(res.data)
       setShowassign(false);
       setAssignuser("");
       setSelectedassetid("");
@@ -177,11 +181,14 @@ export default function Assets() {
       .then((res) => {
         const updatedRequest = res.data;
 
-        setRequestasset(prev =>
-          prev.map(req =>
-            req._id === updatedRequest._id ? updatedRequest : req
-          )
-        );
+       setRequestasset(prev =>
+  prev.map(req =>
+    req._id === updatedRequest._id
+      ? { ...req, status: updatedRequest.status }
+      : req
+  )
+)
+
         console.log(res.data)
         setShowstatus(false)
       })
@@ -265,8 +272,8 @@ export default function Assets() {
                 <option value="" disabled>
                   Select an option
                 </option>
-                <option value="approved">Approve</option>
-                <option value="rejected">Reject</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
               </select>
 
               <div className="flex justify-end gap-3">

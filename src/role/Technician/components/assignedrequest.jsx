@@ -55,17 +55,19 @@ const [trackAddress, setTrackAddress] = useState("");
         payload
       );
 
-      setTechnicianassignedassert(prev =>
+setTechnicianassignedassert(prev =>
   prev.map(item =>
     item._id === res.data.updated._id
       ? {
-          ...item,
+          ...item, 
           status: res.data.updated.status,
           costEstimate: res.data.updated.costEstimate ?? Number(costEstimateEdit),
+          completedAt: res.data.updated.completedAt ?? item.completedAt 
         }
       : item
   )
-);
+)
+
 
       console.log(res.data)
       setShoweditform(false);

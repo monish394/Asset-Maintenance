@@ -58,8 +58,8 @@ export default function WorkOrderRequest() {
                             : req.status === "in-progress"
                               ? "#8a50ff"
                               : req.status === "completed"
-                                ? "#48ff00"
-                                : "#7f8c8d",
+                                ? "#447132"
+                                : "#8132c2",
                         padding: "2px 8px",
                         borderRadius: "6px",
                         fontSize: "0.75rem",
@@ -150,7 +150,7 @@ export default function WorkOrderRequest() {
                     <span
                       style={{
                         color: "#fff",
-                        backgroundColor: "#2ecc71",
+                        backgroundColor: "#2a784b",
                         padding: "3px 8px",
                         borderRadius: "6px",
                         fontSize: "0.75rem",

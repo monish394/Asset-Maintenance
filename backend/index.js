@@ -46,7 +46,7 @@ app.get("/api/technicianstats",AuthenticateUser,RaiseRequestCtrl.getTechnicianSt
 //assets route
 app.post("/api/assets",AssetsCtrl.CreateAsset)
 app.get("/api/assets",AssetsCtrl.GetAsset)
-app.put("/api/assets/:assetid",AssetsCtrl.Assignuser)
+app.put("/api/assets/:assetid",AuthenticateUser,AssetsCtrl.Assignuser)
 app.get("/api/userassets",AuthenticateUser,AssetsCtrl.Userasset)
 app.put("/api/editassert/:assetid",AssetsCtrl.EditAllFieldAsset)
 

@@ -70,7 +70,7 @@ export default function Register() {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div style={{fontFamily:"calibri", fontSize:"25px"}} className="min-h-screen flex items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md border border-gray-200 shadow-lg rounded-lg">
         <CardHeader className="text-center">
           <CardTitle>Create Account</CardTitle>
@@ -80,7 +80,6 @@ export default function Register() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Name */}
           {
             clienterr&&
           <p className="text-red-500">{JSON.stringify(clienterr)}</p>
@@ -91,25 +90,21 @@ export default function Register() {
             <Input value={name} onChange={e=>setName(e.target.value)} placeholder="Name" className="border border-gray-300 rounded-md p-2" />
           </div>
 
-          {/* Email */}
           <div className="space-y-1">
             <Label>Email</Label>
             <Input  value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="email" className="border border-gray-300 rounded-md p-2" />
           </div>
 
-          {/* Password */}
           <div className="space-y-1">
             <Label>Password</Label>
             <Input  value={password} onChange={e=>setpassword(e.target.value)} type="password" placeholder="Password" className="border border-gray-300 rounded-md p-2" />
           </div>
 
-          {/* Phone */}
           <div className="space-y-1">
             <Label>Phone</Label>
             <Input  value={phone} onChange={e=>setPhone(e.target.value)} type="text" placeholder="Phone" className="border border-gray-300 rounded-md p-2" />
           </div>
 
-          {/* Address */}
           <div className="space-y-1">
             <Label>Address</Label>
             <Input value={address} onChange={e=>setAddress(e.target.value)} type="text" placeholder="Address" className="border border-gray-300 rounded-md p-2" />

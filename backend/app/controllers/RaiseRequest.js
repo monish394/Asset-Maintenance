@@ -21,7 +21,7 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
   };
 
   try {
-    const genAI = new GoogleGenerativeAI("AIzaSyDw2hrK_e_86QOAVNBl9vNDOf80CfgXVGc");
+    const genAI = new GoogleGenerativeAI("AIzaSyDwh_xdrdjikXpyDWBosTm1OZv_gG-rMcY");
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash-lite",
@@ -195,42 +195,60 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
 RaiseRequestCtrl.TechnicianStatusUpdate = async (req, res) => {
   const { requestid } = req.params;
   const { status, costEstimate } = req.body;
-    let message;
-
 
   try {
+    const updateData = {
+      status,
+    };
+
+    if (costEstimate !== undefined && costEstimate !== null) {
+      updateData.costEstimate = costEstimate;
+    }
+
+    if (status === "completed") {
+      updateData.completedAt = new Date();
+    }
+
     const updatedRequest = await RaiseRequest.findByIdAndUpdate(
       requestid,
-      {
-        status,
-        costEstimate: costEstimate !== undefined ? costEstimate : undefined,
-      },
+      updateData,
       { new: true }
-    ).populate("assetid");
-    if(status==="completed"){
-      message=`Your request for  ${updatedRequest.assetid.assetName} has been completed`;
-    }
-    if(status==="in-process"){
-      message=`Your request for  ${updatedRequest.assetid.assetName} has been in progress`
-    }
-  if(message){
-    await Notification.create({
-      userid:updatedRequest.userid._id,
-      message,
-      requestid:updatedRequest._id
-    })
-  }
-   res.status(200).json({
-  status: true,
-  message: message,
-  updated: updatedRequest
-});
+    )
+      .populate("assetid", "assetName")
+      .populate("userid", "name phone address");
 
+    if (!updatedRequest) {
+      return res.status(404).json({ err: "Request not found" });
+    }
+
+    let message;
+    if (status === "completed") {
+      message = `Your request for "${updatedRequest.assetid.assetName}" has been completed`;
+    } else if (status === "in-process") {
+      message = `Your request for "${updatedRequest.assetid.assetName}" is in progress`;
+    }
+
+    if (message && updatedRequest.userid) {
+      await Notification.create({
+        userid: updatedRequest.userid._id,
+        message,
+        requestid: updatedRequest._id,
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      message,
+      updated: updatedRequest,
+    });
   } catch (err) {
-    console.log(err.message);
-    res.status(400).json({ err: "Something went wrong while updating technician status!" });
+    console.error(err.message);
+    res.status(400).json({
+      err: "Something went wrong while updating technician status!",
+    });
   }
 };
+
 
 
 RaiseRequestCtrl.getRaiserequestStats=async (req,res) => {
