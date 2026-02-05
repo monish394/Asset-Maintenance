@@ -115,11 +115,7 @@ const handleAssign = () => {
 
 
 
-        <div>
-         
-               <h1>WorkOrder Page</h1>
-
-        </div>
+        
         <div>
           <h1>Visual overview</h1>
 

@@ -68,6 +68,7 @@ app.get("/api/usersnotifications",AuthenticateUser,NotificationCtrl.UsersNotific
 app.get("/api/techniciansnotifications",AuthenticateUser,NotificationCtrl.TechniciansNotification)
 
 
+
 //payment route
 
 app.post("/api/create-order", AuthenticateUser, PaymentCtrl.createOrder);

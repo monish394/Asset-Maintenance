@@ -1,15 +1,28 @@
 import { IoMdNotifications } from "react-icons/io";
 import { FaUser } from "react-icons/fa";
 import logo from "../assets/logo.png";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { TechData } from "../context/Techniciandatamaintenance";
 
 export default function TechnicianNavbar() {
+ 
+
   const { techniciansnotifications, techinfo } = TechData();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+  if (techniciansnotifications.some((n) => !n.isRead)) {
+    setShowDot(true);
+  }
+}, [techniciansnotifications]);
+ const [showDot, setShowDot] = useState(
+  techniciansnotifications.some((n) => !n.isRead)
+);
+
 
   return (
     <div className="w-full h-24 flex items-center justify-between px-8 shadow-lg bg-white fixed top-0 left-0 z-50 font-sans">
@@ -73,45 +86,53 @@ export default function TechnicianNavbar() {
           </NavLink>
         </li>
 
-        <li
-          className="cursor-pointer relative"
-          onClick={() => {
-            setShowNotifications(!showNotifications);
-            setShowUserMenu(false);
-          }}
-        >
-          <IoMdNotifications size={28} />
-          {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 bg-white shadow-xl rounded-xl p-4 z-50 border border-gray-200">
-              <h3 className="font-semibold text-lg mb-3 border-b pb-2">Notifications</h3>
-              {techniciansnotifications.length === 0 ? (
-                <p className="text-gray-500 text-sm">No new notifications</p>
-              ) : (
-                <ul className="max-h-64 overflow-y-auto">
-                  {techniciansnotifications
-                    .slice(0, 5)
-                    .reverse()
-                    .map((n) => (
-                      <li
-                        key={n._id}
-                        className="mb-2 p-2 rounded hover:bg-gray-100 cursor-pointer flex justify-between items-start"
-                      >
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-700">{n.message}</p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {new Date(n.createdAt).toLocaleString()}
-                          </p>
-                        </div>
-                        {!n.isRead && (
-                          <span className="w-2 h-2 bg-blue-500 rounded-full mt-1 ml-2"></span>
-                        )}
-                      </li>
-                    ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </li>
+<li
+  className="cursor-pointer relative"
+  onClick={() => {
+    setShowNotifications(!showNotifications);
+    setShowUserMenu(false);
+
+    if (!showNotifications) {
+      setShowDot(false);
+    }
+  }}
+>
+  <IoMdNotifications size={28} />
+
+  {showDot && (
+    <span className="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border border-white"></span>
+  )}
+
+  {showNotifications && (
+    <div className="absolute right-0 mt-3 w-80 bg-white shadow-xl rounded-xl p-4 z-50 border border-gray-200">
+      <h3 className="font-semibold text-lg mb-3 border-b pb-2">Notifications</h3>
+      {techniciansnotifications.length === 0 ? (
+        <p className="text-gray-500 text-sm">No new notifications</p>
+      ) : (
+        <ul className="max-h-64 overflow-y-auto">
+          {techniciansnotifications
+            .slice(-5).reverse()
+            
+            .map((n) => (
+              <li
+                key={n._id}
+                className="mb-2 p-2 rounded hover:bg-gray-100 cursor-pointer flex justify-between items-start"
+              >
+                <div className="flex-1">
+                  <p className="text-sm text-gray-700">{n.message}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {new Date(n.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              </li>
+            ))}
+        </ul>
+      )}
+    </div>
+  )}
+</li>
+
+
 
         <li
           className="cursor-pointer relative"

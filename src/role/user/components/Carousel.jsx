@@ -1,6 +1,16 @@
 import React, { useRef, useState, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import img1 from "../assets/first.png"
+import img2 from "../assets/second.png"
+import img3 from "../assets/third.png"
+import img4 from "../assets/four.png"
+import img5 from "../assets/five.png"
+
+
+
+
+
 
 const FullWidthCarousel = () => {
   const autoplay = useRef(
@@ -28,14 +38,12 @@ const FullWidthCarousel = () => {
     if (!emblaApi) return;
     emblaApi.scrollTo(index);
   };
-
-  // List of images
-  const images = [
-    "https://jbsoftware.ca/wp-content/uploads/web-design.jpg",
-    "https://cdn.corporatefinanceinstitute.com/assets/types-of-assets-1024x575.jpeg",
-    "https://tse1.mm.bing.net/th/id/OIP.XCiQu_Dw49GsxzSATLsIbAHaEJ?rs=1&pid=ImgDetMain&o=7&rm=3",
-    "https://tse4.mm.bing.net/th/id/OIP.19fOdF1XNiGHTKb7b7Et9gHaEK?rs=1&pid=ImgDetMain&o=7&rm=3",
-    "https://th.bing.com/th/id/OIP.WBVUFJaLgzuyC8Lb-JknpAHaE8?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
+ const images = [
+    img1,
+    img2,
+    img4,
+   img5,
+   img3
   ];
 
   return (

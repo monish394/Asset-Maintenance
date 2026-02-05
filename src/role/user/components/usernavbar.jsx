@@ -2,14 +2,25 @@ import { IoMdNotifications } from "react-icons/io";
 import { FaUser } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import { useNavigate, NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserAsset } from "../context/userassetprovider";
 
 export default function UserNavbar() {
   const { usernotifications, userinfo } = useUserAsset();
-  const navigate = useNavigate();
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserNotifications, setShowUserNotifications] = useState(false);
+  const [showUserDot, setShowUserDot] = useState(
+    usernotifications?.some((n) => !n.isRead) || false
+  );
+
   const [showUsermenu, setShowUsermenu] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (usernotifications?.some((n) => !n.isRead)) {
+      setShowUserDot(true);
+    }
+  }, [usernotifications]);
 
   const menu = [
     { label: "Home", to: "/user/home" },
@@ -49,12 +60,16 @@ export default function UserNavbar() {
         <li
           className="cursor-pointer relative"
           onClick={() => {
-            setShowNotifications(!showNotifications);
+            setShowUserNotifications(!showUserNotifications);
             setShowUsermenu(false);
+            if (!showUserNotifications) setShowUserDot(false);
           }}
         >
           <IoMdNotifications size={28} />
-          {showNotifications && (
+          {showUserDot && (
+            <span className="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border border-white"></span>
+          )}
+          {showUserNotifications && (
             <div className="absolute right-0 mt-3 w-80 bg-white shadow-xl rounded-xl p-4 z-50 border border-gray-200">
               <h3 className="font-semibold text-lg mb-3 border-b pb-2">Notifications</h3>
               {usernotifications.length === 0 ? (
@@ -62,11 +77,13 @@ export default function UserNavbar() {
               ) : (
                 <ul className="max-h-64 overflow-y-auto">
                   {usernotifications
-                    .slice(0, -5)
+                    .slice()
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 5)
                     .map((n) => (
                       <li
                         key={n._id}
-                        className="mb-2 p-2 rounded flex justify-between items-start"
+                        className="mb-2 p-2 rounded flex justify-between items-start hover:bg-gray-100 cursor-pointer"
                       >
                         <div className="flex-1">
                           <p className="text-sm text-gray-700">{n.message}</p>
@@ -74,9 +91,6 @@ export default function UserNavbar() {
                             {new Date(n.createdAt).toLocaleString()}
                           </p>
                         </div>
-                        {!n.isRead && (
-                          <span className="w-2 h-2 bg-blue-500 rounded-full mt-1 ml-2"></span>
-                        )}
                       </li>
                     ))}
                 </ul>
@@ -89,7 +103,7 @@ export default function UserNavbar() {
           className="cursor-pointer relative"
           onClick={() => {
             setShowUsermenu(!showUsermenu);
-            setShowNotifications(false);
+            setShowUserNotifications(false);
           }}
         >
           <FaUser size={23} />
@@ -107,7 +121,6 @@ export default function UserNavbar() {
                   </span>
                 </div>
               </div>
-
               <div className="text-sm text-gray-700 space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Phone</span>
@@ -121,7 +134,6 @@ export default function UserNavbar() {
                   Joined on {new Date(userinfo.createdAt).toLocaleDateString()}
                 </p>
               </div>
-
               <button
                 onClick={() => {
                   localStorage.removeItem("token");
