@@ -48,7 +48,7 @@ export default function UserHome() {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ marginBottom: "20px" }}>User Home Page</h1>
+      {/* <h1 style={{ marginBottom: "20px" }}>User Home Page</h1> */}
 
       <Carousel />
 

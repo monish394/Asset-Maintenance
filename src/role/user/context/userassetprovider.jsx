@@ -5,6 +5,7 @@ const UserAssetContext = createContext();
 
 export const UserAssetProvider = ({ children }) => {
   const [userinfo,setUserinfo]=useState(null)
+  const [usergeneralrequest,setUsergeneralrequest]=useState([])
 
   // console.log(userinfo)
 
@@ -52,8 +53,24 @@ useEffect(() => {
   .catch(err => console.log(err.message))
 }, [])
 
+useEffect(()=>{
+  axios.get("http://localhost:5000/api/usergeneralrequest",{
+    headers:{
+      Authorization:token
+    }
+  })
+  .then((res)=>{
+    // console.log(res.data)
+    setUsergeneralrequest(res.data)
+  })
+  .catch((err)=>{
+    console.log(err.message)
+  })
+
+},[])
+
   return (
-    <UserAssetContext.Provider value={{ myasset, setMyasset,myraiserequest,setMyraiserequest,usernotifications,setUsernotifications,userinfo,setUserinfo }}>
+    <UserAssetContext.Provider value={{ myasset, setMyasset,myraiserequest,setMyraiserequest,usernotifications,setUsernotifications,userinfo,setUserinfo,usergeneralrequest,setUsergeneralrequest }}>
       {children}
     </UserAssetContext.Provider>
   );

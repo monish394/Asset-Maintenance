@@ -14,7 +14,7 @@ import img5 from "../assets/five.png"
 
 const FullWidthCarousel = () => {
   const autoplay = useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: false })
+    Autoplay({ delay: 4000, stopOnInteraction: false })
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [

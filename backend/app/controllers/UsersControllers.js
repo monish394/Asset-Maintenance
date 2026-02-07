@@ -1,10 +1,26 @@
 // import mongoose from "mongoose";
+import axios from "axios";
 import bcryptjs from "bcryptjs"
 import jsonwebtoken from "jsonwebtoken"
 import User from "../models/Registeruser.js";
 import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
+async function geocodeAddress(address) {
+  try {
+    const res = await axios.get("https://nominatim.openstreetmap.org/search", {
+      params: { q: address, format: "json", limit: 1 },
+    });
+    if (res.data.length > 0) {
+      return [parseFloat(res.data[0].lon), parseFloat(res.data[0].lat)];
+    }
+    return [0, 0];
+  } catch (err) {
+    console.log("Geocoding error:", err.message);
+    return [0, 0];
+  }
+}
+
 
 //Creating users
 
@@ -166,4 +182,77 @@ UserCtrl.GetuserInfo=async (req,res) => {
     
 }
 
+
+
+//get nerby technician route
+
+UserCtrl.getNearbyTechnicians = async (req, res) => {
+  try {
+    const user = await User.findById(req.userid);
+
+    if (!user?.location?.coordinates || user.location.coordinates.length !== 2) {
+      return res.status(400).json({ error: "User location not found" });
+    }
+
+    const [lng, lat] = user.location.coordinates;
+
+    const technicians = await User.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lng, lat] },
+          distanceField: "distance",
+          spherical: true,
+          maxDistance: 3000,
+          query: { role: "technician" }
+        }
+      }
+    ]);
+
+    res.json(technicians);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+
+
+
+
+//gettechcoordinates
+
+UserCtrl.updateTechCoordinates = async (req, res) => {
+  try {
+    if (req.role !== "admin") {
+      return res.status(403).json({ error: "Access denied. Admins only." });
+    }
+
+    const usersToUpdate = await User.find({
+      role: { $in: ["user", "technician"] },
+      $or: [
+        { "location": { $exists: false } },
+        { "location.coordinates": [0, 0] }
+      ],
+    });
+
+    if (usersToUpdate.length === 0) {
+      return res.status(200).json({ message: "No users or technicians need updating." });
+    }
+
+    for (let user of usersToUpdate) {
+      const coords = await geocodeAddress(user.address);
+      if (!coords || coords.length !== 2) continue;
+
+      user.location = { type: "Point", coordinates: coords };
+      await user.save();
+      console.log(`Updated ${user.name}: ${coords}`);
+    }
+
+    res.status(200).json({ message: "All user and technician coordinates updated successfully." });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ error: "Failed to update user and technician coordinates." });
+  }
+};
 export default UserCtrl

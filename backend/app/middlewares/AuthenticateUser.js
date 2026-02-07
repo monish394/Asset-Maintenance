@@ -14,6 +14,7 @@ export const AuthenticateUser=(req,res,next)=>{
     req.role=tokendata.role
     next();
     }catch(err){
+        console.log(err)
        res.status(403).json({ err: "Invalid or expired token" })
 
     }

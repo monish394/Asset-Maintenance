@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useUserAsset } from "../context/userassetprovider";
 import { FcIdea } from "react-icons/fc";
-import { FaPlus } from "react-icons/fa6";
+import { FaLeaf, FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import { MapContainer, TileLayer, Marker, Polyline ,Tooltip} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -48,6 +48,8 @@ const getDistanceKm = (origin, destination) => {
 export default function RaiseRequest() {
   const [showForm, setShowForm] = useState(false);
   const [usersrequestasset,setUsersrequestasset]=useState([])
+  const [showgenralraiseform,setShowgenralraiseform]=useState(false)
+  const [generalissue, setGeneralissue] = useState("");
   // const [name,setName]=useState("")
   // const [category,setCategory]=useState("Electronics")
     const [assetid,setAssetid]=useState("")
@@ -57,8 +59,8 @@ export default function RaiseRequest() {
     console.log(assetid)
     const [assetdescription,setAssetdescription]=useState("")
 
-    const { myasset,myraiserequest,setMyraiserequest,userinfo } = useUserAsset();
-    console.log(userinfo)
+    const { myasset,myraiserequest,setMyraiserequest,userinfo,usergeneralrequest,setUsergeneralrequest } = useUserAsset();
+    console.log(usergeneralrequest)
 
 
     console.log(myraiserequest)
@@ -189,11 +191,77 @@ useEffect(()=>{
 },[])
 
 
+const handleGeneralRequestSubmit = (e) => {
+  e.preventDefault();
+
+  axios
+    .post(
+      "http://localhost:5000/api/generalraiserequest",
+      { issue: generalissue },
+      { headers: { Authorization: localStorage.getItem("token")} }
+    )
+    .then((res) => {
+      setUsergeneralrequest((prev) => [res.data, ...prev]);
+      setGeneralissue("");
+      setShowgenralraiseform(false);
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
+
+
 
 
 
     return (
         <div>
+{showgenralraiseform && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    
+    {/* Modal Box */}
+    <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
+      
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        Raise General Request
+      </h2>
+
+      <form onSubmit={handleGeneralRequestSubmit}>
+        <label className="block mb-2 font-medium text-gray-700">
+          Issue Description
+        </label>
+
+        <textarea
+          className="w-full border border-gray-300 rounded p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          rows="4"
+          placeholder="Describe the issue..."
+          value={generalissue}
+          onChange={(e) => setGeneralissue(e.target.value)}
+          required
+        />
+
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setShowgenralraiseform(false)}
+            className="px-4 py-2 rounded bg-gray-300 text-gray-800 hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
 
 
           
@@ -581,7 +649,7 @@ useEffect(()=>{
               {ele.status === "approved" && (
                 <span className="inline-flex items-center gap-2 text-sm font-medium text-green-700">
                   <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                  Info: Your request will be assigned to you soon
+                   Your request will be assigned to you soon
                 </span>
               )}
               {ele.status === "rejected" && (
@@ -600,7 +668,8 @@ useEffect(()=>{
     </tbody>
   </table>
 </div>
-
+<div>
+</div>
 
 
 
@@ -609,6 +678,65 @@ useEffect(()=>{
 
 
   </div>
+
+
+<hr />
+<div className="overflow-x-auto">
+  <h2>My General Request</h2><button
+  onClick={() => setShowgenralraiseform(true)}
+  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+>
+  Raise General Request
+</button>
+
+  <table className="min-w-full border border-gray-200 rounded-lg">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="px-4 py-2 border text-left">S.No</th>
+        <th className="px-4 py-2 border text-left">Issue</th>
+        <th className="px-4 py-2 border text-left">Status</th>
+        <th className="px-4 py-2 border text-left">Created At</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {usergeneralrequest.length > 0 ? (
+        usergeneralrequest.map((ele, index) => (
+          <tr key={ele._id} className="hover:bg-gray-50">
+            <td className="px-4 py-2 border">{index + 1}</td>
+            <td className="px-4 py-2 border">{ele.issue}</td>
+
+            <td className="px-4 py-2 border">
+              <span
+                className={`px-2 py-1 rounded text-sm font-medium
+                  ${
+                    ele.status === "OPEN"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : ele.status === "APPROVED"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+              >
+                {ele.status}
+              </span>
+            </td>
+
+            <td className="px-4 py-2 border">
+              {new Date(ele.createdAt).toLocaleString()}
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan="4" className="px-4 py-4 text-center text-gray-500">
+            No General Requests Found
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+
   </div>
 
     )

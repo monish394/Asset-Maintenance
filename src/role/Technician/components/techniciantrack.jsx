@@ -95,7 +95,7 @@ const OSMTrackMap = ({ userAddress, onClose }) => {
               (techCoords.lat + userCoords.lat) / 2,
               (techCoords.lng + userCoords.lng) / 2,
             ]}
-            zoom={15}
+            zoom={13}
             style={{ height: "100%", width: "100%" }}
             scrollWheelZoom={true}
             whenCreated={(mapInstance) => (mapRef.current = mapInstance)}

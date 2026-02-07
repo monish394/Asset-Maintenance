@@ -85,11 +85,12 @@ export default function Assets() {
         }
       );
 
-      setAssets(prev =>
-        prev.map(asset =>
-          asset._id === selectedassetid ? res.data : asset
-        )
-      );
+    setAssets(prev =>
+  prev.map(asset =>
+    asset._id === selectedassetid ? res.data.asset : asset
+  )
+);
+
 
       if (editAssetId === selectedassetid) {
         setEditForm(prev => ({

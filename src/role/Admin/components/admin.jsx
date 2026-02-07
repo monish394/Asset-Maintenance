@@ -7,6 +7,8 @@ import AdminDashboardLineBarChart from "./Admindashboardlinechart";
 
 export default function Admin() {
   // const [userinfo,setUserinfo]=useState(null)
+  const token=localStorage.getItem("token")
+  console.log(token)
 
 
   const [assets,setAssets]=useState([])

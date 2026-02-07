@@ -10,6 +10,7 @@ import { AuthenticateUser } from "./app/middlewares/AuthenticateUser.js";
 import NotificationCtrl from "./app/controllers/NotificationControllers.js";
 import PaymentCtrl from "./app/controllers/PaymentCtrl.js";
 import RequestCtrl from "./app/controllers/RequestAssetCtrl.js";
+import GeneralRequestCtrl from "./app/controllers/GeneralRequestCtrl.js";
 import Payment from "./app/models/Payment.js";
 const app=express();
 app.use(cors())
@@ -95,9 +96,14 @@ app.put("/api/updaterequeststatus/:id",RequestCtrl.StausUpdate)
 app.get("/api/getusersrequest",AuthenticateUser,RequestCtrl.GetUsersRequest)
 
 
+//GeneralRequest route
 
+app.post("/api/generalraiserequest",AuthenticateUser,GeneralRequestCtrl.createGeneralrequest)
+app.get("/api/usergeneralrequest",AuthenticateUser,GeneralRequestCtrl.Getusergeneralrequest)
 
-
+//nearby technician
+app.post("/api/getnearbytechnician", AuthenticateUser, UserCtrl.getNearbyTechnicians);
+app.post("/api/admin/update-tech-coordinates",AuthenticateUser,UserCtrl.updateTechCoordinates );
 
 
 
