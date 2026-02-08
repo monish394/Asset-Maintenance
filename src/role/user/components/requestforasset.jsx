@@ -1,25 +1,26 @@
-
 import axios from "axios";
 import { useState } from "react";
 
-const RequestAssetForm = ({ onSubmit }) => {
+const RequestAssetForm = ({ onSuccess }) => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Electronics");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(name, category);
-    axios.post("http://localhost:5000/api/requestasset",{name,category},{
-        headers:{
-            Authorization:localStorage.getItem("token")
-        }
-    })
-    .then((res)=>{
-        console.log(res.data)
-        setName("")
-        setCategory("")
-    })
-    .catch((err)=>console.log(err.message))
+
+    const res = await axios.post(
+      "http://localhost:5000/api/requestasset",
+      { name, category },
+      {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    onSuccess(res.data);
+    setName("");
+    setCategory("Electronics");
   };
 
   return (
@@ -29,20 +30,23 @@ const RequestAssetForm = ({ onSubmit }) => {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Asset Name"
-        className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border rounded p-2"
+        required
       />
+
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border rounded p-2"
       >
         <option value="Electronics">Electronics</option>
         <option value="Furniture">Furniture</option>
         <option value="Other">Other</option>
       </select>
+
       <button
         type="submit"
-        className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+        className="bg-blue-600 text-white py-2 rounded"
       >
         Submit
       </button>

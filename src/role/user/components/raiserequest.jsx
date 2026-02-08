@@ -43,9 +43,58 @@ const getDistanceKm = (origin, destination) => {
 
   return (R * c).toFixed(2);
 };
+const getUserLocation = () => {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      (err) => reject(err)
+    );
+  });
+};
+
 
 
 export default function RaiseRequest() {
+//nearby tech
+const [showNearbyMap, setShowNearbyMap] = useState(false);
+const [nearbyTechs, setNearbyTechs] = useState([]);
+const [userCoords, setUserCoords] = useState(null);
+
+
+
+const handleNearbyTechnician = async () => {
+  try {
+    const coords = await getUserLocation();
+    setUserCoords(coords);
+
+    const res = await axios.post(
+      "http://localhost:5000/api/getnearbytechnician",
+      {
+        lat: coords.lat,
+        lng: coords.lng,
+      },
+      {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    setNearbyTechs(res.data);
+    setShowNearbyMap(true);
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+
+
+  ///////////////////////////
   const [showForm, setShowForm] = useState(false);
   const [usersrequestasset,setUsersrequestasset]=useState([])
   const [showgenralraiseform,setShowgenralraiseform]=useState(false)
@@ -341,6 +390,56 @@ const handleGeneralRequestSubmit = (e) => {
     </div>
   </div>
 )}
+{showNearbyMap && userCoords && (
+  <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+    <div className="relative bg-white w-full max-w-[700px] h-[500px] rounded-xl shadow-lg">
+
+      {/* Close Button */}
+      <button
+        onClick={() => setShowNearbyMap(false)}
+        className="absolute top-3 right-3 z-[1000] bg-white px-3 py-1 rounded-full shadow text-lg font-bold"
+      >
+        ✕
+      </button>
+
+      <MapContainer
+        center={[userCoords.lat, userCoords.lng]}
+        zoom={13}
+        className="w-full h-full rounded-xl"
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        {/* User Marker */}
+        <Marker position={[userCoords.lat, userCoords.lng]}>
+          <Tooltip permanent direction="bottom">
+            You
+          </Tooltip>
+        </Marker>
+
+        {/* Technician Markers with Labels */}
+        {nearbyTechs.map((tech) => {
+          const lat = tech.location.coordinates[1];
+          const lng = tech.location.coordinates[0];
+
+          return (
+            <Marker key={tech._id} position={[lat, lng]}>
+              <Tooltip
+                permanent
+                direction="top"
+                offset={[0, -10]}
+                className="font-semibold text-blue-700"
+              >
+                {tech.name}
+              </Tooltip>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
+  </div>
+)}
+
+
 
 
 
@@ -570,114 +669,110 @@ const handleGeneralRequestSubmit = (e) => {
 <hr />
 
 
-{showForm && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm ">
-    <div className="bg-white max-w-sm w-full p-6 rounded-xl shadow-lg relative animate-fadeIn ">
-  
-      <button
-        onClick={() => setShowForm(false)}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition text-xl font-bold"
-      >
-        ✕
-      </button>
+<div className="p-6">
 
-      <h2 className="text-2xl font-semibold mb-4 text-center">
-        Request For New Asset
-      </h2>
-
-      <RequestAssetForm
-        onSubmit={(name, category) => {
-          console.log(name, category);
-          setShowForm(false); 
-        }}
-      />
-    </div>
-  </div>
-)}
-
-
-  <div className="p-6">
-    <h2>Request for New Asset</h2>
-
-    
-      <div className=" mt-6">
+  {showForm && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white w-full max-w-sm p-6 rounded-lg relative">
         <button
-          onClick={() => setShowForm((prev) => !prev)}
-          className=" px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          onClick={() => setShowForm(false)}
+          className="absolute top-3 right-3 text-xl font-bold"
         >
-          Request for Asset
+          ✕
         </button>
+
+        <h2 className="text-xl font-semibold mb-4 text-center">
+          Request For New Asset
+        </h2>
+
+        <RequestAssetForm
+          onSuccess={(newRequest) => {
+            setUsersrequestasset((prev) => [newRequest, ...prev]);
+            setShowForm(false);
+          }}
+        />
       </div>
-<div className="mt-10 mx-4 overflow-x-auto">
-  <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden shadow-sm text-sm">
-    <thead className="bg-gray-100">
-      <tr>
-        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
-          Request
-        </th>
-        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
-          Category
-        </th>
-        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
-          Status
-        </th>
-        <th className="px-4 py-3 text-left font-semibold text-gray-700 uppercase">
-          Created At
-        </th>
-      </tr>
-    </thead>
+    </div>
+  )}
 
-    <tbody>
-      {usersrequestasset.map((ele) => (
-        <tr
-          key={ele._id}
-          className="border-t border-gray-200 hover:bg-gray-50 transition"
-        >
-          <td className="px-4 py-3 text-sm font-medium text-gray-800 whitespace-nowrap">
-            {ele.name}
-          </td>
-          <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
-            {ele.category}
-          </td>
-          <td className="px-4 py-3">
-            <div className="flex items-center min-h-[24px]">
-              {ele.status === "pending" && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-                  Pending
-                </span>
-              )}
-              {ele.status === "approved" && (
-                <span className="inline-flex items-center gap-2 text-sm font-medium text-green-700">
-                  <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                   Your request will be assigned to you soon
-                </span>
-              )}
-              {ele.status === "rejected" && (
-                <span className="inline-flex items-center gap-2 text-sm font-medium text-red-600">
-                  <span className="h-2 w-2 rounded-full bg-red-600"></span>
-                  Sorry, product is not available
-                </span>
-              )}
-            </div>
-          </td>
-          <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-            {new Date(ele.createdAt).toLocaleDateString()}
-          </td>
+  <button
+    onClick={() => setShowForm(true)}
+    className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg"
+  >
+    <FaPlus />
+    Request for Asset
+  </button>
+
+  <div className="mt-10 overflow-x-auto">
+    <table className="min-w-full border rounded">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="px-4 py-3 text-left">Request</th>
+          <th className="px-4 py-3 text-left">Category</th>
+          <th className="px-4 py-3 text-left">Status</th>
+          <th className="px-4 py-3 text-left">Info</th>
+          <th className="px-4 py-3 text-left">Created At</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-<div>
-</div>
+      </thead>
+
+      <tbody>
+        {usersrequestasset.map((ele) => (
+          <tr key={ele._id} className="border-t">
+            <td className="px-4 py-3">{ele.name}</td>
+            <td className="px-4 py-3">{ele.category}</td>
+           <td className="px-4 py-3">
+  {ele.status === "approved" && (
+    <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+      Approved
+    </span>
+  )}
+
+  {ele.status === "rejected" && (
+    <span className="px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+      Rejected
+    </span>
+  )}
+
+  {ele.status === "pending" && (
+    <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+      Pending
+    </span>
+  )}
+</td>
 
 
+          <td className="px-4 py-3">
+  {ele.status === "approved" && (
+    <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+      Your asset will be assigned to you soon
+    </span>
+  )}
+
+  {ele.status === "rejected" && (
+    <span className="px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+     Sorry, product is not available
+    </span>
+  )}
+
+  {ele.status === "pending" && (
+    <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+      N/A
+    </span>
+  )}
+</td>
 
 
-
-
-
+            <td className="px-4 py-3">
+              {new Date(ele.createdAt).toLocaleDateString()}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </div>
+
+</div>
+
 
 
 <hr />
@@ -688,6 +783,13 @@ const handleGeneralRequestSubmit = (e) => {
 >
   Raise General Request
 </button>
+<button
+  onClick={handleNearbyTechnician}
+  className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+>
+  Nearby Technicians
+</button>
+
 
   <table className="min-w-full border border-gray-200 rounded-lg">
     <thead className="bg-gray-100">
