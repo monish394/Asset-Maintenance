@@ -4,10 +4,12 @@ import axios from "axios";
 const TechDataMaintain = createContext();
 
 export const TechDataProvider = ({ children }) => {
+  const [requests,setRequests]=useState([])
+  console.log(requests)
      const[technicianassignedassert,setTechnicianassignedassert]=useState([])
      const[techniciansnotifications,setTechniciansnotifications]=useState([])
      const [techinfo,setTechinfo]=useState(null)
-    
+    console.log(localStorage.getItem("token"))
         useEffect(() => {
       axios
         .get("http://localhost:5000/api/alltechnicianrequest", {
@@ -42,6 +44,20 @@ export const TechDataProvider = ({ children }) => {
   })
   .then(res => setTechinfo(res.data))
   .catch(err => console.log(err.message))
+}, [])
+
+
+useEffect(() => {
+  axios.get("http://localhost:5000/api/technician/general-requests", {
+    headers: { Authorization: localStorage.getItem("token") }
+  })
+  .then(res =>{
+    // console.log(res.data)
+     setRequests(res.data)}
+    )
+    .catch((err)=>{
+      console.log(err)
+    })
 }, [])
 
 

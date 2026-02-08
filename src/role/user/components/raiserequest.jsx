@@ -243,19 +243,25 @@ useEffect(()=>{
 const handleGeneralRequestSubmit = (e) => {
   e.preventDefault();
 
+  if (!generalissue.trim()) {
+    alert("Please enter an issue description");
+    return;
+  }
+
   axios
     .post(
       "http://localhost:5000/api/generalraiserequest",
       { issue: generalissue },
-      { headers: { Authorization: localStorage.getItem("token")} }
+      { headers: { Authorization: localStorage.getItem("token") } }
     )
     .then((res) => {
-      setUsergeneralrequest((prev) => [res.data, ...prev]);
-      setGeneralissue("");
-      setShowgenralraiseform(false);
-    })
+  setUsergeneralrequest(prev => [res.data, ...prev])
+  setGeneralissue("")
+  setShowgenralraiseform(false)
+})
+
     .catch((err) => {
-      console.log(err.message);
+      console.log("Error submitting general request:", err.response?.data || err.message);
     });
 };
 
@@ -268,7 +274,6 @@ const handleGeneralRequestSubmit = (e) => {
 {showgenralraiseform && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
     
-    {/* Modal Box */}
     <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
       
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
@@ -394,7 +399,6 @@ const handleGeneralRequestSubmit = (e) => {
   <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
     <div className="relative bg-white w-full max-w-[700px] h-[500px] rounded-xl shadow-lg">
 
-      {/* Close Button */}
       <button
         onClick={() => setShowNearbyMap(false)}
         className="absolute top-3 right-3 z-[1000] bg-white px-3 py-1 rounded-full shadow text-lg font-bold"
@@ -404,19 +408,17 @@ const handleGeneralRequestSubmit = (e) => {
 
       <MapContainer
         center={[userCoords.lat, userCoords.lng]}
-        zoom={13}
+        zoom={12}
         className="w-full h-full rounded-xl"
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* User Marker */}
         <Marker position={[userCoords.lat, userCoords.lng]}>
           <Tooltip permanent direction="bottom">
             You
           </Tooltip>
         </Marker>
 
-        {/* Technician Markers with Labels */}
         {nearbyTechs.map((tech) => {
           const lat = tech.location.coordinates[1];
           const lng = tech.location.coordinates[0];
@@ -429,7 +431,7 @@ const handleGeneralRequestSubmit = (e) => {
                 offset={[0, -10]}
                 className="font-semibold text-blue-700"
               >
-                {tech.name}
+                {`Tech ${tech.name}`}
               </Tooltip>
             </Marker>
           );
@@ -803,7 +805,7 @@ const handleGeneralRequestSubmit = (e) => {
 
     <tbody>
       {usergeneralrequest.length > 0 ? (
-        usergeneralrequest.map((ele, index) => (
+        usergeneralrequest.filter(ele => ele && ele.issue).map((ele, index) => (
           <tr key={ele._id} className="hover:bg-gray-50">
             <td className="px-4 py-2 border">{index + 1}</td>
             <td className="px-4 py-2 border">{ele.issue}</td>

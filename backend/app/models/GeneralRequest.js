@@ -1,11 +1,26 @@
-// import { required } from "joi";
 import mongoose from "mongoose";
+
 const GeneralRequestSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true
   },
-  issue:{type: String ,required:true},
+  issue: {
+    type: String,
+    required: true
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point"
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  },
   status: {
     type: String,
     enum: ["OPEN", "ACCEPTED", "APPROVED", "COMPLETED"],
@@ -13,7 +28,8 @@ const GeneralRequestSchema = new mongoose.Schema({
   },
   acceptedBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    default: null
   },
   createdAt: {
     type: Date,
@@ -21,6 +37,6 @@ const GeneralRequestSchema = new mongoose.Schema({
   }
 });
 
-const GeneralRequest=mongoose.model("GeneralRequest",GeneralRequestSchema)
+GeneralRequestSchema.index({ location: "2dsphere" });
 
-export default GeneralRequest
+export default mongoose.model("GeneralRequest", GeneralRequestSchema);

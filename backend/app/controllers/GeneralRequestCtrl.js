@@ -1,42 +1,122 @@
-import GeneralRequest from "../models/GeneralRequest.js";
+import GeneralRequest from "../models/GeneralRequest.js"
+import User from "../models/Registeruser.js";
+import Notification from "../models/NotificationUser.js";
+const GeneralRequestCtrl = {};
 
-const GeneralRequestCtrl={};
 
+GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
+  const { issue } = req.body;
 
+  if (!issue) return res.status(400).json({ err: "Issue is required" });
 
+  try {
+    const user = await User.findById(req.userid);
+    if (!user) return res.status(404).json({ err: "User not found" });
 
-GeneralRequestCtrl.createGeneralrequest=async (req,res) => {
-    const {issue}=req.body;
-
-    try{
-        const createGeneralRequet=new GeneralRequest({issue:issue,userId:req.userid})
-        await createGeneralRequet.save()
-        res.status(200).json(createGeneralRequet)
-
-        
-    }catch(err){
-        res.status(400).json({err:"something went wrong while create General Request!!!"})
-        console.log(err.message)
+    if (!user.location?.coordinates || user.location.coordinates.length !== 2) {
+      return res.status(400).json({ err: "User location not set properly" });
     }
-    
-}
 
-GeneralRequestCtrl.Getusergeneralrequest=async (req,res) => {
-    
+    const newGeneralRequest = new GeneralRequest({
+      issue,
+      userId: req.userid,
+      location: {
+        type: "Point",
+        coordinates: user.location.coordinates
+      }
+    });
 
-    try{
-        const getusergeneralrequest=await GeneralRequest.find({userId:req.userid})
-        res.status(200).json(getusergeneralrequest)
+    await newGeneralRequest.save();
 
-        
-    }catch(err){
-        res.status(400).json({err:"something went wrong while create General Request!!!"})
-        console.log(err.message)
+    const nearbyTechnicians = await User.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: user.location.coordinates
+          },
+          distanceField: "distance",
+          spherical: true,
+          maxDistance: 5000,
+          query: { role: "technician" }
+        }
+      }
+    ]);
+
+    for (const tech of nearbyTechnicians) {
+      await Notification.create({
+        userid: tech._id,
+        message: `New General Request: "${issue}" ${user.name}`,
+        type: "general_request",
+        referenceId: newGeneralRequest._id
+      });
     }
-    
-}
+
+    res.status(200).json(newGeneralRequest);
+
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "Failed to create general request" });
+  }
+};
 
 
 
 
-export default GeneralRequestCtrl
+GeneralRequestCtrl.Getusergeneralrequest = async (req, res) => {
+  try {
+    const getusergeneralrequest = await GeneralRequest.find({
+      userId: req.userid,
+    });
+    res.status(200).json(getusergeneralrequest);
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(400)
+      .json({ err: "Something went wrong while fetching general requests!" });
+  }
+};
+
+
+
+GeneralRequestCtrl.getNearbyOpenRequests = async (req, res) => {
+  try {
+    const tech = await User.findById(req.userid);
+
+    if (!tech?.location?.coordinates || tech.location.coordinates.length !== 2) {
+      return res.status(400).json({ err: "Technician location missing" });
+    }
+
+    const [lng, lat] = tech.location.coordinates;
+
+    const requests = await GeneralRequest.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lng, lat] },
+          distanceField: "distance",
+          spherical: true,
+          maxDistance: 5000
+        }
+      },
+      {
+        $match: {
+          status: "OPEN",
+          acceptedBy: null
+        }
+      }
+    ]);
+
+    console.log("Nearby open requests:", requests);
+
+    res.status(200).json(requests);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err: "Failed to fetch requests" });
+  }
+};
+
+
+
+
+
+export default GeneralRequestCtrl;

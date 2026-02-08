@@ -105,7 +105,7 @@ app.get("/api/usergeneralrequest",AuthenticateUser,GeneralRequestCtrl.Getusergen
 app.post("/api/getnearbytechnician", AuthenticateUser, UserCtrl.getNearbyTechnicians);
 app.post("/api/admin/update-tech-coordinates",AuthenticateUser,UserCtrl.updateTechCoordinates );
 
-
+app.get("/api/technician/general-requests",AuthenticateUser,GeneralRequestCtrl.getNearbyOpenRequests)
 
 
 app.listen(PORT,()=>{

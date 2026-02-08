@@ -202,7 +202,7 @@ UserCtrl.getNearbyTechnicians = async (req, res) => {
           near: { type: "Point", coordinates: [lng, lat] },
           distanceField: "distance",
           spherical: true,
-          maxDistance: 3000,
+          maxDistance: 5000,
           query: { role: "technician" }
         }
       }
