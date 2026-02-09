@@ -11,18 +11,24 @@ async function geocodeAddress(address) {
     const res = await axios.get("https://nominatim.openstreetmap.org/search", {
       params: { q: address, format: "json", limit: 1 },
     });
+
     if (res.data.length > 0) {
-      return [parseFloat(res.data[0].lon), parseFloat(res.data[0].lat)];
+      const lon = parseFloat(res.data[0].lon);
+      const lat = parseFloat(res.data[0].lat);
+      if (!isNaN(lon) && !isNaN(lat)) {
+        return [lon, lat];
+      }
     }
-    return [0, 0];
+
+    console.log(`Geocoding failed for address: "${address}"`);
+    return null; 
   } catch (err) {
     console.log("Geocoding error:", err.message);
-    return [0, 0];
+    return null;
   }
 }
 
 
-//Creating users
 
 UserCtrl.Registeruser = async (req, res) => {
     const body = req.body;
@@ -222,6 +228,8 @@ UserCtrl.getNearbyTechnicians = async (req, res) => {
 
 //gettechcoordinates
 
+
+
 UserCtrl.updateTechCoordinates = async (req, res) => {
   try {
     if (req.role !== "admin") {
@@ -232,7 +240,8 @@ UserCtrl.updateTechCoordinates = async (req, res) => {
       role: { $in: ["user", "technician"] },
       $or: [
         { "location": { $exists: false } },
-        { "location.coordinates": [0, 0] }
+        { "location.coordinates": { $size: 0 } },
+        { "location.coordinates": [0, 0] },
       ],
     });
 
@@ -240,19 +249,50 @@ UserCtrl.updateTechCoordinates = async (req, res) => {
       return res.status(200).json({ message: "No users or technicians need updating." });
     }
 
+    let updatedCount = 0;
+
     for (let user of usersToUpdate) {
+      if (!user.address) {
+        console.log(`Skipping ${user.name}, no address available`);
+        continue;
+      }
+
       const coords = await geocodeAddress(user.address);
-      if (!coords || coords.length !== 2) continue;
+
+      if (!coords || coords.length !== 2) {
+        console.log(`Skipping ${user.name}, invalid geocode result`);
+        continue;
+      }
 
       user.location = { type: "Point", coordinates: coords };
       await user.save();
+      updatedCount++;
       console.log(`Updated ${user.name}: ${coords}`);
     }
 
-    res.status(200).json({ message: "All user and technician coordinates updated successfully." });
+    res.status(200).json({
+      message: `Updated coordinates for ${updatedCount} users/technicians successfully.`,
+    });
   } catch (err) {
     console.log(err.message);
     res.status(500).json({ error: "Failed to update user and technician coordinates." });
   }
 };
+
+
+UserCtrl.UserLocation=async (req, res) => {
+  try {
+    const user = await User.findById(req.userid);
+    if (!user || !user.location || !user.location.coordinates)
+      return res.status(404).json({ error: "Coordinates not found" });
+
+    res.status(200).json({
+      lat: user.location.coordinates[1],
+      lng: user.location.coordinates[0],
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch user location" });
+  }
+}
+
 export default UserCtrl

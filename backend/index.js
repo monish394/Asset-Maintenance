@@ -107,6 +107,20 @@ app.post("/api/admin/update-tech-coordinates",AuthenticateUser,UserCtrl.updateTe
 
 app.get("/api/technician/general-requests",AuthenticateUser,GeneralRequestCtrl.getNearbyOpenRequests)
 
+app.post("/api/technician/general-request/:id/accept",AuthenticateUser, GeneralRequestCtrl.acceptGeneralRequest);
+app.get("/api/technician/general-request/assigned",AuthenticateUser,GeneralRequestCtrl.getAssignedRequests)
+
+app.get("/api/gettechnicianaccepetedgeneralrequest",AuthenticateUser,GeneralRequestCtrl.getTechnicianAccecptedGeneralReqeust)
+
+
+app.get("/api/user/location", AuthenticateUser,UserCtrl.UserLocation)
+app.patch(
+  "/api/technician/general-request/:id/complete",
+  AuthenticateUser,
+  GeneralRequestCtrl.completeGeneralRequest
+);
+
+
 
 app.listen(PORT,()=>{
     console.log(`server is running on port  ${PORT}`)

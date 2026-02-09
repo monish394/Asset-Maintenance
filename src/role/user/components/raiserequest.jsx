@@ -69,28 +69,29 @@ const [userCoords, setUserCoords] = useState(null);
 
 const handleNearbyTechnician = async () => {
   try {
-    const coords = await getUserLocation();
+    const resUser = await axios.get("http://localhost:5000/api/user/location", {
+      headers: { Authorization: localStorage.getItem("token") },
+    });
+
+    const coords = resUser.data;
     setUserCoords(coords);
 
-    const res = await axios.post(
+    const resTech = await axios.post(
       "http://localhost:5000/api/getnearbytechnician",
+      { lat: coords.lat, lng: coords.lng },
       {
-        lat: coords.lat,
-        lng: coords.lng,
-      },
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
+        headers: { Authorization: localStorage.getItem("token") },
       }
     );
 
-    setNearbyTechs(res.data);
+    setNearbyTechs(resTech.data);
     setShowNearbyMap(true);
+
   } catch (err) {
-    console.log(err.message);
+    console.log("Error fetching nearby technicians:", err.message);
   }
 };
+
 
 
 
@@ -799,7 +800,7 @@ const handleGeneralRequestSubmit = (e) => {
         <th className="px-4 py-2 border text-left">S.No</th>
         <th className="px-4 py-2 border text-left">Issue</th>
         <th className="px-4 py-2 border text-left">Status</th>
-        <th className="px-4 py-2 border text-left">Created At</th>
+        <th className="px-4 py-2 border text-left">Requested At</th>
       </tr>
     </thead>
 

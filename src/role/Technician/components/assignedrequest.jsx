@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
 import axios from "axios";
 import OSMTrackMap from "./techniciantrack";
@@ -6,13 +6,33 @@ import OSMTrackMap from "./techniciantrack";
 export default function AssignedRequest() {
 const [showMap, setShowMap] = useState(false);
 const [trackAddress, setTrackAddress] = useState("");
+const [acceptedtechniciangeneralreqeust,setAcceptedtechniciangeneralreqeust]=useState([])
+console.log(acceptedtechniciangeneralreqeust)
 
 
   const [costEstimateEdit, setCostEstimateEdit] = useState("");
   const [requestid, setRequestid] = useState("")
   const [statusedit, setStatusedit] = useState("")
   const [showeditform, setShoweditform] = useState(false)
-  const { technicianassignedassert, setTechnicianassignedassert } = TechData();
+  const { technicianassignedassert, setTechnicianassignedassert,requests,setRequests } = TechData();
+  // console.log(requests)
+
+
+  useEffect(()=>{
+    axios.get("/api/gettechnicianaccepetedgeneralrequest",
+      {headers:{
+        Authorization:localStorage.getItem("token")
+
+    }})
+    .then((res)=>{
+      setAcceptedtechniciangeneralreqeust(res.data)
+      // console.log(res.data)
+    })
+    .catch((err)=>console.log(err.message))
+
+  },[])
+
+
 
   const handleAccept = async (requestId) => {
     try {
@@ -82,6 +102,59 @@ const handleTrack = (address) => {
   setTrackAddress(address);
   setShowMap(true);
 };
+
+
+
+
+const handleGeneralAccept = async (id) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:5000/api/technician/general-request/${id}/accept`,
+      {},
+      { headers: { Authorization: localStorage.getItem("token") } }
+    );
+
+    setRequests(prev => prev.filter(req => req._id !== id));
+    setAcceptedtechniciangeneralreqeust(prev => [...prev, res.data]);
+
+  } catch (err) {
+    if (err.response?.status === 400) {
+      alert(err.response.data.err || "This request is already accepted by another technician");
+      setRequests(prev => prev.filter(req => req._id !== id));
+    } else {
+      console.error("Failed to accept request:", err.response?.data || err.message);
+    }
+  }
+};
+
+
+
+
+
+const handleComplete = async (requestId) => {
+  try {
+    const res = await axios.patch(
+      `http://localhost:5000/api/technician/general-request/${requestId}/complete`,
+      {},
+      { headers: { Authorization: localStorage.getItem("token") } }
+    );
+
+    setAcceptedtechniciangeneralreqeust((prev) =>
+      prev.map((req) => (req._id === requestId ? res.data : req))
+    );
+  } catch (err) {
+    console.log("Error completing request:", err.response?.data || err.message);
+  }
+};
+
+
+
+
+
+
+
+
+
 
 
 
@@ -313,6 +386,125 @@ const handleTrack = (address) => {
     <p className="text-gray-500 text-sm">No assigned requests yet.</p>
   )}
 </div>
+<div className="p-6">
+  <h2 className="text-xl font-semibold mb-4">General Requests</h2>
+
+  {requests.length === 0 ? (
+    <p className="text-gray-500 text-center">No general requests available</p>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="min-w-full border rounded">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="px-4 py-2 text-left">User</th>
+            <th className="px-4 py-2 text-left">Issue</th>
+            <th className="px-4 py-2 text-left">Phone</th>
+            <th className="px-4 py-2 text-left">Address</th>
+            <th className="px-4 py-2 text-left">Status</th>
+            <th className="px-4 py-2 text-left">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {requests.map((req) => (
+            <tr key={req._id} className="border-t">
+              <td className="px-4 py-2">{req.userId?.name}</td>
+              <td className="px-4 py-2">{req.issue}</td>
+              <td className="px-4 py-2">{req.userId?.phone}</td>
+              <td className="px-4 py-2">{req.userId?.address}</td>
+              <td className="px-4 py-2">
+                <span
+                  className={`px-2 py-1 rounded text-sm font-medium ${
+                    req.status === "OPEN"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-green-100 text-green-800"
+                  }`}
+                >
+                  {req.status}
+                </span>
+              </td>
+              <td className="px-4 py-2 flex gap-2">
+                {req.status === "OPEN" && (
+                  <button
+                    onClick={() => handleGeneralAccept(req._id)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Accept
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+
+
+<div className="p-6 mt-8">
+  <h2 className="text-xl font-semibold mb-4">Accepted Requests</h2>
+
+  {acceptedtechniciangeneralreqeust.length === 0 ? (
+    <p className="text-gray-500 text-center">No accepted requests yet</p>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="min-w-full border rounded">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="px-4 py-2 text-left">User</th>
+            <th className="px-4 py-2 text-left">Issue</th>
+            <th className="px-4 py-2 text-left">Phone</th>
+            <th className="px-4 py-2 text-left">Address</th>
+            <th className="px-4 py-2 text-left">Status</th>
+            <th className="px-4 py-2 text-left">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {acceptedtechniciangeneralreqeust.map((req) => (
+            <tr key={req._id} className="border-t">
+              <td className="px-4 py-2">{req.userId?.name}</td>
+              <td className="px-4 py-2">{req.issue}</td>
+              <td className="px-4 py-2">{req.userId?.phone}</td>
+              <td className="px-4 py-2">{req.userId?.address}</td>
+              <td className="px-4 py-2">
+                <span
+                  className={`px-2 py-1 rounded text-sm font-medium ${
+                    req.status === "COMPLETED"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {req.status}
+                </span>
+              </td>
+              <td className="px-4 py-2 flex gap-2">
+                <button
+                  onClick={() => handleTrack(req.userId?.address)}
+                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                  Track
+                </button>
+
+                {req.status !== "COMPLETED" && (
+                  <button
+                    onClick={() => handleComplete(req._id)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Complete
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+
+
+
+
 
 
       </div>

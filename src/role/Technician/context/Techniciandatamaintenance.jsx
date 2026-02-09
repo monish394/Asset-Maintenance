@@ -5,7 +5,7 @@ const TechDataMaintain = createContext();
 
 export const TechDataProvider = ({ children }) => {
   const [requests,setRequests]=useState([])
-  console.log(requests)
+  // console.log(requests)
      const[technicianassignedassert,setTechnicianassignedassert]=useState([])
      const[techniciansnotifications,setTechniciansnotifications]=useState([])
      const [techinfo,setTechinfo]=useState(null)
@@ -66,7 +66,7 @@ useEffect(() => {
     
 
   return (
-    <TechDataMaintain.Provider value={{technicianassignedassert,setTechnicianassignedassert,techniciansnotifications,techinfo}}>
+    <TechDataMaintain.Provider value={{technicianassignedassert,setTechnicianassignedassert,techniciansnotifications,techinfo,requests,setRequests}}>
       {children}
     </TechDataMaintain.Provider>
   );
