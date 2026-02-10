@@ -68,7 +68,6 @@ const FullWidthCarousel = () => {
         </div>
       </div>
 
-      {/* Dots */}
       <div className="flex justify-center mt-3 space-x-2">
         {scrollSnaps.map((_, index) => (
           <button

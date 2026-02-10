@@ -89,7 +89,6 @@ GeneralRequestCtrl.getNearbyOpenRequests = async (req, res) => {
 
     const [lng, lat] = tech.location.coordinates;
 
-    // Fetch nearby requests that are OPEN and not accepted
     const requests = await GeneralRequest.aggregate([
       {
         $geoNear: {
@@ -102,15 +101,14 @@ GeneralRequestCtrl.getNearbyOpenRequests = async (req, res) => {
       {
         $match: {
           status: "OPEN",
-          acceptedBy: null // only unassigned requests
+          acceptedBy: null 
         }
       },
       {
-        $sort: { distance: 1 } // optional: closest requests first
+        $sort: { distance: 1 } 
       }
     ]);
 
-    // Populate userId for name, phone, address
     await GeneralRequest.populate(requests, {
       path: "userId",
       select: "name phone address"
@@ -124,8 +122,6 @@ GeneralRequestCtrl.getNearbyOpenRequests = async (req, res) => {
     res.status(500).json({ err: "Failed to fetch nearby open requests" });
   }
 };
-
-
 GeneralRequestCtrl.acceptGeneralRequest = async (req, res) => {
   try {
     const techId = req.userid;
