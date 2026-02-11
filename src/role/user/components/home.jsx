@@ -54,51 +54,94 @@ export default function UserHome() {
 
 
 {userdashboardstats && (
-  <div className="bg-gray-50 p-10 rounded-2xl border border-gray-200 mt-16 mx-auto max-w-7xl">
-    <h1 className="text-3xl font-bold text-gray-800 mb-10 tracking-wide text-left">
+  <div className="mt-20">
+
+    <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 tracking-wide">
       Quick Stats Overview
     </h1>
 
-    <div className="flex flex-wrap justify-center gap-8">
-      <div className="w-56 sm:w-60 h-48 bg-white border border-gray-200 rounded-2xl px-5 py-5 flex justify-between items-center shadow-md hover:shadow-lg transition-shadow">
-        <div className="flex flex-col justify-center h-full">
-          <p className="text-lg text-gray-500">My Assets</p>
-          <p className="text-2xl font-semibold text-gray-900 mt-2">{userdashboardstats.userassets}</p>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+      <div className="bg-white rounded-xl p-6 h-[170px]
+                      border border-gray-100 shadow-sm 
+                      hover:shadow-md transition-all duration-300 
+                      flex flex-col justify-between">
+
+        <p className="text-lg font-semibold text-gray-700">
+          My Assets
+        </p>
+
+        <div className="flex items-center justify-between">
+          <span className="text-3xl font-bold text-gray-900">
+            {userdashboardstats.userassets}
+          </span>
+          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <FaBoxOpen className="text-blue-600 text-xl" />
+          </div>
         </div>
-        <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center">
-          <span className="text-blue-600 text-3xl"><FaBoxOpen /></span>
-        </div>
+
       </div>
 
-      <div className="w-56 sm:w-60 h-48 bg-white border border-gray-200 rounded-2xl px-5 py-5 flex justify-between items-center shadow-md hover:shadow-lg transition-shadow">
-        <div className="flex flex-col justify-center h-full">
-          <p className="text-lg text-gray-500">Active Work Orders</p>
-          <p className="text-2xl font-semibold text-gray-900 mt-2">{userdashboardstats.activeworkorders}</p>
+      <div className="bg-white rounded-xl p-6 h-[170px]
+                      border border-gray-100 shadow-sm 
+                      hover:shadow-md transition-all duration-300 
+                      flex flex-col justify-between">
+
+        <p className="text-lg font-semibold text-gray-700">
+          Active Work Orders
+        </p>
+
+        <div className="flex items-center justify-between">
+          <span className="text-3xl font-bold text-gray-900">
+            {userdashboardstats.activeworkorders}
+          </span>
+          <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+            <AiFillSetting className="text-red-600 text-xl" />
+          </div>
         </div>
-        <div className="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center">
-          <span className="text-red-600 text-3xl"><AiFillSetting /></span>
-        </div>
+
       </div>
 
-      <div className="w-56 sm:w-60 h-48 bg-white border border-gray-200 rounded-2xl px-5 py-5 flex justify-between items-center shadow-md hover:shadow-lg transition-shadow">
-        <div className="flex flex-col justify-center h-full">
-          <p className="text-lg text-gray-500">Pending Requests</p>
-          <p className="text-2xl font-semibold text-gray-900 mt-2">{userdashboardstats.pendingrequests}</p>
+      <div className="bg-white rounded-xl p-6 h-[170px]
+                      border border-gray-100 shadow-sm 
+                      hover:shadow-md transition-all duration-300 
+                      flex flex-col justify-between">
+
+        <p className="text-lg font-semibold text-gray-700">
+          Pending Requests
+        </p>
+
+        <div className="flex items-center justify-between">
+          <span className="text-3xl font-bold text-gray-900">
+            {userdashboardstats.pendingrequests}
+          </span>
+          <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <IoMdClock className="text-yellow-600 text-xl" />
+          </div>
         </div>
-        <div className="w-16 h-16 bg-yellow-100 rounded-xl flex items-center justify-center">
-          <span className="text-yellow-600 text-3xl"><IoMdClock /></span>
-        </div>
+
       </div>
 
-      <div className="w-56 sm:w-60 h-48 bg-white border border-gray-200 rounded-2xl px-5 py-5 flex justify-between items-center shadow-md hover:shadow-lg transition-shadow">
-        <div className="flex flex-col justify-center h-full">
-          <p className="text-lg text-gray-500">Completed Requests</p>
-          <p className="text-2xl font-semibold text-gray-900 mt-2">{userdashboardstats.completedrequests}</p>
+      <div className="bg-white rounded-xl p-6 h-[170px]
+                      border border-gray-100 shadow-sm 
+                      hover:shadow-md transition-all duration-300 
+                      flex flex-col justify-between">
+
+        <p className="text-lg font-semibold text-gray-700">
+          Completed Requests
+        </p>
+
+        <div className="flex items-center justify-between">
+          <span className="text-3xl font-bold text-gray-900">
+            {userdashboardstats.completedrequests}
+          </span>
+          <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+            <MdDone className="text-green-600 text-xl" />
+          </div>
         </div>
-        <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center">
-          <span className="text-green-600 text-3xl"><MdDone /></span>
-        </div>
+
       </div>
+
     </div>
   </div>
 )}
@@ -109,7 +152,8 @@ export default function UserHome() {
 
 
 
-<div className="mt-10 font-sans">
+
+<div className="mt-10 font-sans mt-20">
   <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 text-center md:text-left tracking-wide">
     My Assigned Assets
   </h1>
@@ -191,7 +235,7 @@ export default function UserHome() {
 
 
 
-<div className="mt-12 px-4 font-sans">
+<div className="mt-20 px-4 font-sans">
   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 tracking-wide">
     Recent Work Orders
   </h2>
@@ -292,7 +336,7 @@ export default function UserHome() {
 
 
 
-<div className="mt-12 px-4 font-sans">
+<div className="mt-20 px-4 font-sans">
   <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-wide">
     Technician Info
   </h2>

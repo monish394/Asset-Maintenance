@@ -206,68 +206,74 @@ export default function Assets() {
 
 
       <div>
-      <div className="ml-64 mt-10 px-4 overflow-x-auto font-sans">
-  <table className="min-w-full border border-gray-200 rounded-md overflow-hidden text-sm shadow-sm">
-    <thead className="bg-gray-50 border-b border-gray-200">
-      <tr>
-        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
-          Asset Request
-        </th>
-        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
-          Requested By
-        </th>
-        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
-          Status
-        </th>
-        <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
-          Action
-        </th>
-      </tr>
-    </thead>
+  <div className="ml-64 mt-8 px-6 font-[Inter]">
 
-    <tbody className="divide-y divide-gray-100 bg-white">
-      {requestasset.map((ele) => (
-        <tr
-          key={ele._id}
-          className="hover:bg-gray-50 transition-colors"
-        >
-          <td className="px-5 py-3 font-medium text-gray-900 whitespace-nowrap">
-            {ele.name}
-          </td>
+  <div className="mb-5">
+    <h2 className="text-xl font-semibold text-gray-900 tracking-tight">
+      Asset Request Management
+    </h2>
+    <p className="text-sm text-gray-500">
+      Review and manage submitted asset requests
+    </p>
+  </div>
 
-          <td className="px-5 py-3 text-gray-700 whitespace-nowrap">
-            {ele.requestedBy.name}
-          </td>
-
-          <td className="px-5 py-3 whitespace-nowrap">
-            <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                ele.status === "pending"
-                  ? "bg-amber-100 text-amber-800"
-                  : ele.status === "approved"
-                  ? "bg-emerald-100 text-emerald-800"
-                  : "bg-rose-100 text-rose-700"
-              }`}
-            >
-              {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
-            </span>
-          </td>
-
-          <td className="px-5 py-3">
-            <button
-              onClick={() => handleStatusEdit(ele._id)}
-              className="inline-flex items-center px-4 py-1.5 rounded-md 
-                         bg-gray-900 text-white text-xs font-medium
-                         hover:bg-gray-800 transition"
-            >
-              Edit
-            </button>
-          </td>
+  <div className="overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
+    <table className="min-w-full text-sm">
+      
+      <thead className="bg-gray-50 border-b border-gray-200">
+        <tr className="text-gray-600 uppercase text-xs tracking-wider">
+          <th className="px-4 py-3 text-left font-semibold">Asset Request</th>
+          <th className="px-4 py-3 text-left font-semibold">Requested By</th>
+          <th className="px-4 py-3 text-left font-semibold">Status</th>
+          <th className="px-4 py-3 text-left font-semibold">Action</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+
+      <tbody className="divide-y divide-gray-100">
+        {requestasset.map((ele, index) => (
+          <tr
+            key={ele._id}
+            className={`transition hover:bg-gray-50 ${
+              index % 2 === 0 ? "bg-white" : "bg-gray-50"
+            }`}
+          >
+            <td className="px-4 py-3 font-medium text-gray-900">
+              {ele.name}
+            </td>
+
+            <td className="px-4 py-3 text-gray-600">
+              {ele.requestedBy.name}
+            </td>
+
+            <td className="px-4 py-3">
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium capitalize
+                  ${ele.status === "pending" && "bg-amber-100 text-amber-700"}
+                  ${ele.status === "approved" && "bg-emerald-100 text-emerald-700"}
+                  ${ele.status === "rejected" && "bg-rose-100 text-rose-700"}
+                `}
+              >
+                {ele.status}
+              </span>
+            </td>
+
+            <td className="px-4 py-3">
+              <button
+                onClick={() => handleStatusEdit(ele._id)}
+                className="px-3 py-1.5 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-800 transition"
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+
+    </table>
+  </div>
+
 </div>
+
 
 
       {showstatus && (

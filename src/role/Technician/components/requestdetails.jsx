@@ -4,124 +4,138 @@ export default function RequestDetails() {
     console.log(technicianassignedassert)
     return (
         <>
-            <div>
-                <h1 className="text-2xl font-semibold mb-6">Request Details</h1>
+       <div className="font-[Inter] space-y-10">
 
-                {technicianassignedassert.map((ele) => (
-                    <div
-                        key={ele._id}
-                        className="bg-white rounded-xl p-4 mb-4 shadow-sm border"
-                    >
-                        <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                                <img
-                                    src={ele.assetid?.assetImg}
-                                    alt={ele.assetid?.assetName}
-                                    className="w-16 h-16 rounded-lg object-cover"
-                                />
-                                <div>
-                                    <h2 className="text-lg font-semibold">
-                                        {ele.assetid?.assetName}
-                                    </h2>
-                                    <p className="text-sm text-gray-500 capitalize">
-                                        {ele.aiCategory} • {ele.requesttype}
-                                    </p>
-                                </div>
-                            </div>
+  <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
+    Request Details
+  </h1>
 
-                            <div className="text-right">
-                                <div className="flex justify-end gap-2">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold capitalize
-                ${ele.status === "completed" && "bg-green-100 text-green-700"}
-                ${ele.status === "in-progress" && "bg-orange-100 text-orange-700"}
-                ${ele.status === "pending" && "bg-yellow-100 text-yellow-700"}
-              `}
-                                    >
-                                        {ele.status}
-                                    </span>
+  {technicianassignedassert.map((ele) => (
+    <div
+      key={ele._id}
+      className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition duration-300"
+    >
+      <div className="flex justify-between items-start">
 
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold capitalize
-                ${ele.aiPriority === "high" && "bg-red-100 text-red-700"}
-                ${ele.aiPriority === "medium" && "bg-orange-100 text-orange-700"}
-                ${ele.aiPriority === "low" && "bg-blue-100 text-blue-700"}
-              `}
-                                    >
-                                        {ele.aiPriority}
-                                    </span>
-                                </div>
+        <div className="flex items-center gap-4">
+          <img
+            src={ele.assetid?.assetImg}
+            alt={ele.assetid?.assetName}
+            className="w-20 h-20 rounded-xl object-cover border"
+          />
 
-                                <p className="text-xs text-gray-400 mt-1">
-                                    Request ID: {ele._id}
-                                </p>
-                            </div>
-                        </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              {ele.assetid?.assetName}
+            </h2>
 
-                        <div className="flex gap-6 mt-4 text-sm text-gray-600">
-                            <span>
-                                <strong>Created:</strong>{" "}
-                                {new Date(ele.createdAt).toLocaleString()}
-                            </span>
-                            <span>
-                                <strong>Assigned:</strong>{" "}
-                                {ele.assignAt
-                                    ? new Date(ele.assignAt).toLocaleString()
-                                    : "pending"}
-                            </span>
-                            {ele.completedAt && (
-                                <span>
-                                    <strong>Completed:</strong>{" "}
-                                    {new Date(ele.completedAt).toLocaleString()}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div>
-                {technicianassignedassert.map((ele) => (
-                    <div
-                        key={ele._id}
-                        className="bg-white rounded-2xl border shadow-sm p-6 space-y-6 m-4"
-                    >
-                        <h2 className="text-xl font-semibold text-gray-800">
-                            Issue Details
-                        </h2>
+            <p className="text-sm text-gray-500 mt-1 capitalize">
+              {ele.aiCategory} • {ele.requesttype}
+            </p>
+          </div>
+        </div>
 
-                        <div className="border-l-4 border-blue-500 pl-4">
-                            <h3 className="text-base font-semibold text-gray-700 mb-1">
-                                Customer Reported Issue
-                            </h3>
-                            <p className="text-gray-600 leading-relaxed">
-                                {ele.description}
-                            </p>
-                        </div>
+        <div className="text-right space-y-2">
+          <div className="flex justify-end gap-2">
 
-                        <div className="bg-slate-50 rounded-xl p-4 border">
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-base font-semibold text-gray-700">
-                                    AI Diagnosis
-                                </h3>
-                                <span
-                                    className={`px-3 py-1 rounded-full text-xs font-semibold capitalize
+            <span
+              className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize
+              ${ele.status === "completed" && "bg-green-100 text-green-700"}
+              ${ele.status === "in-progress" && "bg-orange-100 text-orange-700"}
+              ${ele.status === "pending" && "bg-yellow-100 text-yellow-700"}
+            `}
+            >
+              {ele.status}
+            </span>
+
+            <span
+              className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize
+              ${ele.aiPriority === "high" && "bg-red-100 text-red-700"}
+              ${ele.aiPriority === "medium" && "bg-orange-100 text-orange-700"}
+              ${ele.aiPriority === "low" && "bg-blue-100 text-blue-700"}
+            `}
+            >
+              {ele.aiPriority} Priority
+            </span>
+
+          </div>
+
+          <p className="text-xs text-gray-400">
+            Request ID: {ele._id}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-8 mt-6 text-sm text-gray-600 border-t pt-4">
+        <span>
+          <strong className="text-gray-700">Created:</strong>{" "}
+          {new Date(ele.createdAt).toLocaleString()}
+        </span>
+
+        <span>
+          <strong className="text-gray-700">Assigned:</strong>{" "}
+          {ele.assignAt
+            ? new Date(ele.assignAt).toLocaleString()
+            : "Pending"}
+        </span>
+
+        {ele.completedAt && (
+          <span>
+            <strong className="text-gray-700">Completed:</strong>{" "}
+            {new Date(ele.completedAt).toLocaleString()}
+          </span>
+        )}
+      </div>
+    </div>
+  ))}
+
+
+  {technicianassignedassert.map((ele) => (
+    <div
+      key={`details-${ele._id}`}
+      className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 space-y-8"
+    >
+
+      <h2 className="text-2xl font-semibold text-gray-900">
+        Issue Details
+      </h2>
+
+      <div className="border-l-4 border-blue-600 pl-5">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          Customer Reported Issue
+        </h3>
+        <p className="text-gray-600 leading-relaxed text-base">
+          {ele.description}
+        </p>
+      </div>
+
+      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">
+            AI Diagnosis
+          </h3>
+
+          <span
+            className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize
             ${ele.aiPriority === "high" && "bg-red-100 text-red-700"}
             ${ele.aiPriority === "medium" && "bg-orange-100 text-orange-700"}
             ${ele.aiPriority === "low" && "bg-blue-100 text-blue-700"}
           `}
-                                >
-                                    {ele.aiPriority} priority
-                                </span>
-                            </div>
+          >
+            {ele.aiPriority} Priority
+          </span>
+        </div>
 
-                            <p className="text-gray-600 leading-relaxed">
-                                {ele.aiResponse}
-                            </p>
-                        </div>
-                    </div>
-                ))}
+        <p className="text-gray-700 leading-relaxed text-base">
+          {ele.aiResponse}
+        </p>
+      </div>
 
-            </div>
+    </div>
+  ))}
+
+</div>
+
 
 
            

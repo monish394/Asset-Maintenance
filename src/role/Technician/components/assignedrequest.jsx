@@ -232,150 +232,167 @@ const handleComplete = async (requestId) => {
       </h2>
 
       <div className="overflow-x-auto">
-       <div className="overflow-x-auto">
-  <table className="min-w-full border border-gray-200 text-sm table-fixed">
-    <thead className="bg-blue-50">
-      <tr>
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/6">Asset</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-2/6">Issue</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/6">Raised By</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/6">Address</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/12">Priority</th>
+<div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200 font-[Inter]">
 
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/12">Status</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/12">Assigned At</th>
-<th className="px-4 py-3 text-left font-medium text-gray-700 w-1/6">Cost</th>
-        <th className="px-4 py-3 text-left font-medium text-gray-700 w-1/12">Action</th>
+  <table className="min-w-full text-base">
+
+    <thead className="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Asset</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Issue</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Raised By</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Address</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Priority</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Status</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Assigned</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Cost</th>
+        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Action</th>
       </tr>
     </thead>
-    <tbody>
-  {technicianassignedassert.map((ele, i) => (
-    <tr
-      key={ele._id}
-      className={`border-t border-gray-200 align-middle ${i % 2 === 0 ? "bg-white" : "bg-blue-50"} hover:bg-gray-100 transition`}
-    >
-      <td className="px-4 py-3 font-medium text-gray-900 align-middle">{ele.assetid?.assetName || "N/A"}</td>
-      <td className="px-4 py-3 text-gray-700 align-middle break-words max-w-[400px]">{ele.description}</td>
-      <td className="px-4 py-3 text-gray-700 align-middle">{ele.userid?.name || "N/A"}</td>
-      <td className="px-4 py-3 text-gray-700 align-middle">{ele.userid?.address || "N/A"}</td>
 
-<td className="px-4 py-3 align-middle">
-  <span
-    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-      ele.aiPriority === "high"
-        ? "bg-red-100 text-red-800"
-        : ele.aiPriority === "medium"
-        ? "bg-yellow-100 text-yellow-800"
-        : ele.aiPriority === "low"
-        ? "bg-green-100 text-green-800"
-        : "bg-gray-100 text-gray-800"
-    }`}
-  >
-    {ele.aiPriority || "N/A"}
-  </span>
-</td>
-
-
-      <td className="px-4 py-3 align-middle">
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-            ele.status === "pending"
-              ? "bg-yellow-100 text-yellow-800"
-              : ele.status === "assigned"
-              ? "bg-blue-100 text-blue-800"
-              : ele.status === "in-process"
-              ? "bg-purple-100 text-purple-800"
-              : ele.status === "completed"
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
-          }`}
+    <tbody className="divide-y divide-gray-100">
+      {technicianassignedassert.map((ele) => (
+        <tr
+          key={ele._id}
+          className="hover:bg-gray-50 transition duration-200"
         >
-          {ele.status}
-        </span>
-      </td>
-      <td className="px-4 py-3 text-gray-700 align-middle">
-        {ele.assignAt
-          ? new Date(ele.assignAt).toLocaleString("en-US", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "Not Assigned"}
-      </td>
-      <td className="px-4 py-3 text-gray-700 align-middle flex items-center gap-1">
-        <span>₹</span>
-        {ele.costEstimate ? ele.costEstimate : "N/A"}
-      </td>
+          <td className="px-5 py-4 font-semibold text-gray-900">
+            {ele.assetid?.assetName || "N/A"}
+          </td>
 
-      <td className="px-4 py-3 align-middle space-x-2">
-        {ele.status === "pending" && (
-          <button
-            className=" px-3 py-1 text-sm font-semibold bg-green-600 text-white rounded hover:bg-green-700 transition"
-            onClick={() => handleAccept(ele._id)}
-            disabled={ele.status !== "pending"}
-          >
-            Accept
-          </button>
-        )}
-        {["assigned", "in-process", "completed"].includes(ele.status) && (
-          <button
-            className="px-3 py-1 text-sm font-semibold bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-            onClick={() => handleEdit(ele)}
-          >
-            Edit
-          </button>
-        )}
-      </td>
-    </tr>
-  ))}
-</tbody>
+          <td className="px-5 py-4 text-gray-700 max-w-xs truncate">
+            {ele.description}
+          </td>
+
+          <td className="px-5 py-4 text-gray-700">
+            {ele.userid?.name || "N/A"}
+          </td>
+
+          <td className="px-5 py-4 text-gray-700 truncate">
+            {ele.userid?.address || "N/A"}
+          </td>
+
+          <td className="px-5 py-4">
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                ele.aiPriority === "high"
+                  ? "bg-red-100 text-red-700"
+                  : ele.aiPriority === "medium"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : ele.aiPriority === "low"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {ele.aiPriority || "N/A"}
+            </span>
+          </td>
+
+          <td className="px-5 py-4">
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                ele.status === "pending"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : ele.status === "assigned"
+                  ? "bg-blue-100 text-blue-700"
+                  : ele.status === "in-process"
+                  ? "bg-purple-100 text-purple-700"
+                  : ele.status === "completed"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {ele.status}
+            </span>
+          </td>
+
+          <td className="px-5 py-4 text-gray-600 text-sm">
+            {ele.assignAt
+              ? new Date(ele.assignAt).toLocaleDateString()
+              : "—"}
+          </td>
+
+          <td className="px-5 py-4 text-gray-800 font-semibold">
+            ₹ {ele.costEstimate || "—"}
+          </td>
+
+          <td className="px-5 py-4 space-x-2">
+            {ele.status === "pending" && (
+              <button
+                className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                onClick={() => handleAccept(ele._id)}
+              >
+                Accept
+              </button>
+            )}
+
+            {["assigned", "in-process", "completed"].includes(ele.status) && (
+              <button
+                className="px-4 py-2 text-sm font-semibold bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
+                onClick={() => handleEdit(ele)}
+              >
+                Edit
+              </button>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
 
   </table>
 </div>
-<div className="p-6 pb-12 bg-gray-100 font-sans">
 
-  <h1 className="text-2xl font-bold text-gray-800 mb-6">Requests</h1>
+
+
+<div className="p-6 rounded-2xl font-[Poppins]">
+
+  <h1 className="text-xl md:text-3xl font-semibold text-gray-800 mb-8 tracking-tight">
+    Assigned Requests
+  </h1>
 
   {technicianassignedassert.length > 0 ? (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {technicianassignedassert.map((item) => (
         <div
           key={item._id}
-          className="bg-white rounded-xl shadow-lg p-4 flex flex-col justify-between hover:shadow-2xl transition"
+          className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition duration-300 p-5 flex flex-col justify-between"
         >
-          <div className="mb-2">
-            <h4 className="text-gray-800 font-semibold text-lg truncate">User: {item.userid?.name}</h4>
-          </div>
+          <div>
+            <h4 className="text-gray-900 font-semibold text-lg mb-3 truncate">
+              {item.userid?.name}
+            </h4>
 
-          <div className="mb-2 text-xs text-gray-600 space-y-1">
-            <p>
-              <span className="font-medium">Phone:</span>{" "}
-              <a href={`tel:${item.userid?.phone}`} className="text-blue-600 hover:underline">
-                {item.userid?.phone}
-              </a>
-            </p>
-            <p>
-              <span className="font-medium">Address:</span> {item.userid?.address}
-            </p>
-          </div>
+            <div className="text-sm text-gray-600 space-y-2">
+              <p>
+                <span className="font-medium text-gray-700">Phone:</span>{" "}
+                <a
+                  href={`tel:${item.userid?.phone}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {item.userid?.phone}
+                </a>
+              </p>
 
-          <div className="mb-2 text-xs text-gray-700">
-            <p>
-              <span className="font-medium">Asset:</span> {item.assetid?.assetName}
-            </p>
-          </div>
+              <p>
+                <span className="font-medium text-gray-700">Address:</span>{" "}
+                {item.userid?.address}
+              </p>
 
-          <div className="mb-4 text-xs text-gray-700 truncate">
-            <p>
-              <span className="font-medium">Issue:</span> {item?.description}
-            </p>
+              <p>
+                <span className="font-medium text-gray-700">Asset:</span>{" "}
+                {item.assetid?.assetName}
+              </p>
+
+              <p className="truncate">
+                <span className="font-medium text-gray-700">Issue:</span>{" "}
+                {item?.description}
+              </p>
+            </div>
           </div>
 
           <button
             onClick={() => handleTrack(item.userid?.address)}
-            className="w-full px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
+            className="mt-5 w-full py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200"
           >
             Track
           </button>
@@ -383,104 +400,174 @@ const handleComplete = async (requestId) => {
       ))}
     </div>
   ) : (
-    <p className="text-gray-500 text-sm">No assigned requests yet.</p>
+    <div className="text-center py-10 text-gray-500 text-sm">
+      No assigned requests available.
+    </div>
   )}
+
 </div>
-<div className="p-6">
-  <h2 className="text-xl font-semibold mb-4">General Requests</h2>
+
+
+
+<div className="p-6 bg-gray-50 rounded-xl font-[Poppins] mt-8">
+
+  <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 tracking-tight">
+    General Requests
+  </h2>
 
   {requests.length === 0 ? (
-    <p className="text-gray-500 text-center">No general requests available</p>
+    <div className="text-center py-8 text-gray-500 text-base">
+      No general requests available
+    </div>
   ) : (
-    <div className="overflow-x-auto">
-      <table className="min-w-full border rounded">
+    <div className="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
+      <table className="min-w-full text-base">
+
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">User</th>
-            <th className="px-4 py-2 text-left">Issue</th>
-            <th className="px-4 py-2 text-left">Phone</th>
-            <th className="px-4 py-2 text-left">Address</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Action</th>
+            <th className="px-5 py-4 text-left font-semibold text-gray-700">
+              User
+            </th>
+            <th className="px-5 py-4 text-left font-semibold text-gray-700">
+              Issue
+            </th>
+            <th className="px-5 py-4 text-left font-semibold text-gray-700">
+              Phone
+            </th>
+            <th className="px-5 py-4 text-left font-semibold text-gray-700">
+              Address
+            </th>
+            <th className="px-5 py-4 text-left font-semibold text-gray-700">
+              Status
+            </th>
+            <th className="px-5 py-4 text-left font-semibold text-gray-700">
+              Action
+            </th>
           </tr>
         </thead>
-        <tbody>
+
+        <tbody className="divide-y divide-gray-200">
           {requests.map((req) => (
-            <tr key={req._id} className="border-t">
-              <td className="px-4 py-2">{req.userId?.name}</td>
-              <td className="px-4 py-2">{req.issue}</td>
-              <td className="px-4 py-2">{req.userId?.phone}</td>
-              <td className="px-4 py-2">{req.userId?.address}</td>
-              <td className="px-4 py-2">
+            <tr
+              key={req._id}
+              className="hover:bg-gray-50 transition duration-200"
+            >
+              <td className="px-5 py-4 font-medium text-gray-900">
+                {req.userId?.name}
+              </td>
+
+              <td className="px-5 py-4 text-gray-700">
+                {req.issue}
+              </td>
+
+              <td className="px-5 py-4 text-gray-700">
+                {req.userId?.phone}
+              </td>
+
+              <td className="px-5 py-4 text-gray-700">
+                {req.userId?.address}
+              </td>
+
+              <td className="px-5 py-4">
                 <span
-                  className={`px-2 py-1 rounded text-sm font-medium ${
+                  className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
                     req.status === "OPEN"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-green-100 text-green-800"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-700"
                   }`}
                 >
                   {req.status}
                 </span>
               </td>
-              <td className="px-4 py-2 flex gap-2">
+
+              <td className="px-5 py-4">
                 {req.status === "OPEN" && (
                   <button
                     onClick={() => handleGeneralAccept(req._id)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
                   >
                     Accept
                   </button>
                 )}
               </td>
+
             </tr>
           ))}
         </tbody>
+
       </table>
     </div>
   )}
+
 </div>
 
 
-<div className="p-6 mt-8">
-  <h2 className="text-xl font-semibold mb-4">Accepted Requests</h2>
+
+
+
+<div className="p-6 mt-10 bg-gray-50 rounded-xl font-[Montserrat]">
+
+  <h2 className="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
+    Accepted Requests
+  </h2>
 
   {acceptedtechniciangeneralreqeust.length === 0 ? (
-    <p className="text-gray-500 text-center">No accepted requests yet</p>
+    <p className="text-gray-500 text-center text-base py-6">
+      No accepted requests yet
+    </p>
   ) : (
-    <div className="overflow-x-auto">
-      <table className="min-w-full border rounded">
+    <div className="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-200">
+      <table className="min-w-full text-base">
+
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">User</th>
-            <th className="px-4 py-2 text-left">Issue</th>
-            <th className="px-4 py-2 text-left">Phone</th>
-            <th className="px-4 py-2 text-left">Address</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Action</th>
+            <th className="px-6 py-4 text-left font-semibold text-gray-700">User</th>
+            <th className="px-6 py-4 text-left font-semibold text-gray-700">Issue</th>
+            <th className="px-6 py-4 text-left font-semibold text-gray-700">Phone</th>
+            <th className="px-6 py-4 text-left font-semibold text-gray-700 whitespace-nowrap">Address</th>
+            <th className="px-6 py-4 text-left font-semibold text-gray-700">Status</th>
+            <th className="px-6 py-4 text-left font-semibold text-gray-700">Action</th>
           </tr>
         </thead>
-        <tbody>
+
+        <tbody className="divide-y divide-gray-200">
           {acceptedtechniciangeneralreqeust.map((req) => (
-            <tr key={req._id} className="border-t">
-              <td className="px-4 py-2">{req.userId?.name}</td>
-              <td className="px-4 py-2">{req.issue}</td>
-              <td className="px-4 py-2">{req.userId?.phone}</td>
-              <td className="px-4 py-2">{req.userId?.address}</td>
-              <td className="px-4 py-2">
+            <tr
+              key={req._id}
+              className="hover:bg-gray-50 transition duration-200"
+            >
+              <td className="px-6 py-4 font-medium text-gray-900">
+                {req.userId?.name}
+              </td>
+
+              <td className="px-6 py-4 text-gray-700">
+                {req.issue}
+              </td>
+
+              <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                {req.userId?.phone}
+              </td>
+
+              <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                {req.userId?.address}
+              </td>
+
+              <td className="px-6 py-4">
                 <span
-                  className={`px-2 py-1 rounded text-sm font-medium ${
+                  className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
                     req.status === "COMPLETED"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-blue-100 text-blue-800"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-blue-100 text-blue-700"
                   }`}
                 >
                   {req.status}
                 </span>
               </td>
-              <td className="px-4 py-2 flex gap-2">
+
+              <td className="px-6 py-4 flex gap-3 whitespace-nowrap">
                 <button
                   onClick={() => handleTrack(req.userId?.address)}
-                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                  className="px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                 >
                   Track
                 </button>
@@ -488,19 +575,23 @@ const handleComplete = async (requestId) => {
                 {req.status !== "COMPLETED" && (
                   <button
                     onClick={() => handleComplete(req._id)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                   >
                     Complete
                   </button>
                 )}
               </td>
+
             </tr>
           ))}
         </tbody>
+
       </table>
     </div>
   )}
 </div>
+
+
 
 
 

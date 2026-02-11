@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import img1 from "../assets/first.png"
+import img1 from "../assets/first1.png"
 import img2 from "../assets/second.png"
 import img3 from "../assets/third.png"
 import img4 from "../assets/four.png"
