@@ -242,7 +242,7 @@ const handleComplete = async (requestId) => {
         <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider">Address</th>
         <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Priority</th>
         <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th>
-        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Assigned</th>
+        {/* <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">AssignedAt</th> */}
         <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Cost</th>
         <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Action</th>
       </tr>
@@ -290,8 +290,8 @@ const handleComplete = async (requestId) => {
               {ele.status}
             </span>
           </td>
-          <td className="px-6 py-4 text-gray-600 text-sm whitespace-nowrap">{ele.assignAt ? new Date(ele.assignAt).toLocaleDateString() : "—"}</td>
-          <td className="px-6 py-4 text-gray-800 font-semibold whitespace-nowrap">₹ {ele.costEstimate || "—"}</td>
+          {/* <td className="px-6 py-4 text-gray-600 text-sm whitespace-nowrap">{ele.assignAt ? new Date(ele.assignAt).toLocaleDateString() : "N/A"}</td> */}
+          <td className="px-6 py-4 text-gray-800 font-semibold whitespace-nowrap">₹ {ele.costEstimate || "N/A"}</td>
           <td className="px-6 py-4 space-x-2 whitespace-nowrap">
             {ele.status === "pending" && (
               <button
@@ -320,7 +320,7 @@ const handleComplete = async (requestId) => {
 
 
 
-<div className="p-6 rounded-2xl font-[Poppins]">
+<div className="p-6 rounded-2xl font-[Poppins] mt-15">
   <h1 className="md:text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
     Assigned Requests
   </h1>
@@ -396,7 +396,7 @@ const handleComplete = async (requestId) => {
 
 
 
-<div className="p-6 bg-gray-50 rounded-xl font-[Poppins] mt-8">
+<div className="p-6 bg-gray-50 rounded-xl font-[Poppins] mt-15">
 
   <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 tracking-tight">
     General Requests
@@ -492,7 +492,7 @@ const handleComplete = async (requestId) => {
 
 
 
-<div className="p-6 mt-10 bg-gray-50 rounded-xl font-[Montserrat]">
+<div className="p-6 mt-15 bg-gray-50 rounded-xl font-[Montserrat]">
 
   <h2 className="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
     Accepted Requests

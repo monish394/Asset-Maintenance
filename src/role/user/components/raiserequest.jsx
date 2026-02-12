@@ -864,7 +864,7 @@ const handleGeneralRequestSubmit = (e) => {
                   </span>
                 </td>
                 <td className="px-6 py-3 text-gray-700 font-medium whitespace-nowrap">
-                  {ele.acceptedBy?.name || "—"}
+                  {ele.acceptedBy?.name || "N/A"}
                 </td>
                 <td className="px-6 py-3 text-gray-500 whitespace-nowrap">
                   {new Date(ele.createdAt).toLocaleString()}

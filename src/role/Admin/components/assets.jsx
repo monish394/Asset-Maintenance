@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+console.log(motion)
 
 import { BsSearch } from "react-icons/bs";
 
@@ -260,12 +261,14 @@ export default function Assets() {
             </td>
 
             <td className="px-4 py-3">
-              <button
-                onClick={() => handleStatusEdit(ele._id)}
-                className="px-3 py-1.5 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-800 transition"
-              >
-                Edit
-              </button>
+             <button
+  onClick={() => handleStatusEdit(ele._id)}
+  className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold shadow-sm 
+             hover:bg-green-700 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
+>
+  Edit
+</button>
+
             </td>
           </tr>
         ))}
@@ -615,32 +618,32 @@ export default function Assets() {
 
 
      <div className="flex flex-wrap gap-4 justify-start p-4 ml-64 mt-20">
-  {filtereddata.length > 0 ? filtereddata.reverse().map((asset, index) => (
-    <motion.div
+  {filtereddata.length > 0 ? filtereddata.reverse().map((ele,i) => (
+    <motion.div key={i}
   initial={{ opacity: 0, y: -50 }}
   whileInView={{ opacity: 1, y: 0 }}
   viewport={{ once: true, amount: 0.2 }}
-  transition={{ duration: 0.5, ease: "easeOut", delay:0.2 }}
+  transition={{ duration: 0.5, ease: "easeOut", delay:0.01 }}
       className="bg-gray-50 border border-gray-200 shadow-sm rounded-lg overflow-hidden w-52 hover:shadow-lg transition-shadow duration-200 flex flex-col"
 
 >
 
     
-      <img src={asset.assetImg} alt={asset.assetName} className="w-full p-3 h-40 object-cover" />
+      <img src={ele.assetImg} alt={ele.assetName} className="w-full p-3 h-40 object-cover" />
       <div className="p-3 flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-sm font-semibold mb-1">{asset.assetName}</h3>
-          <p className="text-gray-600 text-xs mb-0.5"><strong>Category:</strong> {asset.category}</p>
-          <p className="text-gray-600 text-xs mb-0.5 line-clamp-3"><strong>Description:</strong> {asset.description}</p>
-          <p className="text-gray-600 text-xs mb-0.5"><strong>Status:</strong> <span className={asset.status === "unassigned" ? "text-green-600 font-medium" : asset.status === "assigned" ? "text-blue-600 font-medium" : "text-red-600 font-medium"}>{asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}</span></p>
-          <p className="text-gray-600 text-xs mb-0.5"><strong>Assigned To:</strong> {asset.assignedTo ? asset.assignedTo.name : "Not assigned"}</p>
-          <p className="text-gray-500 text-[10px]"><strong>Created At:</strong> {new Date(asset.createdAt).toLocaleDateString()}</p>
+          <h3 className="text-sm font-semibold mb-1">{ele.assetName}</h3>
+          <p className="text-gray-600 text-xs mb-0.5"><strong>Category:</strong> {ele.category}</p>
+          <p className="text-gray-600 text-xs mb-0.5 line-clamp-3"><strong>Description:</strong> {ele.description}</p>
+          <p className="text-gray-600 text-xs mb-0.5"><strong>Status:</strong> <span className={ele.status === "unassigned" ? "text-green-600 font-medium" : ele.status === "assigned" ? "text-blue-600 font-medium" : "text-red-600 font-medium"}>{ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}</span></p>
+          <p className="text-gray-600 text-xs mb-0.5"><strong>Assigned To:</strong> {ele.assignedTo ? ele.assignedTo.name : "Not assigned"}</p>
+          <p className="text-gray-500 text-[10px]"><strong>Created At:</strong> {new Date(ele.createdAt).toLocaleDateString()}</p>
         </div>
         <div className="flex gap-2 mt-2">
-          {asset.status !== "undermaintenance" && asset.status !== "assigned" && (
-            <button onClick={() => handleAssign(asset._id)} className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700">Assign</button>
+          {ele.status !== "undermaintenance" && ele.status !== "assigned" && (
+            <button onClick={() => handleAssign(ele._id)} className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700">Assign</button>
           )}
-          <button onClick={() => handleEdit(asset)} className="flex-1 text-xs bg-gray-600 text-white py-1.5 rounded hover:bg-gray-700">Edit</button>
+          <button onClick={() => handleEdit(ele)} className="flex-1 text-xs bg-gray-600 text-white py-1.5 rounded hover:bg-gray-700">Edit</button>
         </div>
       </div>
     </motion.div>
