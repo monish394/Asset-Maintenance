@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
+
 import { BsSearch } from "react-icons/bs";
 
 export default function Assets() {
@@ -612,34 +614,46 @@ export default function Assets() {
 
 
 
-        <div className="flex flex-wrap gap-4 justify-start p-4 ml-64">
-          {filtereddata.length > 0 ? filtereddata.reverse().map(asset => (
-            <div key={asset._id} className="bg-gray-50 border border-gray-200 shadow-sm rounded-lg overflow-hidden w-52 hover:shadow-lg transition-shadow duration-200 flex flex-col">
-              <img src={asset.assetImg} alt={asset.assetName} className="w-full p-3 h-40 object-cover" />
-              <div className="p-3 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-sm font-semibold mb-1">{asset.assetName}</h3>
-                  <p className="text-gray-600 text-xs mb-0.5"><strong>Category:</strong> {asset.category}</p>
-                  <p className="text-gray-600 text-xs mb-0.5 line-clamp-3"><strong>Description:</strong> {asset.description}</p>
-                  <p className="text-gray-600 text-xs mb-0.5"><strong>Status:</strong> <span className={asset.status === "unassigned" ? "text-green-600 font-medium" : asset.status === "assigned" ? "text-blue-600 font-medium" : "text-red-600 font-medium"}>{asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}</span></p>
-                  <p className="text-gray-600 text-xs mb-0.5"><strong>Assigned To:</strong> {asset.assignedTo ? asset.assignedTo.name : "Not assigned"}</p>
-                  <p className="text-gray-500 text-[10px]"><strong>Created At:</strong> {new Date(asset.createdAt).toLocaleDateString()}</p>
-                </div>
-                <div className="flex gap-2 mt-2">
-                  {asset.status !== "undermaintenance" && asset.status !== "assigned" && (
-                    <button onClick={() => handleAssign(asset._id)} className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700">Assign</button>
-                  )}
-                  <button onClick={() => handleEdit(asset)} className="flex-1 text-xs bg-gray-600 text-white py-1.5 rounded hover:bg-gray-700">Edit</button>
-                </div>
-              </div>
-            </div>
-          )) : (
-            <div className="w-full text-center mt-16">
-              <p className="text-lg text-gray-500 font-medium">No assets found</p>
-              <p className="text-sm text-gray-400 mt-1">Try searching with a different name</p>
-            </div>
-          )}
+     <div className="flex flex-wrap gap-4 justify-start p-4 ml-64 mt-20">
+  {filtereddata.length > 0 ? filtereddata.reverse().map((asset, index) => (
+    <motion.div
+  initial={{ opacity: 0, y: -50 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true, amount: 0.2 }}
+  transition={{ duration: 0.5, ease: "easeOut", delay:0.2 }}
+      className="bg-gray-50 border border-gray-200 shadow-sm rounded-lg overflow-hidden w-52 hover:shadow-lg transition-shadow duration-200 flex flex-col"
+
+>
+
+    
+      <img src={asset.assetImg} alt={asset.assetName} className="w-full p-3 h-40 object-cover" />
+      <div className="p-3 flex-1 flex flex-col justify-between">
+        <div>
+          <h3 className="text-sm font-semibold mb-1">{asset.assetName}</h3>
+          <p className="text-gray-600 text-xs mb-0.5"><strong>Category:</strong> {asset.category}</p>
+          <p className="text-gray-600 text-xs mb-0.5 line-clamp-3"><strong>Description:</strong> {asset.description}</p>
+          <p className="text-gray-600 text-xs mb-0.5"><strong>Status:</strong> <span className={asset.status === "unassigned" ? "text-green-600 font-medium" : asset.status === "assigned" ? "text-blue-600 font-medium" : "text-red-600 font-medium"}>{asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}</span></p>
+          <p className="text-gray-600 text-xs mb-0.5"><strong>Assigned To:</strong> {asset.assignedTo ? asset.assignedTo.name : "Not assigned"}</p>
+          <p className="text-gray-500 text-[10px]"><strong>Created At:</strong> {new Date(asset.createdAt).toLocaleDateString()}</p>
         </div>
+        <div className="flex gap-2 mt-2">
+          {asset.status !== "undermaintenance" && asset.status !== "assigned" && (
+            <button onClick={() => handleAssign(asset._id)} className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700">Assign</button>
+          )}
+          <button onClick={() => handleEdit(asset)} className="flex-1 text-xs bg-gray-600 text-white py-1.5 rounded hover:bg-gray-700">Edit</button>
+        </div>
+      </div>
+    </motion.div>
+  )) : (
+    <div className="w-full text-center mt-16">
+      <p className="text-lg text-gray-500 font-medium">No assets found</p>
+      <p className="text-sm text-gray-400 mt-1">Try searching with a different name</p>
+    </div>
+  )}
+</div>
+
+        
+      
       </div>
     </>
   );

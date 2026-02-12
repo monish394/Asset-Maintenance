@@ -65,9 +65,8 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
 
 GeneralRequestCtrl.Getusergeneralrequest = async (req, res) => {
   try {
-    const getusergeneralrequest = await GeneralRequest.find({
-      userId: req.userid,
-    });
+     const getusergeneralrequest = await GeneralRequest.find({ userId: req.userid })
+    .populate("acceptedBy", "name");
     res.status(200).json(getusergeneralrequest);
   } catch (err) {
     console.log(err.message);

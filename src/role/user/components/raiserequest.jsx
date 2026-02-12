@@ -515,7 +515,7 @@ const handleGeneralRequestSubmit = (e) => {
 )}
 
 
-<div className="bg-white shadow-xl rounded-2xl p-6 w-full">
+<div className="bg-white shadow-xl rounded-2xl p-6 w-full mt-10">
   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
     <h1 className="text-3xl font-bold text-gray-800 tracking-wide">
       My Service Requests
@@ -531,7 +531,7 @@ const handleGeneralRequestSubmit = (e) => {
     </button>
   </div>
 
-  <div className="overflow-x-auto">
+  <div className="overflow-x-auto mt-20">
     <table className="w-full border border-gray-200 text-sm rounded-xl overflow-hidden shadow-sm">
       <thead className="bg-gray-100">
         <tr>
@@ -621,7 +621,7 @@ const handleGeneralRequestSubmit = (e) => {
 </div>
 
 
-<div className="mt-10">
+<div className="mt-20">
   <h2 className="text-2xl font-bold mb-6 text-gray-800" style={{ fontFamily: "Poppins, sans-serif" }}>
     Assigned Technicians
   </h2>
@@ -683,7 +683,7 @@ const handleGeneralRequestSubmit = (e) => {
 <hr />
 
 
-<div className="p-6">
+<div className="p-6 mt-20">
 
   <div className="flex items-center justify-between mb-6">
     <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "Poppins, sans-serif" }}>
@@ -788,9 +788,9 @@ const handleGeneralRequestSubmit = (e) => {
 
 
 <hr />
-<div className="mt-10 px-4 font-sans" style={{ fontFamily: "Poppins, sans-serif" }}>
+<div className="mt-10 px-4 font-[Poppins] mt-20">
   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-    <h2 className="text-2xl md:text-3xl font-bold text-gray-800 tracking-wide">
+    <h2 className="md:text-2xl font-bold text-gray-800 tracking-tight">
       My General Requests
     </h2>
 
@@ -800,32 +800,35 @@ const handleGeneralRequestSubmit = (e) => {
         className="flex items-center gap-2 px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
       >
         <FaPlus />
-        Raise General Request
+        Raise Request
       </button>
 
       <button
         onClick={handleNearbyTechnician}
-        className="px-5 py-2 bg-blue-50 text-blue-700 font-semibold rounded-lg border border-blue-200 hover:bg-blue-100 transition"
+        className="px-5 py-2 bg-green-200 text-green-800 font-semibold rounded-lg border border-teal-200 hover:bg-teal-100 transition"
       >
         Nearby Technicians
       </button>
     </div>
   </div>
 
-  <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
-    <table className="min-w-full divide-y divide-gray-200">
+  <div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+    <table className="min-w-full divide-y divide-gray-200 table-auto">
       <thead className="bg-gray-50">
         <tr>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
             S.No
           </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
             Issue
           </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
             Status
           </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+            Accepted By
+          </th>
+          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
             Requested At
           </th>
         </tr>
@@ -833,34 +836,47 @@ const handleGeneralRequestSubmit = (e) => {
 
       <tbody className="bg-white divide-y divide-gray-100">
         {usergeneralrequest.length > 0 ? (
-          usergeneralrequest.filter(ele => ele && ele.issue).map((ele, index) => (
-            <tr key={ele._id} className="hover:bg-gray-50 transition duration-150">
-              <td className="px-6 py-3 text-gray-700 font-medium">{index + 1}</td>
-              <td className="px-6 py-3 text-gray-700">{ele.issue}</td>
-
-              <td className="px-6 py-3">
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-semibold
-                    ${
-                      ele.status === "OPEN"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : ele.status === "ACCEPTED"
-                        ? "bg-purple-100 text-purple-800"
-                        : "bg-green-100 text-green-800"
-                    }`}
-                >
-                  {ele.status}
-                </span>
-              </td>
-
-              <td className="px-6 py-3 text-gray-500">
-                {new Date(ele.createdAt).toLocaleString()}
-              </td>
-            </tr>
-          ))
+          usergeneralrequest
+            .filter((ele) => ele && ele.issue)
+            .map((ele, index) => (
+              <tr
+                key={ele._id}
+                className="hover:bg-gray-50 transition duration-150"
+              >
+                <td className="px-6 py-3 text-gray-700 font-medium whitespace-nowrap">
+                  {index + 1}
+                </td>
+                <td className="px-6 py-3 text-gray-700 line-clamp-2">
+                  {ele.issue}
+                </td>
+                <td className="px-6 py-3">
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-sm font-semibold
+                      ${
+                        ele.status === "OPEN"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : ele.status === "ACCEPTED"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                  >
+                    {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
+                  </span>
+                </td>
+                <td className="px-6 py-3 text-gray-700 font-medium whitespace-nowrap">
+                  {ele.acceptedBy?.name || "—"}
+                </td>
+                <td className="px-6 py-3 text-gray-500 whitespace-nowrap">
+                  {new Date(ele.createdAt).toLocaleString()}
+                </td>
+              </tr>
+            ))
         ) : (
           <tr>
-            <td colSpan="4" className="px-6 py-8 text-center text-gray-400 font-medium">
+            <td
+              colSpan="5"
+              className="px-6 py-8 text-center text-gray-400 font-medium"
+            >
               No General Requests Found
             </td>
           </tr>
@@ -869,6 +885,8 @@ const handleGeneralRequestSubmit = (e) => {
     </table>
   </div>
 </div>
+
+
 
 
   </div>

@@ -232,103 +232,78 @@ const handleComplete = async (requestId) => {
       </h2>
 
       <div className="overflow-x-auto">
-<div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200 font-[Inter]">
-
-  <table className="min-w-full text-base">
-
-    <thead className="bg-gray-50 border-b border-gray-200">
+<div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200 font-[Inter] p-4">
+  <table className="min-w-full text-base table-auto">
+    <thead className="bg-gradient-to-r from-gray-100 to-gray-50 border-b border-gray-200 sticky top-0 z-10">
       <tr>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Asset</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Issue</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Raised By</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Address</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Priority</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Status</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Assigned</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Cost</th>
-        <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wide">Action</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Asset</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider">Issue</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Raised By</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider">Address</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Priority</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Assigned</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Cost</th>
+        <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Action</th>
       </tr>
     </thead>
 
     <tbody className="divide-y divide-gray-100">
-      {technicianassignedassert.map((ele) => (
+      {technicianassignedassert.map((ele, idx) => (
         <tr
           key={ele._id}
-          className="hover:bg-gray-50 transition duration-200"
+          className={`transition duration-200 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
         >
-          <td className="px-5 py-4 font-semibold text-gray-900">
-            {ele.assetid?.assetName || "N/A"}
-          </td>
-
-          <td className="px-5 py-4 text-gray-700 max-w-xs truncate">
-            {ele.description}
-          </td>
-
-          <td className="px-5 py-4 text-gray-700">
-            {ele.userid?.name || "N/A"}
-          </td>
-
-          <td className="px-5 py-4 text-gray-700 truncate">
-            {ele.userid?.address || "N/A"}
-          </td>
-
-          <td className="px-5 py-4">
+          <td className="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">{ele.assetid?.assetName || "N/A"}</td>
+          <td className="px-6 py-4 text-gray-700">{ele.description || "N/A"}</td>
+          <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{ele.userid?.name || "N/A"}</td>
+          <td className="px-6 py-4 text-gray-700">{ele.userid?.address || "N/A"}</td>
+          <td className="px-6 py-4 whitespace-nowrap">
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${
                 ele.aiPriority === "high"
-                  ? "bg-red-100 text-red-700"
+                  ? "bg-gradient-to-r from-red-200 to-red-100 text-red-800"
                   : ele.aiPriority === "medium"
-                  ? "bg-yellow-100 text-yellow-700"
+                  ? "bg-gradient-to-r from-yellow-200 to-yellow-100 text-yellow-800"
                   : ele.aiPriority === "low"
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-gradient-to-r from-green-200 to-green-100 text-green-800"
                   : "bg-gray-100 text-gray-600"
               }`}
             >
               {ele.aiPriority || "N/A"}
             </span>
           </td>
-
-          <td className="px-5 py-4">
+          <td className="px-6 py-4 whitespace-nowrap">
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${
                 ele.status === "pending"
-                  ? "bg-yellow-100 text-yellow-700"
+                  ? "bg-gradient-to-r from-yellow-200 to-yellow-100 text-yellow-800"
                   : ele.status === "assigned"
-                  ? "bg-blue-100 text-blue-700"
+                  ? "bg-gradient-to-r from-blue-200 to-blue-100 text-blue-800"
                   : ele.status === "in-process"
-                  ? "bg-purple-100 text-purple-700"
+                  ? "bg-gradient-to-r from-purple-200 to-purple-100 text-purple-800"
                   : ele.status === "completed"
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-gradient-to-r from-green-200 to-green-100 text-green-800"
                   : "bg-gray-100 text-gray-600"
               }`}
             >
               {ele.status}
             </span>
           </td>
-
-          <td className="px-5 py-4 text-gray-600 text-sm">
-            {ele.assignAt
-              ? new Date(ele.assignAt).toLocaleDateString()
-              : "—"}
-          </td>
-
-          <td className="px-5 py-4 text-gray-800 font-semibold">
-            ₹ {ele.costEstimate || "—"}
-          </td>
-
-          <td className="px-5 py-4 space-x-2">
+          <td className="px-6 py-4 text-gray-600 text-sm whitespace-nowrap">{ele.assignAt ? new Date(ele.assignAt).toLocaleDateString() : "—"}</td>
+          <td className="px-6 py-4 text-gray-800 font-semibold whitespace-nowrap">₹ {ele.costEstimate || "—"}</td>
+          <td className="px-6 py-4 space-x-2 whitespace-nowrap">
             {ele.status === "pending" && (
               <button
-                className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                className="px-4 py-2 text-sm font-[Poppins] font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 onClick={() => handleAccept(ele._id)}
               >
                 Accept
               </button>
             )}
-
             {["assigned", "in-process", "completed"].includes(ele.status) && (
               <button
-                className="px-4 py-2 text-sm font-semibold bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
+                className="px-4 py-2 text-sm font-[Poppins] font-semibold bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
                 onClick={() => handleEdit(ele)}
               >
                 Edit
@@ -338,61 +313,72 @@ const handleComplete = async (requestId) => {
         </tr>
       ))}
     </tbody>
-
   </table>
 </div>
 
 
 
-<div className="p-6 rounded-2xl font-[Poppins]">
 
-  <h1 className="text-xl md:text-3xl font-semibold text-gray-800 mb-8 tracking-tight">
+
+<div className="p-6 rounded-2xl font-[Poppins]">
+  <h1 className="md:text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
     Assigned Requests
   </h1>
 
   {technicianassignedassert.length > 0 ? (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {technicianassignedassert.map((item) => (
         <div
           key={item._id}
-          className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition duration-300 p-5 flex flex-col justify-between"
+          className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200 p-4 flex flex-col justify-between"
         >
-          <div>
-            <h4 className="text-gray-900 font-semibold text-lg mb-3 truncate">
-              {item.userid?.name}
-            </h4>
-
-            <div className="text-sm text-gray-600 space-y-2">
-              <p>
-                <span className="font-medium text-gray-700">Phone:</span>{" "}
-                <a
-                  href={`tel:${item.userid?.phone}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {item.userid?.phone}
-                </a>
-              </p>
-
-              <p>
-                <span className="font-medium text-gray-700">Address:</span>{" "}
-                {item.userid?.address}
-              </p>
-
-              <p>
-                <span className="font-medium text-gray-700">Asset:</span>{" "}
-                {item.assetid?.assetName}
-              </p>
-
-              <p className="truncate">
-                <span className="font-medium text-gray-700">Issue:</span>{" "}
-                {item?.description}
-              </p>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-lg">
+                {item.userid?.name?.charAt(0) || "U"}
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-gray-900 font-semibold text-base truncate">
+                {item.userid?.name || "Unknown User"}
+              </h4>
+              <div className="text-sm text-gray-600 mt-0.5 space-y-0.5">
+                {item.userid?.phone && (
+                  <p>
+                    <span className="font-medium text-gray-700">Phone:</span>{" "}
+                    <a
+                      href={`tel:${item.userid?.phone}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {item.userid?.phone}
+                    </a>
+                  </p>
+                )}
+                {item.userid?.address && (
+                  <p>
+                    <span className="font-medium text-gray-700">Address:</span>{" "}
+                    {item.userid?.address}
+                  </p>
+                )}
+                {item.assetid?.assetName && (
+                  <p>
+                    <span className="font-medium text-gray-700">Asset:</span>{" "}
+                    {item.assetid?.assetName}
+                  </p>
+                )}
+                {item.description && (
+                  <p>
+                    <span className="font-medium text-gray-700">Issue:</span>{" "}
+                    {item.description}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
           <button
             onClick={() => handleTrack(item.userid?.address)}
-            className="mt-5 w-full py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200"
+            className="mt-3 w-full py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200"
           >
             Track
           </button>
@@ -400,12 +386,13 @@ const handleComplete = async (requestId) => {
       ))}
     </div>
   ) : (
-    <div className="text-center py-10 text-gray-500 text-sm">
+    <div className="text-center py-8 text-gray-500 text-sm">
       No assigned requests available.
     </div>
   )}
-
 </div>
+
+
 
 
 
