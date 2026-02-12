@@ -6,7 +6,7 @@ import AdminDashboardLineBarChart from "./Admindashboardlinechart";
 
 
 export default function Admin() {
-  //changes made 
+  //changes madeee
 
   
   // const [userinfo,setUserinfo]=useState(null)
