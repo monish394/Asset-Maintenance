@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 import { motion } from "framer-motion";
 console.log(motion)
 
@@ -33,13 +33,13 @@ export default function Assets() {
   const [selectedassetid, setSelectedassetid] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/assets")
+    axios.get("/assets")
       .then(res => setAssets(res.data))
       .catch(err => console.log(err));
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/findusers")
+    axios.get("/findusers")
       .then(res => setUser(res.data))
       .catch(err => console.log(err.message));
   }, []);
@@ -80,7 +80,7 @@ export default function Assets() {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/assets/${selectedassetid}`,
+        `/assets/${selectedassetid}`,
         { userid: assignuser },{
           headers:{
             Authorization:localStorage.getItem("token")
@@ -133,7 +133,7 @@ export default function Assets() {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/editassert/${editAssetId}`,
+        `/editassert/${editAssetId}`,
         editForm
       );
 
@@ -159,7 +159,7 @@ export default function Assets() {
 
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/getallrequestasset")
+    axios.get("/getallrequestasset")
       .then((res) => {
         console.log(res.data)
         setRequestasset(res.data)
@@ -181,7 +181,7 @@ export default function Assets() {
   const handleeditrequeststatus = () => {
 
 
-    axios.put(`http://localhost:5000/api/updaterequeststatus/${requeststatusid}`, { status: requeststatus })
+    axios.put(`/updaterequeststatus/${requeststatusid}`, { status: requeststatus })
       .then((res) => {
         const updatedRequest = res.data;
 

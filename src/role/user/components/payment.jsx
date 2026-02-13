@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 import { useUserAsset } from "../context/userassetprovider";
 
 export default function Payment() {
@@ -19,7 +19,7 @@ useEffect(() => {
   const token = localStorage.getItem("token");
   if (token) {
    axios
-  .get("http://localhost:5000/api/payment/user", { headers: { Authorization: token } })
+  .get("/payment/user", { headers: { Authorization: token } })
   .then((res) => {
     const paidIds = res.data.payments 
       .map((p) => p.raiseRequestId);
@@ -49,7 +49,7 @@ useEffect(() => {
       setLoadingId(request._id);
 
       const { data } = await axios.post(
-        "http://localhost:5000/api/create-order",
+        "/create-order",
         { amount: request.costEstimate, raiseRequestId: request._id },
         { headers: { Authorization: localStorage.getItem("token")} }
       );
@@ -72,7 +72,7 @@ useEffect(() => {
         handler: async function (response) {
           try {
             const verifyRes = await axios.post(
-              "http://localhost:5000/api/verify-payment",
+              "/verify-payment",
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,

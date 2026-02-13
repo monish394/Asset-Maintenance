@@ -2,7 +2,7 @@
 import Carousel from "./Carousel";
 import { useUserAsset } from "../context/userassetprovider";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 import { FaBoxOpen } from "react-icons/fa6";
 import { AiFillSetting } from "react-icons/ai";
 import { IoMdClock } from "react-icons/io";
@@ -23,7 +23,7 @@ export default function UserHome() {
 
 
  useEffect(()=>{
-  axios.get("http://localhost:5000/api/userdashboardstats",{
+  axios.get("/userdashboardstats",{
     headers:{
       Authorization:token
     }

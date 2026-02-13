@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 
 const UserAssetContext = createContext();
 
@@ -17,7 +17,7 @@ export const UserAssetProvider = ({ children }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/userassets", {
+      .get("/userassets", {
         headers: { Authorization: localStorage.getItem("token") },
       })
       .then((res) => setMyasset(res.data))
@@ -26,12 +26,12 @@ export const UserAssetProvider = ({ children }) => {
 
   }, []);
   useEffect(()=>{
-    axios.get("http://localhost:5000/api/userraiserequest",{headers:{Authorization:localStorage.getItem("token")}})
+    axios.get("/userraiserequest",{headers:{Authorization:localStorage.getItem("token")}})
       .then((res) =>{ setMyraiserequest(res.data)})
       .catch((err) => console.log(err.message));
   },[])
   useEffect(()=>{
-  axios.get("http://localhost:5000/api/usersnotifications",{
+  axios.get("/usersnotifications",{
     headers:{Authorization:token}
   })
   .then((res)=>{
@@ -44,7 +44,7 @@ export const UserAssetProvider = ({ children }) => {
 
 },[])
 useEffect(() => {
-  axios.get("http://localhost:5000/api/userinfo", {
+  axios.get("/userinfo", {
     headers: {
       Authorization: token
     }
@@ -54,7 +54,7 @@ useEffect(() => {
 }, [])
 
 useEffect(()=>{
-  axios.get("http://localhost:5000/api/usergeneralrequest",{
+  axios.get("/usergeneralrequest",{
     headers:{
       Authorization:token
     }

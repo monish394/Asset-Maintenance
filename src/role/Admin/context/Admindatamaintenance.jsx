@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 
 const AdminDataMaintenance = createContext();
 
@@ -8,7 +8,7 @@ export const AdminDataProvider = ({ children }) => {
     // console.log(allraiserequest)
     const[alltechnicians,setAlltechnicians]=useState([])
     useEffect(()=>{
-        axios.get("http://localhost:5000/api/allraiserequest")
+        axios.get("/allraiserequest")
         .then((res)=>{
             // console.log(res.data)
             setAllraiserequest(res.data)
@@ -20,7 +20,7 @@ export const AdminDataProvider = ({ children }) => {
 
     },[])
     useEffect(()=>{
-        axios.get("http://localhost:5000/api/findtechnicians")
+        axios.get("/findtechnicians")
         .then((res)=>{
             // console.log(res.data)
             setAlltechnicians(res.data)

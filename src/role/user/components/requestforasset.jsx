@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../../config/api";
 import { useState } from "react";
 
 const RequestAssetForm = ({ onSuccess }) => {
@@ -9,7 +9,7 @@ const RequestAssetForm = ({ onSuccess }) => {
     e.preventDefault();
 
     const res = await axios.post(
-      "http://localhost:5000/api/requestasset",
+      "/requestasset",
       { name, category },
       {
         headers: {

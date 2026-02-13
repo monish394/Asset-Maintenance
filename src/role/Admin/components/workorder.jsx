@@ -1,7 +1,7 @@
 import Navbar from "./navbar";
 import { AdminData } from "../context/Admindatamaintenance";
 import {  useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 export default function WorkOrder() {
   
   
@@ -29,7 +29,7 @@ const handleAssign = () => {
   const technicianObj = alltechnicians.find((t) => t._id === technicianid);
 
   axios
-    .put(`http://localhost:5000/api/assigntechnician/${requestid}`, { technicianid })
+    .put(`/assigntechnician/${requestid}`, { technicianid })
     .then((res) => {
       console.log("Updated request:", res.data);
 

@@ -5,14 +5,14 @@ import { GiAutoRepair } from "react-icons/gi";
 import { GrHostMaintenance } from "react-icons/gr";
 import logo from "../assets/logo.png";
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 
 export default function Navbar() {
   const [userinfo, setUserinfo] = useState(null);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/userinfo", {
+      .get("/userinfo", {
         headers: { Authorization: localStorage.getItem("token") },
       })
       .then((res) => setUserinfo(res.data))

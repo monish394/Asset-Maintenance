@@ -1,5 +1,5 @@
 import { useEffect, useState, useReducer } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 
 const initialstate = {
   users: [],
@@ -34,7 +34,7 @@ export default function Users() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/findusers")
+      .get("/findusers")
       .then((res) => {
         dispatch({ type: "SET_USERS", payload: res.data });
         setAllusers(res.data);
@@ -46,7 +46,7 @@ export default function Users() {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/deleteuser/${id}`);
+      await axios.delete(`/deleteuser/${id}`);
       dispatch({
         type: "SET_USERS",
         payload: users.filter((user) => user._id !== id),
@@ -67,7 +67,7 @@ export default function Users() {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/updateuser/${editUser._id}`,
+        `/updateuser/${editUser._id}`,
         {
           name: editUser.name,
           email: editUser.email,

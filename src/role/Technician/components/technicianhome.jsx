@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
-import axios from "axios";
+import axios from "../../../config/api";
       import { FaUserTie, FaEnvelope, FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 
 import { FaBoxOpen, FaCheckCircle, FaTools, FaClock } from "react-icons/fa";
@@ -13,7 +13,7 @@ export default function TechnicianHome() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/technicianstats", {
+      .get("/technicianstats", {
         headers: {
           Authorization: localStorage.getItem("token"),
         },

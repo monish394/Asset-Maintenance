@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../../config/api";
 
 const TechDataMaintain = createContext();
 
@@ -13,7 +13,7 @@ export const TechDataProvider = ({ children }) => {
     console.log(localStorage.getItem("token"))
         useEffect(() => {
       axios
-        .get("http://localhost:5000/api/alltechnicianrequest", {
+        .get("/alltechnicianrequest", {
           headers: { Authorization:localStorage.getItem("token") },
         })
         .then((res) =>{ setTechnicianassignedassert(res.data)
@@ -23,7 +23,7 @@ export const TechDataProvider = ({ children }) => {
     }, []);
 
        useEffect(()=>{
-      axios.get("http://localhost:5000/api/techniciansnotifications",{
+      axios.get("/techniciansnotifications",{
         headers:{
           Authorization:localStorage.getItem("token")
         }
@@ -38,7 +38,7 @@ export const TechDataProvider = ({ children }) => {
 
     },[])
     useEffect(() => {
-  axios.get("http://localhost:5000/api/userinfo", {
+  axios.get("/userinfo", {
     headers: {
       Authorization: localStorage.getItem("token")
     }
@@ -49,7 +49,7 @@ export const TechDataProvider = ({ children }) => {
 
 
 useEffect(() => {
-  axios.get("http://localhost:5000/api/technician/general-requests", {
+  axios.get("/technician/general-requests", {
     headers: { Authorization: localStorage.getItem("token") }
   })
   .then(res =>{

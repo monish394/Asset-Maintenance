@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom"
 
 
 import { useState } from "react"
-import axios from "axios"
+import axios from "../config/api"
 
 
 export default function Register() {
@@ -29,7 +29,7 @@ export default function Register() {
 
   const handleRegister=(e)=>{
     e.preventDefault();
-    axios.post(`http://localhost:5000/api/usersregister`,registerData)
+    axios.post(`/usersregister`,registerData)
     .then((res)=>{
       if(res.data){
         setClienterr("");

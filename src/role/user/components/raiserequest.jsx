@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useUserAsset } from "../context/userassetprovider";
 import { FcIdea } from "react-icons/fc";
 import { FaLeaf, FaPlus } from "react-icons/fa6";
-import axios from "axios";
+import axios from "../../../config/api";
 import { MapContainer, TileLayer, Marker, Polyline ,Tooltip} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -43,19 +43,19 @@ const getDistanceKm = (origin, destination) => {
 
   return (R * c).toFixed(2);
 };
-const getUserLocation = () => {
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        resolve({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
-      },
-      (err) => reject(err)
-    );
-  });
-};
+// const getUserLocation = () => {
+//   return new Promise((resolve, reject) => {
+//     navigator.geolocation.getCurrentPosition(
+//       (pos) => {
+//         resolve({
+//           lat: pos.coords.latitude,
+//           lng: pos.coords.longitude,
+//         });
+//       },
+//       (err) => reject(err)
+//     );
+//   });
+// };
 
 
 
@@ -69,7 +69,7 @@ const [userCoords, setUserCoords] = useState(null);
 
 const handleNearbyTechnician = async () => {
   try {
-    const resUser = await axios.get("http://localhost:5000/api/user/location", {
+    const resUser = await axios.get("/user/location", {
       headers: { Authorization: localStorage.getItem("token") },
     });
 
@@ -77,7 +77,7 @@ const handleNearbyTechnician = async () => {
     setUserCoords(coords);
 
     const resTech = await axios.post(
-      "http://localhost:5000/api/getnearbytechnician",
+      "/getnearbytechnician",
       { lat: coords.lat, lng: coords.lng },
       {
         headers: { Authorization: localStorage.getItem("token") },
@@ -138,7 +138,7 @@ const handleNearbyTechnician = async () => {
 
   try {
     const res = await axios.post(
-      "http://localhost:5000/api/raiserequest",
+      "/raiserequest",
       { assetid, description: assetdescription },
       {
         headers: {
@@ -228,7 +228,7 @@ const techIcon = new L.Icon({
 
 // };
 useEffect(()=>{
-  axios.get("http://localhost:5000/api/getusersrequest",{
+  axios.get("/getusersrequest",{
     headers:{
     Authorization:localStorage.getItem("token")
     }
@@ -252,7 +252,7 @@ const handleGeneralRequestSubmit = (e) => {
 
   axios
     .post(
-      "http://localhost:5000/api/generalraiserequest",
+      "/generalraiserequest",
       { issue: generalissue },
       { headers: { Authorization: localStorage.getItem("token") } }
     )

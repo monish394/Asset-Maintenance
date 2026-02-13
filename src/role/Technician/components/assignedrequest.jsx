@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
-import axios from "axios";
+import axios from "../../../config/api";
 import OSMTrackMap from "./techniciantrack";
 
 export default function AssignedRequest() {
@@ -19,7 +19,7 @@ console.log(acceptedtechniciangeneralreqeust)
 
 
   useEffect(()=>{
-    axios.get("/api/gettechnicianaccepetedgeneralrequest",
+    axios.get("/gettechnicianaccepetedgeneralrequest",
       {headers:{
         Authorization:localStorage.getItem("token")
 
@@ -37,7 +37,7 @@ console.log(acceptedtechniciangeneralreqeust)
   const handleAccept = async (requestId) => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/raiserequest/accept/${requestId}`,
+        `/raiserequest/accept/${requestId}`,
         {},
         { headers: { Authorization: localStorage.getItem("token") } }
       );
@@ -71,7 +71,7 @@ console.log(acceptedtechniciangeneralreqeust)
         payload.costEstimate = Number(costEstimateEdit);
 
       const res = await axios.put(
-        `http://localhost:5000/api/technicianstatusupdate/${requestid}`,
+        `/technicianstatusupdate/${requestid}`,
         payload
       );
 
@@ -109,7 +109,7 @@ const handleTrack = (address) => {
 const handleGeneralAccept = async (id) => {
   try {
     const res = await axios.post(
-      `http://localhost:5000/api/technician/general-request/${id}/accept`,
+      `/technician/general-request/${id}/accept`,
       {},
       { headers: { Authorization: localStorage.getItem("token") } }
     );
@@ -134,7 +134,7 @@ const handleGeneralAccept = async (id) => {
 const handleComplete = async (requestId) => {
   try {
     const res = await axios.patch(
-      `http://localhost:5000/api/technician/general-request/${requestId}/complete`,
+      `/technician/general-request/${requestId}/complete`,
       {},
       { headers: { Authorization: localStorage.getItem("token") } }
     );

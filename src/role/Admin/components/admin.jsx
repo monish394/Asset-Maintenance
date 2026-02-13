@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AdminData } from "../context/Admindatamaintenance";
-import axios from "axios";
+import axios from "../../../config/api";
 import AdminDashboardPieChart from "./Admindashboardpiechart";
 import AdminDashboardLineBarChart from "./Admindashboardlinechart";
 
@@ -33,19 +33,19 @@ export default function Admin() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/dashboardstats")
+      .get("/dashboardstats")
       .then((res) => setAdmindashboardstats(res.data))
       .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/raiserequeststats")
+      .get("/raiserequeststats")
       .then((res) => setAdmindashboardraiserequeststats(res.data))
       .catch((err) => console.log(err.message));
   }, []);
     useEffect(() => {
-    axios.get("http://localhost:5000/api/assets")
+    axios.get("/assets")
       .then(res => setAssets(res.data))
       .catch(err => console.log(err));
   }, []);
@@ -359,7 +359,7 @@ const recentAssigned = allraiserequest
     </thead>
 
     <tbody className="divide-y divide-gray-100">
-      {assets.slice(-5).reverse().map((ele, index) => (
+      {assets.slice(-5).reverse().map((ele) => (
         <tr
           key={ele._id}
           className="hover:bg-gray-50 transition-colors"
