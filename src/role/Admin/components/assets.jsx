@@ -6,12 +6,13 @@ console.log(motion)
 import { BsSearch } from "react-icons/bs";
 
 export default function Assets() {
-  const [showstatus, setShowstatus] = useState(false)
-  const [requeststatusid, setRequeststatusid] = useState("")
+  // const [showstatus, setShowstatus] = useState(false)
+  // const [requeststatusid, setRequeststatusid] = useState("")
   // console.log(requeststatusid)
-  const [requeststatus, setRequeststatus] = useState("")
+  // const [requeststatus, setRequeststatus] = useState("")
   const [statusFilter, setStatusFilter] = useState("all");
-  const [requestasset, setRequestasset] = useState([])
+  // const [requestasset, setRequestasset] = useState([])
+  
 
   const [original_asset, set_original_asset] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
@@ -158,48 +159,48 @@ export default function Assets() {
 
 
 
-  useEffect(() => {
-    axios.get("/getallrequestasset")
-      .then((res) => {
-        console.log(res.data)
-        setRequestasset(res.data)
-      })
-      .catch((err) => {
-        console.log(err.message)
-      })
+  // useEffect(() => {
+  //   axios.get("/getallrequestasset")
+  //     .then((res) => {
+  //       console.log(res.data)
+  //       setRequestasset(res.data)
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message)
+  //     })
 
-  }, [])
+  // }, [])
 
-  const handleStatusEdit = (id) => {
-    setRequeststatusid(id)
-    setRequeststatus("")
-    setShowstatus(true)
-  }
-
-
-
-  const handleeditrequeststatus = () => {
+  // const handleStatusEdit = (id) => {
+  //   setRequeststatusid(id)
+  //   setRequeststatus("")
+  //   setShowstatus(true)
+  // }
 
 
-    axios.put(`/updaterequeststatus/${requeststatusid}`, { status: requeststatus })
-      .then((res) => {
-        const updatedRequest = res.data;
 
-       setRequestasset(prev =>
-  prev.map(req =>
-    req._id === updatedRequest._id
-      ? { ...req, status: updatedRequest.status }
-      : req
-  )
-)
-
-        console.log(res.data)
-        setShowstatus(false)
-      })
-      .catch((err) => console.log(err.message))
+//   const handleeditrequeststatus = () => {
 
 
-  }
+//     axios.put(`/updaterequeststatus/${requeststatusid}`, { status: requeststatus })
+//       .then((res) => {
+//         const updatedRequest = res.data;
+
+//        setRequestasset(prev =>
+//   prev.map(req =>
+//     req._id === updatedRequest._id
+//       ? { ...req, status: updatedRequest.status }
+//       : req
+//   )
+// )
+
+//         console.log(res.data)
+//         setShowstatus(false)
+//       })
+//       .catch((err) => console.log(err.message))
+
+
+//   }
 
 
 
@@ -211,15 +212,15 @@ export default function Assets() {
       <div>
   <div className="ml-64 mt-8 px-6 font-[Inter]">
 
-  <div className="mb-5">
+  {/* <div className="mb-5">
     <h2 className="text-xl font-semibold text-gray-900 tracking-tight">
       Asset Request Management
     </h2>
     <p className="text-sm text-gray-500">
       Review and manage submitted asset requests
     </p>
-  </div>
-
+  </div> */}
+{/* 
   <div className="overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
     <table className="min-w-full text-sm">
       
@@ -275,13 +276,13 @@ export default function Assets() {
       </tbody>
 
     </table>
-  </div>
+  </div> */}
 
 </div>
 
 
 
-      {showstatus && (
+      {/* {showstatus && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
     <div className="w-96 rounded-md bg-white border border-gray-200 shadow-xl p-6 font-sans">
       
@@ -327,7 +328,7 @@ export default function Assets() {
       </div>
     </div>
   </div>
-)}
+)} */}
 
 
 

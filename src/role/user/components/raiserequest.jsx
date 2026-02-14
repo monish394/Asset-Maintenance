@@ -680,10 +680,10 @@ const handleGeneralRequestSubmit = (e) => {
 
 
 
-<hr />
 
 
-<div className="p-6 mt-20">
+
+{/* <div className="p-6 mt-20">
 
   <div className="flex items-center justify-between mb-6">
     <h2 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "Poppins, sans-serif" }}>
@@ -781,13 +781,13 @@ const handleGeneralRequestSubmit = (e) => {
       </tbody>
     </table>
   </div>
-</div>
+</div> */}
 
 
 
 
 
-<hr />
+
 <div className="mt-10 px-4 font-[Poppins] mt-20">
   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
     <h2 className="md:text-2xl font-bold text-gray-800 tracking-tight">

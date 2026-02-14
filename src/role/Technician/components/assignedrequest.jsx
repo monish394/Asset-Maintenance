@@ -8,6 +8,9 @@ const [showMap, setShowMap] = useState(false);
 const [trackAddress, setTrackAddress] = useState("");
 const [acceptedtechniciangeneralreqeust,setAcceptedtechniciangeneralreqeust]=useState([])
 console.log(acceptedtechniciangeneralreqeust)
+const [nearbyAssetRequests, setNearbyAssetRequests] = useState([]);
+console.log("nearbyAsset - " ,nearbyAssetRequests)
+
 
 
   const [costEstimateEdit, setCostEstimateEdit] = useState("");
@@ -16,6 +19,23 @@ console.log(acceptedtechniciangeneralreqeust)
   const [showeditform, setShoweditform] = useState(false)
   const { technicianassignedassert, setTechnicianassignedassert,requests,setRequests } = TechData();
   // console.log(requests)
+
+console.log("general -",requests)
+useEffect(() => {
+  const fetchNearby = async () => {
+    try {
+      const res = await axios.get("/getnearbyassetrequest", { 
+        headers: { Authorization: localStorage.getItem("token") },
+      });
+      setNearbyAssetRequests(res.data);
+    } catch (err) {
+      console.error("Failed to fetch nearby requests:", err.response?.data || err.message);
+    }
+  };
+
+  fetchNearby();
+}, []);
+
 
 
   useEffect(()=>{
@@ -148,6 +168,29 @@ const handleComplete = async (requestId) => {
 };
 
 
+const filteredRequests = nearbyAssetRequests.filter(
+    (req) =>
+      req.aiPriority &&
+      ["low", "medium"].includes(req.aiPriority.toLowerCase())
+  );
+  const handleNearbyAssetAccept = async (requestId) => {
+  try {
+    const res = await axios.put(
+      `/raiserequest/accept/${requestId}`,
+      {},
+      { headers: { Authorization: localStorage.getItem("token") } }
+    );
+
+    setTechnicianassignedassert(prev => [...prev, res.data]);
+
+    setNearbyAssetRequests(prev =>
+      prev.filter(req => req._id !== requestId)
+    );
+
+  } catch (err) {
+    console.log(err.response?.data || err.message);
+  }
+};
 
 
 
@@ -577,6 +620,87 @@ const handleComplete = async (requestId) => {
     </div>
   )}
 </div>
+
+<div className="p-6">
+  <h2 className="text-2xl font-bold mb-6 text-gray-800">
+    Nearby Asset Requests
+  </h2>
+
+  <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
+    <table className="min-w-full text-sm text-left text-gray-600">
+      <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+        <tr>
+          <th className="px-6 py-4">Category</th>
+          <th className="px-6 py-4">Priority</th>
+          <th className="px-6 py-4">Type</th>
+          <th className="px-6 py-4">Description</th>
+          <th className="px-6 py-4">Created</th>
+          <th className="px-6 py-4 text-center">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {filteredRequests.length === 0 ? (
+          <tr>
+            <td
+              colSpan="6"
+              className="text-center py-8 text-gray-400 font-medium"
+            >
+              No Nearby Requests
+            </td>
+          </tr>
+        ) : (
+          filteredRequests.map((req) => (
+            <tr
+              key={req._id}
+              className="border-b hover:bg-gray-50 transition duration-200"
+            >
+              <td className="px-6 py-4 font-medium text-gray-800">
+                {req.aiCategory}
+              </td>
+
+              <td className="px-6 py-4">
+                <span
+                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                    req.aiPriority?.toLowerCase() === "high"
+                      ? "bg-red-100 text-red-600"
+                      : req.aiPriority?.toLowerCase() === "medium"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-600"
+                  }`}
+                >
+                  {req.aiPriority}
+                </span>
+              </td>
+
+              <td className="px-6 py-4 capitalize">
+                {req.requesttype}
+              </td>
+
+              <td className="px-6 py-4 max-w-xs truncate">
+                {req.description}
+              </td>
+
+              <td className="px-6 py-4">
+                {new Date(req.createdAt).toLocaleDateString()}
+              </td>
+
+              <td className="px-6 py-4 text-center">
+                <button
+                  onClick={() => handleNearbyAssetAccept(req._id)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition duration-200"
+                >
+                  Accept
+                </button>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
 
 

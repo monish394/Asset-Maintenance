@@ -50,6 +50,7 @@ app.get("/api/assets",AssetsCtrl.GetAsset)
 app.put("/api/assets/:assetid",AuthenticateUser,AssetsCtrl.Assignuser)
 app.get("/api/userassets",AuthenticateUser,AssetsCtrl.Userasset)
 app.put("/api/editassert/:assetid",AssetsCtrl.EditAllFieldAsset)
+app.put("/api/user/assign-asset/:assetid",AuthenticateUser,AssetsCtrl.AssignAssetToSelf)
 
 
 //raise request route
@@ -119,6 +120,7 @@ app.patch(
   AuthenticateUser,
   GeneralRequestCtrl.completeGeneralRequest
 );
+app.get("/api/getnearbyassetrequest",AuthenticateUser,RaiseRequestCtrl.getNearbyAssetRequests)
 
 
 

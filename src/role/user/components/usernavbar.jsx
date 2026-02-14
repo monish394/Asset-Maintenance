@@ -27,6 +27,8 @@ export default function UserNavbar() {
     { label: "RaiseRequest", to: "/user/raiserequest" },
     { label: "Payment", to: "/user/payment" },
     { label: "WorkOrders", to: "/user/workorderrequest" },
+    { label: "Assets", to: "/user/pickassets" },
+    
   ];
 
   return (

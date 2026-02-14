@@ -151,4 +151,31 @@ AssetsCtrl.UserStatsDashboard=async (req,res) => {
     
 }
 
+
+AssetsCtrl.AssignAssetToSelf = async (req, res) => {
+  const { assetid } = req.params;
+  const userid = req.userid; 
+
+  try {
+    const asset = await Asset.findByIdAndUpdate(
+      assetid,
+      { assignedTo: userid, status: "assigned" },
+      { new: true }
+    ).populate("assignedTo", "name");
+
+    if (!asset) return res.status(404).json({ err: "Asset not found" });
+
+    await Notification.create({
+      userid,
+      message: `You have successfully picked the asset "${asset.assetName}".`,
+    });
+
+    res.status(200).json({ message: "Asset assigned to you", asset });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ err: "Failed to pick asset" });
+  }
+};
+
+
 export default AssetsCtrl;

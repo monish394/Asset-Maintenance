@@ -6,6 +6,8 @@ import User from "../models/Registeruser.js";
 import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
+
+
 async function geocodeAddress(address) {
   try {
     const res = await axios.get("https://nominatim.openstreetmap.org/search", {
@@ -291,8 +293,10 @@ UserCtrl.UserLocation=async (req, res) => {
       lng: user.location.coordinates[0],
     });
   } catch (err) {
+    console.log(err)
     res.status(500).json({ error: "Failed to fetch user location" });
   }
 }
+
 
 export default UserCtrl

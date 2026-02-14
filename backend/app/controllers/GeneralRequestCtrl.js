@@ -61,8 +61,6 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
 };
 
 
-
-
 GeneralRequestCtrl.Getusergeneralrequest = async (req, res) => {
   try {
      const getusergeneralrequest = await GeneralRequest.find({ userId: req.userid })
@@ -121,6 +119,8 @@ GeneralRequestCtrl.getNearbyOpenRequests = async (req, res) => {
     res.status(500).json({ err: "Failed to fetch nearby open requests" });
   }
 };
+
+
 GeneralRequestCtrl.acceptGeneralRequest = async (req, res) => {
   try {
     const techId = req.userid;
@@ -157,8 +157,6 @@ GeneralRequestCtrl.acceptGeneralRequest = async (req, res) => {
 };
 
 
-
-
 GeneralRequestCtrl.getAssignedRequests = async (req, res) => {
   try {
     const requests = await GeneralRequest.find({
@@ -168,6 +166,7 @@ GeneralRequestCtrl.getAssignedRequests = async (req, res) => {
 
     res.status(200).json(requests);
   } catch (err) {
+    console.log(err)
     res.status(500).json({ err: "Failed to fetch assigned requests" });
   }
 };
@@ -222,11 +221,5 @@ GeneralRequestCtrl.completeGeneralRequest = async (req, res) => {
     res.status(500).json({ err: "Failed to complete request" });
   }
 };
-
-
-
-
-
-
 
 export default GeneralRequestCtrl;

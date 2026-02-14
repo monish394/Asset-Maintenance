@@ -30,6 +30,7 @@ import TechnicianHome from "./role/Technician/components/technicianhome.jsx";
 import AssignedRequest from "./role/Technician/components/assignedrequest.jsx";
 import RequestDetails from "./role/Technician/components/requestdetails.jsx";
 import ServiceHistory from "./role/Technician/components/servicehistory.jsx";
+import PickAssets from "./role/user/components/Assets.jsx";
 export default function App() {
   return (
     <>
@@ -57,6 +58,8 @@ export default function App() {
           <Route index element={<Navigate to="home" />} />
 
           <Route path="home" element={<Home />} />
+          <Route path="pickassets" element={<PickAssets />} />
+
           <Route path="raiserequest" element={<RaiseRequest />} />
           <Route path="payment" element={<Payment />} />
           <Route path="workorderrequest" element={<WorkOrderRequest />} />
