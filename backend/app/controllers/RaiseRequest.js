@@ -219,15 +219,38 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
   const techId = req.userid;
 
   try {
-    const updated = await RaiseRequest.findOneAndUpdate(
+    let updated = await RaiseRequest.findOneAndUpdate(
       { _id: requestid, assignedto: null },
       { status: "assigned", assignedto: techId, assignAt: new Date() },
       { new: true }
-    ).populate("userid", "name phone address")
-    .populate("assetid", "assetName");
+    )
+      .populate("userid", "name phone address")
+      .populate("assetid", "assetName");
 
     if (!updated) {
-      return res.status(400).json({ err: "Request already assigned to another technician" });
+      const request = await RaiseRequest.findById(requestid);
+
+      if (!request) return res.status(404).json({ err: "Request not found" });
+
+      if (request.assignedto?.toString() !== techId) {
+        return res.status(400).json({ err: "Request already assigned to another technician" });
+      }
+
+      if (request.status === "pending") {
+        request.status = "assigned";
+        request.acceptedAt = new Date();
+        updated = await request.save();
+
+        await Notification.create({
+          userid: request.userid,
+          message: `Your request "${request.description}" has been accepted by the technician.`,
+          requestid: request._id
+        });
+
+        return res.status(200).json(updated);
+      }
+
+      return res.status(400).json({ err: "Request already accepted" });
     }
 
     await Notification.create({
@@ -236,9 +259,9 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
       requestid: updated._id
     });
 
-    const otherTechs = await User.find({ 
-      role: "technician", 
-      _id: { $ne: techId } 
+    const otherTechs = await User.find({
+      role: "technician",
+      _id: { $ne: techId }
     });
 
     const notifications = otherTechs.map((tech) => ({
@@ -258,6 +281,7 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
     res.status(500).json({ err: "Failed to accept request" });
   }
 };
+
 
 
 RaiseRequestCtrl.TechnicianStatusUpdate = async (req, res) => {

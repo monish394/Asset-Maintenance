@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import TechnicianNavbar from "./technavbar";
-
+import TechnicianFooter from "./technicianfooter";
 export default function TechnicianLayout() {
   const navigate = useNavigate();
 
@@ -20,6 +20,9 @@ export default function TechnicianLayout() {
       <main className="pt-24 px-8 mt-7">
         <Outlet />
       </main>
+
+      <TechnicianFooter></TechnicianFooter>
+      
     </div>
   );
 }

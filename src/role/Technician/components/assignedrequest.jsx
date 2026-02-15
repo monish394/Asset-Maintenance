@@ -18,7 +18,7 @@ console.log("nearbyAsset - " ,nearbyAssetRequests)
   const [statusedit, setStatusedit] = useState("")
   const [showeditform, setShoweditform] = useState(false)
   const { technicianassignedassert, setTechnicianassignedassert,requests,setRequests } = TechData();
-  // console.log(requests)
+  console.log(technicianassignedassert)
 
 console.log("general -",requests)
 useEffect(() => {
@@ -54,27 +54,32 @@ useEffect(() => {
 
 
 
-  const handleAccept = async (requestId) => {
-    try {
-      const res = await axios.put(
-        `/raiserequest/accept/${requestId}`,
-        {},
-        { headers: { Authorization: localStorage.getItem("token") } }
-      );
+const handleAccept = async (requestId) => {
+  try {
+    const res = await axios.put(
+      `/raiserequest/accept/${requestId}`,
+      null,
+      { headers: { Authorization: localStorage.getItem("token") } }
+    );
 
+    setTechnicianassignedassert(prev =>
+      prev.map(req =>
+        req._id === requestId
+          ? { ...res.data, assetid: req.assetid, userid: req.userid }
+          : req
+      )
+    );
 
-      setTechnicianassignedassert(prev =>
-        prev.map(req =>
-          req._id === requestId
-            ? { ...res.data, assetid: req.assetid, userid: req.userid }
-            : req
-        )
-      );
-
-    } catch (err) {
-      console.log(err.message);
+  } catch (err) {
+    if (err.response?.status === 400) {
+      alert(err.response.data.err || "This request has already been assigned.");
+    } else {
+      console.log("Accept request error:", err.message);
     }
-  };
+  }
+};
+
+
 
   const handleEdit = (request) => {
     setRequestid(request._id);
@@ -337,12 +342,16 @@ const filteredRequests = nearbyAssetRequests.filter(
           <td className="px-6 py-4 text-gray-800 font-semibold whitespace-nowrap">₹ {ele.costEstimate || "N/A"}</td>
           <td className="px-6 py-4 space-x-2 whitespace-nowrap">
             {ele.status === "pending" && (
-              <button
-                className="px-4 py-2 text-sm font-[Poppins] font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                onClick={() => handleAccept(ele._id)}
-              >
-                Accept
-              </button>
+            <button
+  onClick={() => handleAccept(ele._id)}
+  disabled={ele.status !== "pending"}
+  className={`px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 ${
+    ele.status !== "pending" ? "opacity-50 cursor-not-allowed" : ""
+  }`}
+>
+  Accept
+</button>
+
             )}
             {["assigned", "in-process", "completed"].includes(ele.status) && (
               <button
@@ -370,7 +379,7 @@ const filteredRequests = nearbyAssetRequests.filter(
 
   {technicianassignedassert.length > 0 ? (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {technicianassignedassert.map((item) => (
+      {technicianassignedassert.filter((ele)=>ele.status!=="completed").map((item) => (
         <div
           key={item._id}
           className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200 p-4 flex flex-col justify-between"

@@ -51,7 +51,7 @@ export default function WorkOrderRequest() {
                       ? "bg-yellow-100 text-yellow-800"
                       : req.aiPriority === "low"
                       ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
+                      : "bg-gray-100 text-grey-800"
                   }`}
                 >
                   {req.aiPriority || "N/A"}
@@ -67,7 +67,7 @@ export default function WorkOrderRequest() {
                       ? "bg-purple-100 text-purple-800"
                       : req.status === "completed"
                       ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
+                      : "bg-purple-100 text-purple-800"
                   }`}
                 >
                   {req.status}

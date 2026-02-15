@@ -31,23 +31,17 @@ export default function TechnicianHome() {
     <div className=" min-h-screen p-8 font-sans">
 
 
-<div className="mb-10 bg-gray-50 border border-gray-200 rounded-xl p-6 
-                flex flex-col md:flex-row md:items-center md:justify-between">
+<div className="mb-10  border border-gray-200 rounded-xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
-  <div>
+  <div className="flex-1">
     <div className="flex items-center gap-3">
-      <FaUserTie className="text-gray-600 text-xl" />
+      <FaUserTie className="text-gray-600 text-2xl" />
       <h1 className="text-3xl font-semibold text-gray-800">
         Welcome, {techinfo?.name}
       </h1>
     </div>
 
-    <p className="text-base text-gray-600 mt-2">
-      Technician Dashboard Overview
-    </p>
-
     <div className="mt-4 flex flex-wrap gap-6 text-base text-gray-600">
-
       <div className="flex items-center gap-2">
         <FaEnvelope className="text-gray-500" />
         <span>{techinfo?.email}</span>
@@ -57,11 +51,10 @@ export default function TechnicianHome() {
         <FaMapMarkerAlt className="text-gray-500" />
         <span>{techinfo?.address}</span>
       </div>
-
     </div>
   </div>
 
-  <div className="mt-6 md:mt-0 flex items-center gap-2 text-base text-gray-600">
+  <div className="flex-shrink-0 flex items-center gap-2 text-base text-gray-600">
     <FaCalendarAlt className="text-gray-500" />
     <span>
       {new Date().toLocaleDateString("en-US", {
@@ -76,95 +69,61 @@ export default function TechnicianHome() {
 </div>
 
 
+
       
-<h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-5 tracking-wide mt-30">
+<h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-5 tracking-wide mt-10">
   Assigned Requests Overview
 </h1>
 
 
 {technicianstats && (
   <div className="mt-6">
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-      <div className="bg-white rounded-xl p-6 h-[180px]
-                      shadow-sm hover:shadow-md transition-all duration-300 
-                      border border-gray-100 flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          My Assigned Requests
-        </p>
-
+      <div className="bg-white rounded-xl p-6 h-[180px] shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col justify-between">
+        <p className="text-lg font-semibold text-gray-700">My Assigned Requests</p>
         <div className="flex items-center justify-between">
-          <span className="text-4xl font-bold text-gray-900">
-            {technicianstats.technicianassignstats}
-          </span>
+          <span className="text-4xl font-bold text-gray-900">{technicianstats.technicianassignstats}</span>
           <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-            <FaBoxOpen className="text-blue-600 text-xl" />
+            <FaBoxOpen className="text-blue-600 text-2xl" />
           </div>
         </div>
-
       </div>
 
-      <div className="bg-white rounded-xl p-6 h-[180px]
-                      shadow-sm hover:shadow-md transition-all duration-300 
-                      border border-gray-100 flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          Work In Progress
-        </p>
-
+      <div className="bg-white rounded-xl p-6 h-[180px] shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col justify-between">
+        <p className="text-lg font-semibold text-gray-700">Work In Progress</p>
         <div className="flex items-center justify-between">
-          <span className="text-4xl font-bold text-gray-900">
-            {technicianstats.inprocessrequest}
-          </span>
+          <span className="text-4xl font-bold text-gray-900">{technicianstats.inprocessrequest}</span>
           <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-            <FaClock className="text-yellow-600 text-xl" />
+            <FaClock className="text-yellow-600 text-2xl" />
           </div>
         </div>
-
       </div>
 
-      <div className="bg-white rounded-xl p-6 h-[180px]
-                      shadow-sm hover:shadow-md transition-all duration-300 
-                      border border-gray-100 flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          Pending Requests
-        </p>
-
+      <div className="bg-white rounded-xl p-6 h-[180px] shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col justify-between">
+        <p className="text-lg font-semibold text-gray-700">Pending Requests</p>
         <div className="flex items-center justify-between">
-          <span className="text-4xl font-bold text-gray-900">
-            {technicianstats.technicianpendingrequest}
-          </span>
+          <span className="text-4xl font-bold text-gray-900">{technicianstats.technicianpendingrequest}</span>
           <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-            <FaTools className="text-orange-600 text-xl" />
+            <FaTools className="text-orange-600 text-2xl" />
           </div>
         </div>
-
       </div>
 
-      <div className="bg-white rounded-xl p-6 h-[180px]
-                      shadow-sm hover:shadow-md transition-all duration-300 
-                      border border-gray-100 flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          Completed Requests
-        </p>
-
+      <div className="bg-white rounded-xl p-6 h-[180px] shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col justify-between">
+        <p className="text-lg font-semibold text-gray-700">Completed Requests</p>
         <div className="flex items-center justify-between">
-          <span className="text-4xl font-bold text-gray-900">
-            {technicianstats.completedrequest}
-          </span>
+          <span className="text-4xl font-bold text-gray-900">{technicianstats.completedrequest}</span>
           <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-            <FaCheckCircle className="text-green-600 text-xl" />
+            <FaCheckCircle className="text-green-600 text-2xl" />
           </div>
         </div>
-
       </div>
 
     </div>
   </div>
 )}
+
 
 
 

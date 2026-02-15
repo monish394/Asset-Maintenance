@@ -54,97 +54,65 @@ export default function UserHome() {
 
 
 {userdashboardstats && (
-  <div className="mt-20">
-
+  <div className="mt-20 px-4 md:px-0">
     <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 tracking-wide">
       Quick Stats Overview
     </h1>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-      <div className="bg-white rounded-xl p-6 h-[170px]
-                      border border-gray-100 shadow-sm 
-                      hover:shadow-md transition-all duration-300 
-                      flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          My Assets
-        </p>
-
+      <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+        <p className="text-lg font-medium text-gray-700">My Assets</p>
         <div className="flex items-center justify-between">
-          <span className="text-3xl font-bold text-gray-900">
+          <span className="text-3xl md:text-4xl font-bold text-gray-900">
             {userdashboardstats.userassets}
           </span>
-          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-            <FaBoxOpen className="text-blue-600 text-xl" />
+          <div className="w-14 h-14 md:w-16 md:h-16 bg-blue-100 rounded-xl flex items-center justify-center">
+            <FaBoxOpen className="text-blue-600 text-2xl md:text-3xl" />
           </div>
         </div>
-
       </div>
 
-      <div className="bg-white rounded-xl p-6 h-[170px]
-                      border border-gray-100 shadow-sm 
-                      hover:shadow-md transition-all duration-300 
-                      flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          Active Work Orders
-        </p>
-
+      <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+        <p className="text-lg font-medium text-gray-700">Active Work Orders</p>
         <div className="flex items-center justify-between">
-          <span className="text-3xl font-bold text-gray-900">
+          <span className="text-3xl md:text-4xl font-bold text-gray-900">
             {userdashboardstats.activeworkorders}
           </span>
-          <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-            <AiFillSetting className="text-red-600 text-xl" />
+          <div className="w-14 h-14 md:w-16 md:h-16 bg-red-100 rounded-xl flex items-center justify-center">
+            <AiFillSetting className="text-red-600 text-2xl md:text-3xl" />
           </div>
         </div>
-
       </div>
 
-      <div className="bg-white rounded-xl p-6 h-[170px]
-                      border border-gray-100 shadow-sm 
-                      hover:shadow-md transition-all duration-300 
-                      flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          Pending Requests
-        </p>
-
+      <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+        <p className="text-lg font-medium text-gray-700">Pending Requests</p>
         <div className="flex items-center justify-between">
-          <span className="text-3xl font-bold text-gray-900">
+          <span className="text-3xl md:text-4xl font-bold text-gray-900">
             {userdashboardstats.pendingrequests}
           </span>
-          <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-            <IoMdClock className="text-yellow-600 text-xl" />
+          <div className="w-14 h-14 md:w-16 md:h-16 bg-yellow-100 rounded-xl flex items-center justify-center">
+            <IoMdClock className="text-yellow-600 text-2xl md:text-3xl" />
           </div>
         </div>
-
       </div>
 
-      <div className="bg-white rounded-xl p-6 h-[170px]
-                      border border-gray-100 shadow-sm 
-                      hover:shadow-md transition-all duration-300 
-                      flex flex-col justify-between">
-
-        <p className="text-lg font-semibold text-gray-700">
-          Completed Requests
-        </p>
-
+      <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+        <p className="text-lg font-medium text-gray-700">Completed Requests</p>
         <div className="flex items-center justify-between">
-          <span className="text-3xl font-bold text-gray-900">
+          <span className="text-3xl md:text-4xl font-bold text-gray-900">
             {userdashboardstats.completedrequests}
           </span>
-          <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-            <MdDone className="text-green-600 text-xl" />
+          <div className="w-14 h-14 md:w-16 md:h-16 bg-green-100 rounded-xl flex items-center justify-center">
+            <MdDone className="text-green-600 text-2xl md:text-3xl" />
           </div>
         </div>
-
       </div>
 
     </div>
   </div>
 )}
+
 
 
 
