@@ -365,7 +365,7 @@ RaiseRequestCtrl.getTechnicianStats=async (req,res) => {
 
     const technicianassignstats=await RaiseRequest.countDocuments({assignedto:req.userid})
     const technicianpendingrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:"pending"})
-    const inprocessrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:["pending","assigned"]})
+    const inprocessrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:["in-process","assigned"]})
     const completedrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:"completed"})
 
     res.status(200).json({technicianassignstats,technicianpendingrequest,inprocessrequest,completedrequest})

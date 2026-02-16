@@ -204,7 +204,7 @@ export default function UserHome() {
 
 
 <div className="mt-20 px-4 font-sans">
-  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 tracking-wide">
+  <h2 className=" md:text-3xl font-bold text-gray-900 mb-6 tracking-wide">
     Recent Work Orders
   </h2>
 
@@ -273,11 +273,11 @@ export default function UserHome() {
               <td className="px-6 py-4 text-gray-700 font-medium flex items-center gap-1">
                 {req.costEstimate ? (
                   <>
-                    <PiCurrencyInrLight className="inline text-lg" />
+                    <PiCurrencyInrLight className="inline text-lg " />
                     {req.costEstimate}
                   </>
                 ) : (
-                  "Not Assigned"
+                  "N/A"
                 )}
               </td>
 
@@ -305,7 +305,7 @@ export default function UserHome() {
 
 
 <div className="mt-20 px-4 font-sans">
-  <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-wide">
+  <h2 className=" md:text-3xl font-bold text-gray-900 mb-6 tracking-wide">
     Technician Info
   </h2>
 
