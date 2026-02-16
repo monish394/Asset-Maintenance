@@ -4,10 +4,16 @@ import { useState, useEffect } from "react";
 export default function RequestDetails() {
   const { technicianassignedassert } = TechData();
   const [loading, setLoading] = useState(true);
+  console.log(technicianassignedassert)
 
   useEffect(() => {
-    if (technicianassignedassert) setLoading(false);
-  }, [technicianassignedassert]);
+    if (technicianassignedassert) {
+      setTimeout(() => {
+        setLoading(false)
+        
+      }, 400);
+    }
+     }, [technicianassignedassert]);
 
   if (loading) {
     return (
@@ -26,102 +32,101 @@ export default function RequestDetails() {
   }
 
   return (
-    <div className="font-[Inter] space-y-10 mt-6">
-      <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
-        Request Details
-      </h1>
+  <div className="font-sans mt-6 space-y-6">
+  <h1 className="text-2xl font-semibold text-gray-800">
+    Request Details
+  </h1>
 
-      {technicianassignedassert.map((ele) => (
-        <div key={ele._id} className="space-y-6">
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition duration-300">
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-4">
-                <img
-                  src={ele.assetid?.assetImg || "/placeholder.png"}
-                  alt={ele.assetid?.assetName || "Asset Image"}
-                  className="w-20 h-20 rounded-xl object-cover border"
-                />
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    {ele.assetid?.assetName || "Unknown Asset"}
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-1 capitalize">
-                    {ele.aiCategory} • {ele.requesttype}
-                  </p>
-                </div>
-              </div>
+  {technicianassignedassert.map((ele) => (
+    <div
+      key={ele._id}
+      className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 space-y-5"
+      style={{ fontFamily: "Calibri, sans-serif" }}
+    >
+      <div className="flex justify-between items-start">
+        <div className="flex items-center gap-3">
+          <img
+            src={ele.assetid?.assetImg || "/placeholder.png"}
+            alt={ele.assetid?.assetName || "Asset"}
+            className="w-14 h-14 rounded-md object-cover border"
+          />
 
-              <div className="text-right space-y-2">
-                <div className="flex justify-end gap-2">
-                  <span
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize
-                      ${ele.status === "completed" ? "bg-green-100 text-green-700" : ""}
-                      ${ele.status === "in-progress" ? "bg-orange-100 text-orange-700" : ""}
-                      ${ele.status === "pending" ? "bg-yellow-100 text-yellow-700" : ""}
-                    `}
-                  >
-                    {ele.status}
-                  </span>
-                  <span
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize
-                      ${ele.aiPriority === "high" ? "bg-red-100 text-red-700" : ""}
-                      ${ele.aiPriority === "medium" ? "bg-orange-100 text-orange-700" : ""}
-                      ${ele.aiPriority === "low" ? "bg-blue-100 text-blue-700" : ""}
-                    `}
-                  >
-                    {ele.aiPriority} Priority
-                  </span>
-                </div>
-                <p className="text-xs text-gray-400">Request ID: {ele._id}</p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-8 mt-6 text-sm text-gray-600 border-t pt-4">
-              <span>
-                <strong className="text-gray-700">Created:</strong>{" "}
-                {new Date(ele.createdAt).toLocaleString()}
-              </span>
-              <span>
-                <strong className="text-gray-700">Assigned:</strong>{" "}
-                {ele.assignAt ? new Date(ele.assignAt).toLocaleString() : "Pending"}
-              </span>
-              {ele.completedAt && (
-                <span>
-                  <strong className="text-gray-700">Completed:</strong>{" "}
-                  {new Date(ele.completedAt).toLocaleString()}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Issue Details</h2>
-
-            <div className="border-l-4 border-blue-600 pl-5">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Customer Reported Issue
-              </h3>
-              <p className="text-gray-600 leading-relaxed text-base">{ele.description}</p>
-            </div>
-
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">AI Diagnosis</h3>
-                <span
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize
-                    ${ele.aiPriority === "high" ? "bg-red-100 text-red-700" : ""}
-                    ${ele.aiPriority === "medium" ? "bg-orange-100 text-orange-700" : ""}
-                    ${ele.aiPriority === "low" ? "bg-blue-100 text-blue-700" : ""}
-                  `}
-                >
-                  {ele.aiPriority} Priority
-                </span>
-              </div>
-              <p className="text-gray-700 leading-relaxed text-base">{ele.aiResponse}</p>
-            </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              {ele.assetid?.assetName || "Unknown Asset"}
+            </h2>
+            <p className="text-sm text-gray-500 capitalize">
+              {ele.aiCategory} • {ele.requesttype}
+            </p>
           </div>
         </div>
-      ))}
+
+        <div className="flex gap-2">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium capitalize
+              ${ele.status === "completed" ? "bg-green-100 text-green-700" : ""}
+              ${ele.status === "in-process" ? "bg-purple-100 text-purple-700" : ""}
+              ${ele.status === "pending" ? "bg-yellow-100 text-yellow-700" : ""}
+            `}
+          >
+            {ele.status}
+          </span>
+
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium capitalize
+              ${ele.aiPriority === "high" ? "bg-red-100 text-red-700" : ""}
+              ${ele.aiPriority === "medium" ? "bg-orange-100 text-orange-700" : ""}
+              ${ele.aiPriority === "low" ? "bg-blue-100 text-blue-700" : ""}
+            `}
+          >
+            {ele.aiPriority}
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 border-t pt-3">
+        <div>
+          <span className="font-medium text-gray-700">Created:</span>{" "}
+          {new Date(ele.createdAt).toLocaleString()}
+        </div>
+
+        <div>
+          <span className="font-medium text-gray-700">Assigned:</span>{" "}
+          {ele.assignAt
+            ? new Date(ele.assignAt).toLocaleString()
+            : "Pending"}
+        </div>
+
+        <div>
+          <span className="font-medium text-gray-700">Completed:</span>{" "}
+          {ele.completedAt
+            ? new Date(ele.completedAt).toLocaleString()
+            : "-"}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-800">
+            Customer Reported Issue
+          </h3>
+          <p className="text-sm text-gray-600">
+            {ele.description}
+          </p>
+        </div>
+
+        <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+          <h3 className="text-sm font-semibold text-gray-800 mb-1">
+            AI Diagnosis
+          </h3>
+          <p className="text-sm text-gray-700">
+            {ele.aiResponse}
+          </p>
+        </div>
+      </div>
     </div>
+  ))}
+</div>
+
   );
 }

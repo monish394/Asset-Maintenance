@@ -232,7 +232,7 @@ export default function UserHome() {
 
       <tbody className="divide-y divide-gray-100">
         {myraiserequest.length > 0 ? (
-          myraiserequest.map((req) => (
+          myraiserequest.slice(-5).map((req) => (
             <tr
               key={req._id}
               className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
@@ -323,6 +323,9 @@ export default function UserHome() {
             Location
           </th>
           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+            Status
+          </th>
+          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Working On
           </th>
         </tr>
@@ -330,26 +333,41 @@ export default function UserHome() {
 
       <tbody className="divide-y divide-gray-100">
         {myraiserequest.length > 0 ? (
-          myraiserequest.map((req) => (
+          myraiserequest.slice(-5).map((ele) => (
             <tr
-              key={req._id}
+              key={ele._id}
               className="hover:shadow-md transition-shadow duration-200 cursor-pointer"
             >
               <td className="px-6 py-4 text-gray-800 font-semibold">
-                {req.assignedto?.name || "Not Assigned"}
+                {ele.assignedto?.name || "Not Assigned"}
               </td>
 
               <td className="px-6 py-4 text-gray-700 font-medium">
-                {req.assignedto?.phone || "Not Assigned"}
+                {ele.assignedto?.phone || "Not Assigned"}
               </td>
 
               <td className="px-6 py-4 text-gray-700">
-                {req.assignedto?.address || "Not Assigned"}
+                {ele.assignedto?.address || "Not Assigned"}
               </td>
 
+                <td className="px-4 py-3 whitespace-nowrap">
+            <span
+    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium font-mono ${
+      ele.status === "pending"
+        ? "bg-amber-100 text-amber-800"
+        : ele.status === "in-process"
+        ? "bg-purple-100 text-purple-800"
+        : ele.status === "completed"
+        ? "bg-emerald-100 text-emerald-800"
+        : "bg-blue-100 text-blue-700"
+    }`}
+  >
+    {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
+  </span>
+          </td>
               <td className="px-6 py-4 flex items-center gap-3">
                 <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium whitespace-nowrap">
-                  {req.assetid?.assetName || "N/A"}
+                  {ele.assetid?.assetName || "N/A"}
                 </span>
               </td>
             </tr>

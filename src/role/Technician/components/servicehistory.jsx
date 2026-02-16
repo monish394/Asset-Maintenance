@@ -1,7 +1,27 @@
 import { TechData } from "../context/Techniciandatamaintenance"
+import { useState,useEffect } from "react";
 
 export default function ServiceHistory() {
   const { technicianassignedassert } = TechData()
+  const [loading, setLoading] = useState(true);
+    console.log(technicianassignedassert)
+  
+    useEffect(() => {
+      if (technicianassignedassert) {
+        setTimeout(() => {
+          setLoading(false)
+          
+        }, 500);
+      }
+       }, [technicianassignedassert]);
+  
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center mt-20">
+          <p className="text-gray-500 text-lg">Loading request details...</p>
+        </div>
+      );
+    }
 
   const inProgress = technicianassignedassert.filter(
     ele => ele.status === "in-process"
@@ -12,15 +32,17 @@ export default function ServiceHistory() {
   )
 
   return (
-  <div className="p-10 space-y-14 font-[Inter] bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-
-  <h1 className="text-4xl font-semibold text-gray-900 tracking-tight">
+<div
+  className="p-8 space-y-10 min-h-screen bg-gray-50"
+  style={{ fontFamily: "Calibri, Segoe UI, sans-serif",fontSize:"30px"}}
+>
+  <h1 className="text-3xl font-semibold text-gray-800">
     Service Details
   </h1>
 
-  <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
-    <div className="flex items-center justify-between mb-6">
-      <h2 className="text-2xl font-semibold text-gray-900">
+  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="text-xl font-semibold text-gray-800">
         In Progress Work Orders
       </h2>
       <span className="text-sm text-gray-500 font-medium">
@@ -28,54 +50,49 @@ export default function ServiceHistory() {
       </span>
     </div>
 
-    <div className="overflow-x-auto rounded-xl border border-gray-100">
-      <table className="min-w-full text-base">
-        <thead className="bg-gray-50">
-          <tr className="text-gray-600 uppercase text-xs tracking-wider">
-            <th className="px-6 py-4 text-left font-semibold">Asset</th>
-            <th className="px-6 py-4 text-left font-semibold">Issue</th>
-            <th className="px-6 py-4 text-left font-semibold">Priority</th>
-            <th className="px-6 py-4 text-left font-semibold">Cost</th>
+    <div className="overflow-x-auto border border-gray-200 rounded-lg">
+      <table className="min-w-full text-sm text-gray-700">
+        <thead className="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
+          <tr>
+            <th className="px-5 py-3 text-left font-semibold">Asset</th>
+            <th className="px-5 py-3 text-left font-semibold">Issue</th>
+            <th className="px-5 py-3 text-left font-semibold">Priority</th>
+            <th className="px-5 py-3 text-left font-semibold">Cost</th>
           </tr>
         </thead>
 
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-gray-200">
           {inProgress.length ? (
-            inProgress.map((ele, index) => (
-              <tr
-                key={ele._id}
-                className={`transition duration-200 hover:bg-blue-50 ${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                }`}
-              >
-                <td className="px-6 py-4 font-medium text-gray-900">
+            inProgress.map((ele) => (
+              <tr key={ele._id} className="hover:bg-gray-50 transition">
+                <td className="px-5 py-3 font-medium text-gray-900">
                   {ele.assetid?.assetName}
                 </td>
 
-                <td className="px-6 py-4 text-gray-600 max-w-md">
+                <td className="px-5 py-3 text-gray-600 max-w-md">
                   {ele.description}
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-5 py-3">
                   <span
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize
-                    ${ele.aiPriority === "high" && "bg-red-100 text-red-700"}
-                    ${ele.aiPriority === "medium" && "bg-yellow-100 text-yellow-700"}
-                    ${ele.aiPriority === "low" && "bg-green-100 text-green-700"}
-                  `}
+                    className={`px-3 py-1 rounded-full text-xs font-medium capitalize
+                      ${ele.aiPriority === "high" && "bg-red-100 text-red-700"}
+                      ${ele.aiPriority === "medium" && "bg-yellow-100 text-yellow-700"}
+                      ${ele.aiPriority === "low" && "bg-green-100 text-green-700"}
+                    `}
                   >
                     {ele.aiPriority}
                   </span>
                 </td>
 
-                <td className="px-6 py-4 font-semibold text-gray-800">
+                <td className="px-5 py-3 font-semibold text-gray-800">
                   {ele.costEstimate ? `₹${ele.costEstimate}` : "N/A"}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="px-6 py-6 text-center text-gray-400 font-medium">
+              <td colSpan="4" className="px-5 py-6 text-center text-gray-400">
                 No in-progress work orders
               </td>
             </tr>
@@ -85,10 +102,9 @@ export default function ServiceHistory() {
     </div>
   </div>
 
-
-  <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
-    <div className="flex items-center justify-between mb-6">
-      <h2 className="text-2xl font-semibold text-gray-900">
+  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="text-xl font-semibold text-gray-800">
         Completed Work Orders
       </h2>
       <span className="text-sm text-gray-500 font-medium">
@@ -96,48 +112,43 @@ export default function ServiceHistory() {
       </span>
     </div>
 
-    <div className="overflow-x-auto rounded-xl border border-gray-100">
-      <table className="min-w-full text-base">
-        <thead className="bg-gray-50">
-          <tr className="text-gray-600 uppercase text-xs tracking-wider">
-            <th className="px-6 py-4 text-left font-semibold">Asset</th>
-            <th className="px-6 py-4 text-left font-semibold">Issue</th>
-            <th className="px-6 py-4 text-left font-semibold">Completed At</th>
-            <th className="px-6 py-4 text-left font-semibold">Cost</th>
+    <div className="overflow-x-auto border border-gray-200 rounded-lg">
+      <table className="min-w-full text-sm text-gray-700">
+        <thead className="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
+          <tr>
+            <th className="px-5 py-3 text-left font-semibold">Asset</th>
+            <th className="px-5 py-3 text-left font-semibold">Issue</th>
+            <th className="px-5 py-3 text-left font-semibold">Completed At</th>
+            <th className="px-5 py-3 text-left font-semibold">Cost</th>
           </tr>
         </thead>
 
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-gray-200">
           {completed.length ? (
-            completed.map((ele, index) => (
-              <tr
-                key={ele._id}
-                className={`transition duration-200 hover:bg-green-50 ${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                }`}
-              >
-                <td className="px-6 py-4 font-medium text-gray-900">
+            completed.map((ele) => (
+              <tr key={ele._id} className="hover:bg-gray-50 transition">
+                <td className="px-5 py-3 font-medium text-gray-900">
                   {ele.assetid?.assetName}
                 </td>
 
-                <td className="px-6 py-4 text-gray-600 max-w-md">
+                <td className="px-5 py-3 text-gray-600 max-w-md">
                   {ele.description}
                 </td>
 
-                <td className="px-6 py-4 text-gray-600">
+                <td className="px-5 py-3 text-gray-600">
                   {ele.completedAt
                     ? new Date(ele.completedAt).toLocaleString()
                     : "-"}
                 </td>
 
-                <td className="px-6 py-4 font-semibold text-gray-800">
+                <td className="px-5 py-3 font-semibold text-gray-800">
                   ₹{ele.costEstimate}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="px-6 py-6 text-center text-gray-400 font-medium">
+              <td colSpan="4" className="px-5 py-6 text-center text-gray-400">
                 No completed work orders
               </td>
             </tr>
@@ -146,8 +157,8 @@ export default function ServiceHistory() {
       </table>
     </div>
   </div>
-
 </div>
+
 
   )
 }

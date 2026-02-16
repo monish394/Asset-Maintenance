@@ -69,6 +69,7 @@ const handleAccept = async (requestId) => {
           : req
       )
     );
+    
 
   } catch (err) {
     if (err.response?.status === 400) {
@@ -275,8 +276,8 @@ const filteredRequests = nearbyAssetRequests.filter(
 
      
 
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        Recent Assigned Requests
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+        Recent  Assets Requests
       </h2>
 
       <div className="overflow-x-auto">
@@ -450,8 +451,8 @@ const filteredRequests = nearbyAssetRequests.filter(
 
 <div className="p-6 bg-gray-50 rounded-xl font-[Poppins] mt-15">
 
-  <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 tracking-tight">
-    General Requests
+  <h2 className=" md:text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
+   Nearby General Requests
   </h2>
 
   {requests.length === 0 ? (
@@ -547,7 +548,7 @@ const filteredRequests = nearbyAssetRequests.filter(
 <div className="p-6 mt-15 bg-gray-50 rounded-xl font-[Montserrat]">
 
   <h2 className="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
-    Accepted Requests
+    Accepted General Requests
   </h2>
 
   {acceptedtechniciangeneralreqeust.length === 0 ? (
@@ -630,7 +631,7 @@ const filteredRequests = nearbyAssetRequests.filter(
   )}
 </div>
 
-<div className="p-6">
+<div className="p-6 mt-15">
   <h2 className="text-2xl font-bold mb-6 text-gray-800">
     Nearby Asset Requests
   </h2>
@@ -639,6 +640,8 @@ const filteredRequests = nearbyAssetRequests.filter(
     <table className="min-w-full text-sm text-left text-gray-600">
       <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
         <tr>
+           <th className="px-6 py-4">Raised By</th>
+
           <th className="px-6 py-4">Category</th>
           <th className="px-6 py-4">Priority</th>
           <th className="px-6 py-4">Type</th>
@@ -659,44 +662,47 @@ const filteredRequests = nearbyAssetRequests.filter(
             </td>
           </tr>
         ) : (
-          filteredRequests.map((req) => (
+          filteredRequests.map((ele) => (
             <tr
-              key={req._id}
+              key={ele._id}
               className="border-b hover:bg-gray-50 transition duration-200"
             >
               <td className="px-6 py-4 font-medium text-gray-800">
-                {req.aiCategory}
+                {ele.userid?.name}
+              </td>
+              <td className="px-6 py-4 font-medium text-gray-800">
+                {ele.aiCategory}
               </td>
 
               <td className="px-6 py-4">
                 <span
                   className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    req.aiPriority?.toLowerCase() === "high"
+                    ele.aiPriority?.toLowerCase() === "high"
                       ? "bg-red-100 text-red-600"
-                      : req.aiPriority?.toLowerCase() === "medium"
+                      : ele.aiPriority?.toLowerCase() === "medium"
                       ? "bg-yellow-100 text-yellow-700"
                       : "bg-green-100 text-green-600"
                   }`}
                 >
-                  {req.aiPriority}
+                  {ele.aiPriority}
                 </span>
               </td>
 
               <td className="px-6 py-4 capitalize">
-                {req.requesttype}
+                {ele.requesttype}
               </td>
 
               <td className="px-6 py-4 max-w-xs truncate">
-                {req.description}
+                {ele.description}
               </td>
 
               <td className="px-6 py-4">
-                {new Date(req.createdAt).toLocaleDateString()}
+                {new Date(ele.createdAt).toLocaleDateString()}
               </td>
 
               <td className="px-6 py-4 text-center">
                 <button
-                  onClick={() => handleNearbyAssetAccept(req._id)}
+                  onClick={() => handleNearbyAssetAccept(ele._id)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition duration-200"
                 >
                   Accept

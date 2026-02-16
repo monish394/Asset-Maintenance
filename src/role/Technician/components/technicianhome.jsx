@@ -31,31 +31,39 @@ export default function TechnicianHome() {
     <div className=" min-h-screen p-8 font-sans">
 
 
-<div className="mb-10  border border-gray-200 rounded-xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+<div className=" border border-gray-200 rounded-lg  md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white">
 
   <div className="flex-1">
-    <div className="flex items-center gap-3">
-      <FaUserTie className="text-gray-600 text-2xl" />
-      <h1 className="text-3xl font-semibold text-gray-800">
-        Welcome, {techinfo?.name}
-      </h1>
-    </div>
+  <div className="flex items-center gap-3">
+  <div className="p-2 bg-gray-100 rounded-full">
+    <FaUserTie className="text-gray-600 text-lg" />
+  </div>
 
-    <div className="mt-4 flex flex-wrap gap-6 text-base text-gray-600">
-      <div className="flex items-center gap-2">
-        <FaEnvelope className="text-gray-500" />
+  <div className="leading-tight">
+    <p className="text-sm text-gray-500">Technician Dashboard</p>
+    <h1 className="text-lg font-semibold text-gray-800">
+      Welcome, {techinfo?.name}
+    </h1>
+  </div>
+</div>
+
+
+    <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
+      <div className="flex items-center gap-1.5">
+        <FaEnvelope className="text-gray-400 text-sm" />
         <span>{techinfo?.email}</span>
       </div>
 
-      <div className="flex items-center gap-2">
-        <FaMapMarkerAlt className="text-gray-500" />
+      <div className="flex items-center gap-1.5">
+        <FaMapMarkerAlt className="text-gray-400 text-sm" />
         <span>{techinfo?.address}</span>
       </div>
     </div>
   </div>
 
-  <div className="flex-shrink-0 flex items-center gap-2 text-base text-gray-600">
-    <FaCalendarAlt className="text-gray-500" />
+  <div className="flex items-center gap-2 text-sm text-gray-500">
+    <FaCalendarAlt className="text-gray-400 text-sm" />
     <span>
       {new Date().toLocaleDateString("en-US", {
         weekday: "long",
@@ -70,14 +78,15 @@ export default function TechnicianHome() {
 
 
 
-      
-<h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-5 tracking-wide mt-10">
+
+
+<h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-5 tracking-wide mt-20">
   Assigned Requests Overview
 </h1>
 
 
 {technicianstats && (
-  <div className="mt-6">
+  <div className="mt-15">
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
       <div className="bg-white rounded-xl p-6 h-[180px] shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 flex flex-col justify-between">
@@ -128,7 +137,10 @@ export default function TechnicianHome() {
 
 
 
-      <div className="flex flex-col lg:flex-row justify-center items-start gap-6 mt-10">
+
+
+
+      <div className="flex flex-col lg:flex-row justify-center items-start gap-6 mt-15">
   <div className="flex-1 min-w-[300px] max-w-md mt-8">
     <TechnicianStatusPieChart stats={technicianstats} />
   </div>
@@ -141,7 +153,7 @@ export default function TechnicianHome() {
 
 
 
-     <div className="mt-14 px-6">
+     <div className="mt-20 px-6">
 
   <h2 className="text-2xl font-serif font-semibold text-gray-800 mb-6">
     Recent Assigned Requests
@@ -162,7 +174,7 @@ export default function TechnicianHome() {
       </thead>
 
       <tbody className="divide-y divide-gray-100">
-        {technicianassignedassert.map((ele, i) => (
+        {technicianassignedassert.slice(-5).map((ele, i) => (
           <tr key={i} className="hover:bg-gray-50 transition duration-200">
 
             <td className="px-6 py-4 flex items-center gap-3">

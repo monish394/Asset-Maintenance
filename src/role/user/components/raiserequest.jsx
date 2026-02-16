@@ -473,7 +473,7 @@ export default function RaiseRequest() {
       )}
 
 
-      <div className="bg-white shadow-xl rounded-2xl p-6 w-full mt-10">
+      <div className="bg-white shadow-xl rounded-2xl p-6 w-full ">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-3xl font-bold text-gray-800 tracking-wide">
             My Service Requests

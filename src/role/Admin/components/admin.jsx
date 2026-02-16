@@ -287,10 +287,10 @@ const recentAssigned = allraiserequest
       ele.status === "pending"
         ? "bg-amber-100 text-amber-800"
         : ele.status === "in-process"
-        ? "bg-indigo-100 text-indigo-800"
+        ? "bg-purple-100 text-purple-800"
         : ele.status === "completed"
         ? "bg-emerald-100 text-emerald-800"
-        : "bg-gray-100 text-gray-700"
+        : "bg-blue-100 text-blue-700"
     }`}
   >
     {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
@@ -389,16 +389,16 @@ const recentAssigned = allraiserequest
           </td>
 
         <td className="px-4 py-3 whitespace-nowrap">
-  <span
-    className={`inline-flex items-center rounded-sm px-3 py-1 text-xs font-medium ${
+   <span
+    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium font-mono ${
       ele.status === "assigned"
-        ? "bg-blue-100 text-blue-800"
-        : ele.status === "available"
         ? "bg-green-100 text-green-800"
-        : "bg-gray-100 text-gray-700"
+        : ele.status === "unassigned"
+        ? "bg-red-100 text-red-800"
+        : "bg-blue-100 text-blue-700"
     }`}
   >
-    {ele.status}
+    {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
   </span>
 </td>
 
@@ -482,18 +482,18 @@ const recentAssigned = allraiserequest
 
           <td className="px-4 py-3 whitespace-nowrap">
             <span
-              className={`inline-flex items-center px-3 py-1 rounded-sm text-xs font-medium ${
-                asset.status === "assigned"
-                  ? "bg-gray-900 text-white"
-                  : asset.status === "pending"
-                  ? "bg-gray-200 text-gray-800"
-                  : asset.status === "in-process"
-                  ? "bg-gray-300 text-gray-900"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {asset.status}
-            </span>
+    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium font-mono ${
+      asset.status === "pending"
+        ? "bg-amber-100 text-amber-800"
+        : asset.status === "in-process"
+        ? "bg-purple-100 text-purple-800"
+        : asset.status === "completed"
+        ? "bg-emerald-100 text-emerald-800"
+        : "bg-blue-100 text-blue-700"
+    }`}
+  >
+    {asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
+  </span>
           </td>
 
           <td className="px-4 py-3 text-gray-700 w-[400px]">
