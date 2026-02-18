@@ -51,6 +51,8 @@ app.put("/api/assets/:assetid",AuthenticateUser,AssetsCtrl.Assignuser)
 app.get("/api/userassets",AuthenticateUser,AssetsCtrl.Userasset)
 app.put("/api/editassert/:assetid",AssetsCtrl.EditAllFieldAsset)
 app.put("/api/user/assign-asset/:assetid",AuthenticateUser,AssetsCtrl.AssignAssetToSelf)
+app.put("/api/user/unassign-asset/:assetid", AuthenticateUser, AssetsCtrl.UnassignAsset);
+
 
 
 //raise request route

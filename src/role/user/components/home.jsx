@@ -14,10 +14,14 @@ import { MdDone } from "react-icons/md";
 
 export default function UserHome() {
   const [userdashboardstats,setUserdashboardstats]=useState([])
+  const [selectedRemoveAsset, setSelectedRemoveAsset] = useState(null);
+  console.log(selectedRemoveAsset)
+const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+
 
   const token=localStorage.getItem("token")
   console.log(token)
-  const { myasset,myraiserequest} = useUserAsset();
+  const { myasset,myraiserequest,setMyasset} = useUserAsset();
   console.log(myraiserequest)
  console.log("User assets in Home:", myasset);
 
@@ -37,6 +41,24 @@ export default function UserHome() {
   })
 
  },[])
+
+const handleRemoveAsset = async () => {
+  try {
+    await axios.put(
+      `/user/unassign-asset/${selectedRemoveAsset._id}`,
+      {},
+      { headers: { Authorization: token } }
+    );
+    setMyasset((prev) => prev.filter((a) => a._id !== selectedRemoveAsset._id));
+    setShowRemoveConfirm(false);
+    setSelectedRemoveAsset(null);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    alert(err.response?.data?.err || "Failed to remove asset");
+  }
+};
+
+
 
 
 
@@ -112,6 +134,37 @@ export default function UserHome() {
     </div>
   </div>
 )}
+{showRemoveConfirm && selectedRemoveAsset && (
+  <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div
+      className="absolute inset-0 bg-black/40"
+      onClick={() => setShowRemoveConfirm(false)}
+    />
+    <div className="relative bg-white rounded-xl p-6 shadow-2xl w-80">
+      <h3 className="text-lg font-semibold mb-4">Confirm Removal</h3>
+      <p className="mb-6">
+        Are you sure you want to remove{" "}
+        <strong>{selectedRemoveAsset.assetName}</strong> from your assigned assets?
+      </p>
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShowRemoveConfirm(false)}
+          className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+        >
+          Cancel
+        </button>
+    <button
+  onClick={() => handleRemoveAsset()}
+  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+>
+  Confirm
+</button>
+
+      </div>
+    </div>
+  </div>
+)}
+
 
 
 
@@ -142,6 +195,10 @@ export default function UserHome() {
           <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Category
           </th>
+          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+  Action
+</th>
+
         </tr>
       </thead>
 
@@ -170,19 +227,27 @@ export default function UserHome() {
 
               <td className="px-6 py-4">
                 <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    ele.category === "Hardware"
-                      ? "bg-blue-100 text-blue-800"
-                      : ele.category === "Software"
-                      ? "bg-green-100 text-green-800"
-                      : ele.category === "Network"
-                      ? "bg-purple-100 text-purple-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
+                  className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-200 text-blue-600"  
                 >
                   {ele.category}
                 </span>
               </td>
+  <td className="px-6 py-4">
+<button
+  onClick={() => {
+    setSelectedRemoveAsset(ele);
+    setShowRemoveConfirm(true);
+  }}
+  className="px-4 py-2 text-sm font-semibold text-white bg-red-500 rounded-lg shadow hover:bg-red-700 transition-colors duration-200 flex items-center gap-2"
+>
+  Remove
+</button>
+
+
+
+</td>
+
+
             </tr>
           ))
         ) : (
@@ -227,6 +292,7 @@ export default function UserHome() {
           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Issue
           </th>
+          
         </tr>
       </thead>
 

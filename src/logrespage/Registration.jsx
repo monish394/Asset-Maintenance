@@ -1,3 +1,9 @@
+import { useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
+import axios from "../config/api"
+import { toast } from "sonner"
+import { RxCross1 } from "react-icons/rx"
+
 import {
   Card,
   CardHeader,
@@ -9,119 +15,188 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
-import { useNavigate } from "react-router-dom"
-
-
-import { useState } from "react"
-import axios from "../config/api"
-
 
 export default function Register() {
-  const navigate=useNavigate()
-  const [name,setName]=useState("")
-  const [email,setEmail]=useState("")
-  const [phone,setPhone]=useState("")
-  const [password,setpassword]=useState("")
-  const [address,setAddress]=useState("")
-  const [clienterr,setClienterr]=useState("")
-  const registerData={name,email,password,phone,address}
+  const navigate = useNavigate()
 
-  const handleRegister=(e)=>{
-    e.preventDefault();
-    axios.post(`/usersregister`,registerData)
-    .then((res)=>{
-      if(res.data){
-        setClienterr("");
-      }
-      if(res.data.err){
-        setClienterr(res.data.err)
-        return;
-      }
-  
-      toast.success("Registration successful🎉")
-      setTimeout(() => {
-      navigate("/");
-      setName("");
-      setEmail("");
-      setpassword("")
-      setPhone("")
-      setAddress("")
-
-        
-      }, 1500);
-
-      
-
-      console.log("Registered: " , res.data)
-  })
-    .catch((err)=>{
-      if(err.response){
-        setClienterr(err.response.data.error.replace(/"/g, ""));
-
-      }
-      
-      console.log(err.response.data)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    address: "",
+    role: "user",
   })
 
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  
+  const handleRegister = async (e) => {
+    e.preventDefault()
+    setError("")
+
+    if (!formData.name || !formData.email || !formData.password) {
+      setError("Name, Email, and Password are required.")
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const response = await axios.post("/usersregister", formData)
+
+      if (response.data?.err) {
+        setError(response.data.err)
+        setLoading(false)
+        return
+      }
+
+      toast.success("Account created successfully")
+
+      setTimeout(() => {
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          phone: "",
+          address: "",
+          role: "user",
+        })
+        setLoading(false)
+        navigate("/login")
+      }, 1200)
+
+    } catch (err) {
+      const serverMessage =
+        err?.response?.data?.error ||
+        "Unable to complete registration. Please try again."
+      setError(String(serverMessage).replace(/"/g, ""))
+      setLoading(false)
+    }
+  }
 
   return (
-    <div style={{fontFamily:"calibri", fontSize:"25px"}} className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Card className="w-full max-w-md border border-gray-200 shadow-lg rounded-lg">
-        <CardHeader className="text-center">
-          <CardTitle>Create Account</CardTitle>
-          <CardDescription>
-            Fill in your details below
+    <div className="h-screen flex items-center justify-center bg-gray-50 px-4">
+      <Card className="relative w-full max-w-lg rounded-xl shadow-md border border-gray-200">
+        <button
+          onClick={() => navigate("/home")}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
+        >
+          <RxCross1 size={22} />
+        </button>
+
+        <CardHeader className="text-center space-y-1 pt-4 pb-2">
+          <CardTitle className="text-lg font-semibold">Create Account</CardTitle>
+          <CardDescription className="text-xs text-gray-500">
+            Enter your details to register.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          {
-            clienterr&&
-          <p className="text-red-500">{JSON.stringify(clienterr)}</p>
+        <form onSubmit={handleRegister}>
+          <CardContent className="space-y-2 px-6">
+            {error && (
+              <div className="rounded-md bg-red-50 border border-red-200 p-2 text-xs text-red-600">
+                {error}
+              </div>
+            )}
 
-          }
-          <div className="space-y-1">
-            <Label>Name</Label>
-            <Input value={name} onChange={e=>setName(e.target.value)} placeholder="Name" className="border border-gray-300 rounded-md p-2" />
-          </div>
+            <div className="space-y-1">
+              <Label htmlFor="name" className="text-xs">Full Name</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="h-8 text-sm"
+              />
+            </div>
 
-          <div className="space-y-1">
-            <Label>Email</Label>
-            <Input  value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="email" className="border border-gray-300 rounded-md p-2" />
-          </div>
+            <div className="space-y-1">
+              <Label htmlFor="email" className="text-xs">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="h-8 text-sm"
+              />
+            </div>
 
-          <div className="space-y-1">
-            <Label>Password</Label>
-            <Input  value={password} onChange={e=>setpassword(e.target.value)} type="password" placeholder="Password" className="border border-gray-300 rounded-md p-2" />
-          </div>
+            <div className="space-y-1">
+              <Label htmlFor="password" className="text-xs">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="h-8 text-sm"
+              />
+            </div>
 
-          <div className="space-y-1">
-            <Label>Phone</Label>
-            <Input  value={phone} onChange={e=>setPhone(e.target.value)} type="text" placeholder="Phone" className="border border-gray-300 rounded-md p-2" />
-          </div>
+            <div className="space-y-1">
+              <Label htmlFor="role" className="text-xs">Role</Label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full h-8 text-sm border border-gray-300 rounded-md px-2 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              >
+                <option value="user">User</option>
+                <option value="technician">Technician</option>
+              </select>
+            </div>
 
-          <div className="space-y-1">
-            <Label>Address</Label>
-            <Input value={address} onChange={e=>setAddress(e.target.value)} type="text" placeholder="Address" className="border border-gray-300 rounded-md p-2" />
-          </div>
-        </CardContent>
+            <div className="space-y-1">
+              <Label htmlFor="phone" className="text-xs">Phone</Label>
+              <Input
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="h-8 text-sm"
+              />
+            </div>
 
-        <CardFooter className="flex flex-col gap-3">
-          <Button onClick={handleRegister} className="w-full border border-blue-500 bg-blue-500 hover:bg-blue-600 text-white">
-            Register
-          </Button>
-          <p className="text-sm text-center text-gray-600">
-            Already have an account?{" "}
-            <a href="/login" className="text-blue-500 underline">
-              Login
-            </a>
-          </p>
-        </CardFooter>
+            <div className="space-y-1">
+              <Label htmlFor="address" className="text-xs">Address</Label>
+              <textarea
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                rows={2}
+                className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Enter address"
+              />
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex flex-col gap-2 pt-2 pb-4 px-6">
+            <Button
+              type="submit"
+              disabled={loading}
+              className={`w-full h-8 text-sm text-white rounded-md transition-all duration-200
+                ${loading ? "bg-indigo-400 cursor-not-allowed scale-95" : "bg-indigo-600 hover:bg-indigo-700"}
+              `}
+            >
+              {loading ? "Creating..." : "Register"}
+            </Button>
+
+            <p className="text-xs text-center text-gray-500">
+              Already have an account?{" "}
+              <Link to="/login" className="text-indigo-600 hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   )

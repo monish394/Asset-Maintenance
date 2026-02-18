@@ -6,10 +6,14 @@ import { BsSearch } from "react-icons/bs";
 import { useUserAsset } from "../context/userassetprovider";
 
 export default function PickAssets() {
+  const [assets, setAssets] = useState([]);
+
   const {  setMyasset } = useUserAsset();
+  const [categoryFilter, setCategoryFilter] = useState("");
+const categories = [...new Set(assets.map((a) => a.category))];
+
   const [txt, setTxt] = useState("");
   const [btnsearch, setBtnsearch] = useState("");
-  const [assets, setAssets] = useState([]);
  
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -24,11 +28,12 @@ export default function PickAssets() {
 
   const unassignedAssets = assets.filter((ele) => ele.status !== "undermaintenance");
 
-  const filteredData = unassignedAssets.filter((ele) => {
-    
-      return ele.assetName.toLowerCase().includes(btnsearch.toLowerCase())
-      
-  });
+const filteredData = unassignedAssets.filter((ele) => {
+  const matchesName = ele.assetName.toLowerCase().includes(btnsearch.toLowerCase());
+  const matchesCategory = categoryFilter ? ele.category === categoryFilter : true;
+  return matchesName && matchesCategory;
+});
+
 
   const handleSearch = () => setBtnsearch(txt);
 
@@ -104,6 +109,19 @@ export default function PickAssets() {
   >
     Search
   </button>
+  <div className="relative w-full sm:w-auto">
+  <select
+    value={categoryFilter}
+    onChange={(e) => setCategoryFilter(e.target.value)}
+    className="w-full sm:w-72 h-11 pl-3 pr-4 rounded-lg border border-gray-300 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+  >
+    <option value="">All Categories</option>
+    {categories.map((cat, idx) => (
+      <option key={idx} value={cat}>{cat}</option>
+    ))}
+  </select>
+</div>
+
 </div>
 
 

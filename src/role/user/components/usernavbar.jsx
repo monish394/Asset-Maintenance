@@ -26,7 +26,7 @@ export default function UserNavbar() {
     { label: "Home", to: "/user/home" },
     { label: "RaiseRequest", to: "/user/raiserequest" },
     { label: "Payment", to: "/user/payment" },
-    { label: "WorkOrders", to: "/user/workorderrequest" },
+    { label: "MyWorkOrders", to: "/user/workorderrequest" },
     { label: "Assets", to: "/user/pickassets" },
     
   ];
@@ -140,7 +140,11 @@ export default function UserNavbar() {
                 onClick={() => {
                   localStorage.removeItem("token");
                   localStorage.removeItem("role");
-                  navigate("/");
+                  setTimeout(() => {
+                      navigate("/");
+                    
+                  }, (500));
+                
                 }}
                 className="w-full h-10 rounded-xl bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
               >

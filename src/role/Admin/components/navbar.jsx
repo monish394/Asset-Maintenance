@@ -90,7 +90,11 @@ export default function Navbar() {
                     onClick={() => {
                       localStorage.removeItem("token");
                       localStorage.removeItem("role");
+                    
                       navigate("/");
+
+
+                    
                     }}
                     className="h-9 w-full rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-800 transition"
                   >

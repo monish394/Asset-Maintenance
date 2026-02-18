@@ -177,5 +177,27 @@ AssetsCtrl.AssignAssetToSelf = async (req, res) => {
   }
 };
 
+AssetsCtrl.UnassignAsset = async (req, res) => {
+  const assetid  = req.params.assetid;
+
+  try {
+    const asset = await Asset.findOneAndUpdate(
+      { _id: assetid, assignedTo: req.userid }, 
+      { assignedTo: null, status: "unassigned" },
+      { new: true }
+    );
+
+   if(!asset){
+    res.status(400).json({err:"Asset not found!!!"})
+   }
+
+    res.status(200).json({ message: "asset successfully unassigned", asset });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ err: "something went wrong while unassigning asset!!!" });
+  }
+};
+
+
 
 export default AssetsCtrl;

@@ -4,6 +4,9 @@ import Register from "./logrespage/Registration";
 import { Toaster } from "sonner";
 import Dashboard from "./dashboard.jsx";
 
+//public routes
+import Publichome from "./logrespage/Home.jsx"
+
 //admin page
 import AdminDataProvider from "./role/Admin/context/Admindatamaintenance.jsx";
 import Admin from "./role/Admin/components/admin.jsx";
@@ -37,10 +40,12 @@ export default function App() {
       <Toaster position="top-center" richColors />
       <Routes>
         {/*public route*/}
-        <Route path="/" element={<Navigate to="/login" />} /> {/* Redirect */}
+        <Route path="/" element={<Navigate to="/home" />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/home" element={<Publichome />} />
+
 
         {/* admin route */}
         <Route path="/admin" element={<AdminDataProvider><AdminLayout /></AdminDataProvider>}>
