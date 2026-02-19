@@ -5,7 +5,10 @@ import { Toaster } from "sonner";
 import Dashboard from "./dashboard.jsx";
 
 //public routes
-import Publichome from "./logrespage/Home.jsx"
+import PublicHome from "./logrespage/home.jsx";
+
+//private route
+import PrivateRoute from "./logrespage/publicandprotected/privateroute.jsx";
 
 //admin page
 import AdminDataProvider from "./role/Admin/context/Admindatamaintenance.jsx";
@@ -34,22 +37,36 @@ import AssignedRequest from "./role/Technician/components/assignedrequest.jsx";
 import RequestDetails from "./role/Technician/components/requestdetails.jsx";
 import ServiceHistory from "./role/Technician/components/servicehistory.jsx";
 import PickAssets from "./role/user/components/Assets.jsx";
+import NotFound from "./logrespage/notfound.jsx";
+import ProtectedRoute from "./logrespage/publicandprotected/protectedroute.jsx";
 export default function App() {
   return (
     <>
       <Toaster position="top-center" richColors />
+      {/* public route */}
       <Routes>
-        {/*public route*/}
-        <Route path="/" element={<Navigate to="/home" />} /> 
+
+
+        <Route path="/" element={<Navigate to="/home" />} />
+        <Route path="/home" element={<PublicHome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/home" element={<Publichome />} />
+
 
 
         {/* admin route */}
-        <Route path="/admin" element={<AdminDataProvider><AdminLayout /></AdminDataProvider>}>
-          <Route index element={<Navigate to="dashboard"/>} />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRole="admin">
+              <AdminDataProvider>
+                <AdminLayout />
+              </AdminDataProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<Admin />} />
           <Route path="assets" element={<Assets />} />
           <Route path="workorders" element={<WorkOrder />} />
@@ -58,38 +75,57 @@ export default function App() {
           <Route path="maintenance" element={<Maintenance />} />
         </Route>
 
-        {/* user route */}
-        <Route path="/user" element={ <UserAssetProvider><UserLayout /></UserAssetProvider>}>
-          <Route index element={<Navigate to="home" />} />
 
+
+
+
+        {/* user route */}
+
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute allowedRole="user">
+              <UserAssetProvider>
+                <UserLayout />
+              </UserAssetProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="home" />} />
           <Route path="home" element={<Home />} />
           <Route path="pickassets" element={<PickAssets />} />
-
           <Route path="raiserequest" element={<RaiseRequest />} />
           <Route path="payment" element={<Payment />} />
           <Route path="workorderrequest" element={<WorkOrderRequest />} />
         </Route>
 
-        {/* technician route */}
-         <Route path="/technician" element={<TechDataProvider><TechnicianLayout /></TechDataProvider>}>
-          <Route index element={<Navigate to={<TechnicianHome/>}/>} />
 
+
+
+        {/* technician route */}
+
+        <Route
+          path="/technician"
+          element={
+            <ProtectedRoute allowedRole="technician">
+              <TechDataProvider>
+                <TechnicianLayout />
+              </TechDataProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="home" />} />
           <Route path="home" element={<TechnicianHome />} />
           <Route path="assignedrequest" element={<AssignedRequest />} />
           <Route path="requestdetails" element={<RequestDetails />} />
           <Route path="service" element={<ServiceHistory />} />
         </Route>
 
-        <></>
-
-
-
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
-
-
-
     </>
+
 
 
 

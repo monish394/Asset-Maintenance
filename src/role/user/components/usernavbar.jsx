@@ -32,7 +32,8 @@ export default function UserNavbar() {
   ];
 
   return (
-    <div className="w-full h-24 flex items-center justify-between px-8 shadow-lg bg-white fixed top-0 left-0 z-50 font-sans">
+    <div className="w-full h-24 flex items-center justify-between px-8 shadow-lg bg-gray-50 fixed top-0 left-0 z-50 font-sans"
+>
       <div>
         <img
           style={{ cursor: "pointer" }}

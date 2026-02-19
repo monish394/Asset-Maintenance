@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axios from "../config/api"
 import { toast } from "sonner"
 import { RxCross1 } from "react-icons/rx"
+import BeamsBackground from "./animationcomponent/Beambackground"
 
 import {
   Card,
@@ -30,6 +31,12 @@ export default function Register() {
 
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const [animateCard, setAnimateCard] = useState(false)
+
+  useEffect(() => {
+    setAnimateCard(true)
+  }, [])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -69,7 +76,6 @@ export default function Register() {
         setLoading(false)
         navigate("/login")
       }, 1200)
-
     } catch (err) {
       const serverMessage =
         err?.response?.data?.error ||
@@ -80,8 +86,16 @@ export default function Register() {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="relative w-full max-w-lg rounded-xl shadow-md border border-gray-200">
+    <div className="h-screen flex items-center justify-center bg-whitehi53-50 px-4 relative">
+      <BeamsBackground />
+
+      <Card
+        className={`
+          relative w-full max-w-lg rounded-xl shadow-md border border-gray-200
+          transition-all duration-700 ease-out transform
+          ${animateCard ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-20"}
+        `}
+      >
         <button
           onClick={() => navigate("/home")}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
@@ -91,8 +105,8 @@ export default function Register() {
 
         <CardHeader className="text-center space-y-1 pt-4 pb-2">
           <CardTitle className="text-lg font-semibold">Create Account</CardTitle>
-          <CardDescription className="text-xs text-gray-500">
-            Enter your details to register.
+          <CardDescription className="font-sm text-gray-500">
+            <p style={{ fontSize: "17px" }}>Enter your details to register.</p>
           </CardDescription>
         </CardHeader>
 
@@ -105,7 +119,9 @@ export default function Register() {
             )}
 
             <div className="space-y-1">
-              <Label htmlFor="name" className="text-xs">Full Name</Label>
+              <Label htmlFor="name" className="text-xs">
+                Full Name
+              </Label>
               <Input
                 id="name"
                 name="name"
@@ -116,7 +132,9 @@ export default function Register() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="email" className="text-xs">Email</Label>
+              <Label htmlFor="email" className="text-xs">
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -128,7 +146,9 @@ export default function Register() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="password" className="text-xs">Password</Label>
+              <Label htmlFor="password" className="text-xs">
+                Password
+              </Label>
               <Input
                 id="password"
                 name="password"
@@ -140,7 +160,9 @@ export default function Register() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="role" className="text-xs">Role</Label>
+              <Label htmlFor="role" className="text-xs">
+                Role
+              </Label>
               <select
                 id="role"
                 name="role"
@@ -154,7 +176,9 @@ export default function Register() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="phone" className="text-xs">Phone</Label>
+              <Label htmlFor="phone" className="text-xs">
+                Phone
+              </Label>
               <Input
                 id="phone"
                 name="phone"
@@ -165,7 +189,9 @@ export default function Register() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="address" className="text-xs">Address</Label>
+              <Label htmlFor="address" className="text-xs">
+                Address
+              </Label>
               <textarea
                 id="address"
                 name="address"
@@ -189,7 +215,7 @@ export default function Register() {
               {loading ? "Creating..." : "Register"}
             </Button>
 
-            <p className="text-xs text-center text-gray-500">
+            <p className="text-xm text-center text-gray-500">
               Already have an account?{" "}
               <Link to="/login" className="text-indigo-600 hover:underline">
                 Sign in

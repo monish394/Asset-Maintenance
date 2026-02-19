@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 import logopng from "../assets/logo.png"
-
-const Home = () => {
+import GradientText from "./animationcomponent/GradientText";
+const PublicHome = () => {
   // const navigate=useNavigate()
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,49 +34,48 @@ const Home = () => {
 
   return (
     <div id="top" className="min-h-screen bg-gray-50 text-gray-900">
-     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-200">
-  <div className="max-w-7xl mx-auto px-6">
-    <nav className="flex items-center justify-between py-4">
-      <div className="flex items-center gap-3">
-         <a href="#top"><img 
-                  style={{ cursor: "pointer" }}
-                
-                  src={logopng}
-                  alt="Logo"
-                  className="h-13 w-auto ml-4"
-                />
-                </a>
-              
-        {/* <span className="text-xl font-semibold tracking-tight text-gray-900 cursor-pointer hover:text-indigo-600 transition-colors">
-          <a href="#top">Asset Maintenance</a>
-        </span> */}
-      </div>
-
-      <div className="hidden md:flex items-center gap-8 text-base font-medium text-gray-700">
-        {["Features", "Workflow", "Documentation", "Contact"].map((link) => (
-          <a
-            key={link}
-            href={`#${link.toLowerCase()}`}
-            className="relative hover:text-indigo-600 transition-colors duration-200 
-                       after:content-[''] after:block after:w-0 after:h-0.5 after:bg-indigo-600 
-                       after:rounded after:transition-all after:duration-300 hover:after:w-full"
-          >
-            {link}
+  <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-sm border-b border-gray-200 shadow-md">
+    <div className="max-w-7xl mx-auto px-6">
+      <nav className="flex items-center justify-between py-4">
+        <div className="flex items-center gap-3">
+          <a href="#top">
+            <img
+              style={{ cursor: "pointer" }}
+              src={logopng}
+              alt="Logo"
+              className="h-13 w-auto ml-4"
+            />
           </a>
-        ))}
-      </div>
+        </div>
 
-      <div className="flex items-center gap-3">
-        <a
-          href="/login"
-          className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 transition-all duration-200"
-        >
-          Login
-        </a>
-      </div>
-    </nav>
-  </div>
-</header>
+        <div className="hidden md:flex items-center gap-8 text-base font-medium text-gray-700">
+          {["Features", "Workflow", "Documentation", "Contact"].map((link) => (
+            <a
+              key={link}
+              href={`#${link.toLowerCase()}`}
+              className="relative hover:text-indigo-600 transition-colors duration-200 
+                         after:content-[''] after:block after:w-0 after:h-0.5 after:bg-indigo-600 
+                         after:rounded after:transition-all after:duration-300 hover:after:w-full"
+            >
+              {link}
+            </a>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <a
+            href="/login"
+            className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 transition-all duration-200"
+          >
+            Login
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+{/* </div> */}
+
+
 
       <section
         className="relative bg-gradient-to-br from-indigo-50 via-white to-white py-24 opacity-0"
@@ -84,8 +83,16 @@ const Home = () => {
       >
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold leading-tight tracking-tight mb-6">
-            Intelligent Asset & Maintenance Management
+             <GradientText
+       colors={["#8d14dd8a", "#0d2bc2", "#71e4d3", "#a160d9"]}
+
+        animationSpeed={30}
+        className="text-4xl font-bold"
+      >
+        Intelligent Asset & Maintenance Management
+      </GradientText>
           </h1>
+          
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
             A centralized enterprise platform designed to manage assets,
             automate preventive maintenance, streamline service requests, and
@@ -221,7 +228,7 @@ const Home = () => {
       <section id="documentation" className="py-28 bg-white opacity-0" data-animate>
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-center mb-12">System Documentation</h2>
-          <div className="text-gray-700 text-sm leading-relaxed space-y-6">
+          <div className="text-gray-700 text-xl leading-relaxed space-y-6">
             <p>
               The Asset Maintenance Management System is a secure, role-based enterprise platform built to centralize asset lifecycle management, streamline maintenance workflows, and enhance operational oversight.
             </p>
@@ -308,11 +315,11 @@ const Home = () => {
         </div>
       </footer>
       <style>{`
-        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(25px); } to { opacity:1; transform:translateY(0); } }
         .animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
       `}</style>
     </div>
   );
 };
 
-export default Home;
+export default PublicHome;

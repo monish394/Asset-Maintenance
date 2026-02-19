@@ -382,11 +382,11 @@ const handleRemoveAsset = async () => {
           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Technician
           </th>
-          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+          {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Contact
-          </th>
+          </th> */}
           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-            Location
+            Address
           </th>
           <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Status
@@ -408,9 +408,9 @@ const handleRemoveAsset = async () => {
                 {ele.assignedto?.name || "Not Assigned"}
               </td>
 
-              <td className="px-6 py-4 text-gray-700 font-medium">
+              {/* <td className="px-6 py-4 text-gray-700 font-medium">
                 {ele.assignedto?.phone || "Not Assigned"}
-              </td>
+              </td> */}
 
               <td className="px-6 py-4 text-gray-700">
                 {ele.assignedto?.address || "Not Assigned"}

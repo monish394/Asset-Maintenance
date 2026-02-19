@@ -600,7 +600,7 @@ export default function RaiseRequest() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">{tech.name}</h3>
-                      <p className="text-sm text-gray-500">{tech.phone || "No Phone"}</p>
+                      {/* <p className="text-sm text-gray-500">{tech.phone || "No Phone"}</p> */}
                     </div>
                   </div>
 

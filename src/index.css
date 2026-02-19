@@ -8,6 +8,47 @@ html {
 }
 
 
+/* gradient effect text */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 10s ease-in-out infinite;
+}
+
+.delay-2000 {
+  animation-delay: 2s;
+}
+
+
+
+/* bg animation */
+@keyframes spinSlow {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 20s linear infinite;
+}
+
+
+
+
+
 @import "tailwindcss";
 @import "tw-animate-css";
 

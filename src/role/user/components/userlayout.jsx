@@ -1,20 +1,20 @@
-import { useEffect } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+// import { useEffect } from "react";
+import {  Outlet } from "react-router-dom";
 import UserNavbar from "./usernavbar";
 import Footer from "./footer";
 
 export default function UserLayout() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const role = localStorage.getItem("role");
 
   
-    if (!token || role !== "user") {
-      navigate("/", { replace: true });
-    }
-  }, [navigate]);
+  //   if (!token || role !== "user") {
+  //     navigate("/", { replace: true });
+  //   }
+  // }, [navigate]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

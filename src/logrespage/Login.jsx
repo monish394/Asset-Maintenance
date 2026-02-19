@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../config/api";
 import { toast } from "sonner";
 import { RxCross1 } from "react-icons/rx";
+import BeamsBackground from "./animationcomponent/Beambackground";
 
 import {
   Card,
@@ -24,6 +25,12 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [clienterr, setClienterr] = useState("");
 
+  const [animateCard, setAnimateCard] = useState(false);
+
+  useEffect(() => {
+    setAnimateCard(true);
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setClienterr("");
@@ -40,7 +47,7 @@ export default function Login() {
 
       if (res.data?.err) {
         setClienterr(res.data.err || "Invalid email or password.");
-        setLoading(false); 
+        setLoading(false);
         return;
       }
 
@@ -62,13 +69,21 @@ export default function Login() {
       console.error(err);
       setClienterr("Invalid email or password.");
       toast.error("Login failed", { duration: 1400 });
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
-      <Card className="relative w-full max-w-md border border-gray-200 shadow-lg rounded-lg">
+    <div className="min-h-screen flex items-center justify-center bg-white-50 px-4 py-12 relative">
+      <BeamsBackground />
+
+      <Card
+        className={`
+          relative z-10 w-full max-w-md bg-white/80 border border-gray-200 shadow-2xl rounded-2xl
+          transition-all duration-700 ease-out
+          transform ${animateCard ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-20"}
+        `}
+      >
         <button
           onClick={() => navigate("/home")}
           className="absolute top-4 right-4 text-black hover:text-gray-700 transition"
