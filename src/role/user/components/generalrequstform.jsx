@@ -1,38 +1,64 @@
-import { memo } from "react";
+import { memo, useState, useEffect } from "react";
 
-const GeneralRequestForm = memo(({ show, value, onChange, onClose, onSubmit }) => {
-  if (!show) return null; 
+function GeneralRequestForm({ show, onClose, onSubmit }) {
+  const [issue, setIssue] = useState("");
+
+
+  useEffect(() => {
+    if (show) setIssue("");
+  }, [show]);
+
+  if (!show) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(issue);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Raise General Request</h2>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white w-[440px] md:w-[500px] rounded-2xl shadow-xl p-6 md:p-8 font-sans"
+      >
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          General Request
+        </h1>
+        <p className="text-sm text-gray-500 mb-6">
+          Describe the general issue you're facing
+        </p>
 
-        <form onSubmit={onSubmit}>
-          <label className="block mb-2 font-medium text-gray-700">Issue Description</label>
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Issue Description
+          </label>
           <textarea
-            className="w-full border border-gray-300 rounded p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows="4"
+            value={issue}
+            onChange={(e) => setIssue(e.target.value)}
             placeholder="Describe the issue..."
-            value={value}
-            onChange={onChange}
-            required
+            rows={5}
+            className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none resize-none transition"
           />
-          <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded bg-gray-300 text-gray-800 hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-            <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
   );
-});
+}
 
-export default GeneralRequestForm;
+export default memo(GeneralRequestForm);

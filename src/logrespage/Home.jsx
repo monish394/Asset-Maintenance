@@ -84,7 +84,7 @@ const PublicHome = () => {
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold leading-tight tracking-tight mb-6">
              <GradientText
-       colors={["#8d14dd8a", "#0d2bc2", "#71e4d3", "#a160d9"]}
+       colors={["#9900ff", "#002aff", "#00ffd5", "#e30e8e"]}
 
         animationSpeed={30}
         className="text-4xl font-bold"

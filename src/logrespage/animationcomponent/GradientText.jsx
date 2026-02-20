@@ -1,7 +1,7 @@
 export default function GradientText({ 
   children,
   className = "",
-  colors = ["#5227FF", "#FF9FFC", "#B19EEF"],
+  colors = ["#5227FF", "#FF9FFC", "#128112"],
   animationSpeed = 8,
 }) {
   const gradient = `linear-gradient(270deg, ${colors.join(",")})`;
