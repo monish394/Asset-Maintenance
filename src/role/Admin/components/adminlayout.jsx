@@ -6,13 +6,13 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
-  console.log("role in layout" ,role)
+  console.log("role in layout", role)
 
- useEffect(() => {
-  if (!token || role !== "admin") {
-    navigate("/", { replace: true });
-  }
-}, [navigate, token, role]);
+  useEffect(() => {
+    if (!token || role !== "admin") {
+      navigate("/", { replace: true });
+    }
+  }, [navigate, token, role]);
 
 
 

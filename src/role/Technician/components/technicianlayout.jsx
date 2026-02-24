@@ -22,7 +22,7 @@ export default function TechnicianLayout() {
       </main>
 
       <TechnicianFooter></TechnicianFooter>
-      
+
     </div>
   );
 }

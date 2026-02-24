@@ -24,9 +24,9 @@ export default function NotFound() {
           Try searching or go to the homepage.
         </p>
 
-        <Link to="/home" style={styles.button}>
+        <Link onClick={()=>{localStorage.removeItem("token"); localStorage.removeItem("role")}} to="/home" style={styles.button}>
           GO TO HOMEPAGE
-        </Link>
+                  </Link>
       </div>
     </div>
   );

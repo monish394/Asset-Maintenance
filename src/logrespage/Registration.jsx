@@ -1,21 +1,10 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axios from "../config/api"
 import { toast } from "sonner"
-import { RxCross1 } from "react-icons/rx"
-import BeamsBackground from "./animationcomponent/Beambackground"
-
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { FaUser, FaEnvelope, FaLock, FaPhone, FaMapMarkerAlt, FaUserTag, FaArrowLeft, FaCheckCircle } from "react-icons/fa"
+import { motion } from "framer-motion"
+import regBg from "../assets/registration_bg.png"
 
 export default function Register() {
   const navigate = useNavigate()
@@ -32,12 +21,6 @@ export default function Register() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const [animateCard, setAnimateCard] = useState(false)
-
-  useEffect(() => {
-    setAnimateCard(true)
-  }, [])
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -53,7 +36,6 @@ export default function Register() {
 
     try {
       setLoading(true)
-
       const response = await axios.post("/usersregister", formData)
 
       if (response.data?.err) {
@@ -62,168 +44,261 @@ export default function Register() {
         return
       }
 
-      toast.success("Account created successfully")
+      toast.success("Account created successfully!")
 
       setTimeout(() => {
-        setFormData({
-          name: "",
-          email: "",
-          password: "",
-          phone: "",
-          address: "",
-          role: "user",
-        })
         setLoading(false)
         navigate("/login")
-      }, 1200)
+      }, 1500)
     } catch (err) {
-      const serverMessage =
-        err?.response?.data?.error ||
-        "Unable to complete registration. Please try again."
+      const serverMessage = err?.response?.data?.error || "Unable to complete registration. Please try again."
       setError(String(serverMessage).replace(/"/g, ""))
       setLoading(false)
     }
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-whitehi53-50 px-4 relative">
-      <BeamsBackground />
+    <div className="min-h-screen flex bg-[#f8fafc] text-slate-800 selection:bg-indigo-100 selection:text-indigo-700" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        @keyframes subtle-zoom {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.05); }
+        }
+        .bg-zoom {
+          animation: subtle-zoom 20s infinite alternate ease-in-out;
+        }
+      `}</style>
 
-      <Card
-        className={`
-          relative w-full max-w-lg rounded-xl shadow-md border border-gray-200
-          transition-all duration-700 ease-out transform
-          ${animateCard ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-20"}
-        `}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8 }}
+        className="hidden lg:flex flex-col flex-[0.8] relative overflow-hidden"
       >
-        <button
-          onClick={() => navigate("/home")}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
-        >
-          <RxCross1 size={22} />
-        </button>
+        <div className="absolute inset-0 z-0">
+          <img
+            src={regBg}
+            alt="Registration Background"
+            className="w-full h-full object-cover bg-zoom"
+          />
+          <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-900/80 to-indigo-900/40" />
+        </div>
 
-        <CardHeader className="text-center space-y-1 pt-4 pb-2">
-          <CardTitle className="text-lg font-semibold">Create Account</CardTitle>
-          <CardDescription className="font-sm text-gray-500">
-            <p style={{ fontSize: "17px" }}>Enter your details to register.</p>
-          </CardDescription>
-        </CardHeader>
+        <div className="relative z-10 flex flex-col h-full p-16 text-white">
+          <Link to="/home" className="inline-flex items-center gap-2 text-slate-300 hover:text-white text-[11px] font-bold uppercase tracking-[0.2em] transition-all group w-fit">
+            <FaArrowLeft size={10} className="group-hover:-translate-x-1 transition-transform" />
+            Back to Home
+          </Link>
 
-        <form onSubmit={handleRegister}>
-          <CardContent className="space-y-2 px-6">
-            {error && (
-              <div className="rounded-md bg-red-50 border border-red-200 p-2 text-xs text-red-600">
-                {error}
+          <div className="mt-auto max-w-md">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="backdrop-blur-md bg-white/5 border border-white/10 p-8 rounded-2xl shadow-2xl"
+            >
+              <div className="h-1 w-12 bg-indigo-500 rounded-full mb-8" />
+              <h2 className="text-4xl font-extrabold mb-6 tracking-tight leading-tight">
+                Elevating <span className="text-indigo-400">Asset</span> Management.
+              </h2>
+              <p className="text-lg text-slate-300 font-medium mb-10 leading-relaxed">
+                Join our ecosystem and streamline your organization's maintenance workflows with precision and ease.
+              </p>
+
+              <div className="space-y-6">
+                {[
+                  "Smart Asset Lifecycle Monitoring",
+                  "Predictive Maintenance Scheduling",
+                  "Real-time Collaboration & Reporting"
+                ].map((text, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + (i * 0.1) }}
+                    className="flex items-center gap-4"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
+                      <FaCheckCircle size={12} />
+                    </div>
+                    <span className="text-xs font-bold text-slate-200 uppercase tracking-widest">{text}</span>
+                  </motion.div>
+                ))}
               </div>
+            </motion.div>
+          </div>
+
+          <div className="mt-auto pt-16">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">Enterprise Grade Infrastructure</p>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex-1 flex flex-col justify-center px-8 sm:px-16 md:px-24 bg-white py-12 relative overflow-y-auto"
+      >
+        <div className="max-w-md w-full mx-auto">
+          <div className="mb-10">
+            <h1 className="text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">Create Account</h1>
+            <p className="text-slate-500 text-sm font-medium">Empower your team with professional maintenance tools.</p>
+          </div>
+
+          <form onSubmit={handleRegister} className="space-y-6">
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 font-bold text-xs flex items-center gap-3"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                {error}
+              </motion.div>
             )}
 
-            <div className="space-y-1">
-              <Label htmlFor="name" className="text-xs">
-                Full Name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="h-8 text-sm"
-              />
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                    <FaUser size={12} />
+                  </div>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-medium placeholder:text-slate-300"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Work Email</label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                    <FaEnvelope size={12} />
+                  </div>
+                  <input
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="name@company.com"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-medium placeholder:text-slate-300"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="email" className="text-xs">
-                Email
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="h-8 text-sm"
-              />
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Security Code</label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                    <FaLock size={12} />
+                  </div>
+                  <input
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-medium placeholder:text-slate-300"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Contact No</label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                    <FaPhone size={12} />
+                  </div>
+                  <input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+1 (555) 000-0000"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-medium placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="password" className="text-xs">
-                Password
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="h-8 text-sm"
-              />
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Portal Role</label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 pointer-events-none transition-colors z-10">
+                    <FaUserTag size={12} />
+                  </div>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-bold text-slate-600 appearance-none cursor-pointer relative z-0"
+                  >
+                    <option value="user">Internal Staff</option>
+                    <option value="technician">Service Technician</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Primary Location</label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                    <FaMapMarkerAlt size={12} />
+                  </div>
+                  <textarea
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="HQ / Branch Office"
+                    rows={1}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-medium placeholder:text-slate-300 resize-none"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="role" className="text-xs">
-                Role
-              </Label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full h-8 text-sm border border-gray-300 rounded-md px-2 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="user">User</option>
-                <option value="technician">Technician</option>
-              </select>
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="phone" className="text-xs">
-                Phone
-              </Label>
-              <Input
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="h-8 text-sm"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="address" className="text-xs">
-                Address
-              </Label>
-              <textarea
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                rows={2}
-                className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="Enter address"
-              />
-            </div>
-          </CardContent>
-
-          <CardFooter className="flex flex-col gap-2 pt-2 pb-4 px-6">
-            <Button
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               type="submit"
               disabled={loading}
-              className={`w-full h-8 text-sm text-white rounded-md transition-all duration-200
-                ${loading ? "bg-indigo-400 cursor-not-allowed scale-95" : "bg-indigo-600 hover:bg-indigo-700"}
-              `}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:bg-indigo-400 flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] mt-6"
             >
-              {loading ? "Creating..." : "Register"}
-            </Button>
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Create Professional Account"
+              )}
+            </motion.button>
+          </form>
 
-            <p className="text-xm text-center text-gray-500">
+          <div className="mt-12 text-center border-t border-slate-100 pt-10">
+            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
               Already have an account?{" "}
-              <Link to="/login" className="text-indigo-600 hover:underline">
-                Sign in
+              <Link to="/login" className="text-indigo-600 hover:text-indigo-700 hover:underline underline-offset-4 ml-1">
+                Sign In Instead
               </Link>
             </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </div>
+        </div>
+      </motion.div>
     </div>
   )
 }
+

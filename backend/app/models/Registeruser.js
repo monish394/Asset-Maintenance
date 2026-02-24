@@ -37,12 +37,16 @@ const Userschema = new mongoose.Schema(
         type: [Number],
         default: [0, 0]
       }
+    },
+    profile: {
+      type: String,
+      default: ""
     }
   },
   { timestamps: true }
 );
 
-Userschema.index({ location: "2dsphere" }); 
+Userschema.index({ location: "2dsphere" });
 
 const User = mongoose.model("User", Userschema);
 export default User;

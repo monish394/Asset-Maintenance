@@ -2,30 +2,31 @@
 import Asset from "../models/AssertSchema.js";
 import RaiseRequest from "../models/RaiseRequest.js";
 import Notification from "../models/NotificationUser.js";
+import { uploadToCloudinary } from "../middlewares/cloudinaryUpload.js";
 const AssetsCtrl = {}
 
 AssetsCtrl.CreateAsset = async (req, res) => {
-    const body = req.body;
-    try {
-        const newAsset = new Asset(body);
-        await newAsset.save()
-        res.status(201).json(newAsset)
+  const body = req.body;
+  try {
+    const newAsset = new Asset(body);
+    await newAsset.save()
+    res.status(201).json(newAsset)
 
-    } catch (err) {
-        console.log(err.message)
-        res.status(500).json({ err: "Something went wrong!!!" })
-    }
+  } catch (err) {
+    console.log(err.message)
+    res.status(500).json({ err: "Something went wrong!!!" })
+  }
 
 }
 //get all asset
 AssetsCtrl.GetAsset = async (req, res) => {
-    try {
-        const assets = await Asset.find().populate("assignedTo", "name");
-        res.json(assets);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Something went wrong" });
-    }
+  try {
+    const assets = await Asset.find().populate("assignedTo", "name");
+    res.json(assets);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 
 }
 
@@ -47,7 +48,7 @@ AssetsCtrl.Assignuser = async (req, res) => {
     }
 
     await Notification.create({
-      userid:assignedAsset.assignedTo._id,
+      userid: assignedAsset.assignedTo._id,
       message: `The asset "${assignedAsset.assetName}" has been assigned to you by the administrator.`
     })
 
@@ -67,36 +68,36 @@ AssetsCtrl.Assignuser = async (req, res) => {
 
 AssetsCtrl.Userasset = async (req, res) => {
 
-    try {
-        const Userasset = await Asset.find({ assignedTo: req.userid });
-        res.json(Userasset);
+  try {
+    const Userasset = await Asset.find({ assignedTo: req.userid });
+    res.json(Userasset);
 
-    } catch (err) {
-        console.log(err.message)
-        res.status(400).json({ err: "something went wrong whiel fectcing user assert" })
-    }
+  } catch (err) {
+    console.log(err.message)
+    res.status(400).json({ err: "something went wrong whiel fectcing user assert" })
+  }
 
 }
 //Admin dashboard stats count of totalassert working asert undermaintance pendign 
 AssetsCtrl.DashboardStats = async (req, res) => {
-    try {
-        const totalAssets = await Asset.countDocuments();
-        const workingAssets = await Asset.find({
-            status: { $in: ["assigned", "unassigned"] }
-        }).countDocuments()
-        const undermaintance = await Asset.find({ status: "undermaintenance" }).countDocuments()
+  try {
+    const totalAssets = await Asset.countDocuments();
+    const workingAssets = await Asset.find({
+      status: { $in: ["assigned", "unassigned"] }
+    }).countDocuments()
+    const undermaintance = await Asset.find({ status: "undermaintenance" }).countDocuments()
 
-        const pendingRequests = await RaiseRequest.countDocuments({ status: "pending" }).countDocuments()
+    const pendingRequests = await RaiseRequest.countDocuments({ status: "pending" }).countDocuments()
 
-        res.json({
-            totalAssets,
-            undermaintance,
-            workingAssets,
-            pendingRequests,
-        });
-    } catch (err) {
-        res.status(500).json({ message: "Failed to load counts", error: err.message });
-    }
+    res.json({
+      totalAssets,
+      undermaintance,
+      workingAssets,
+      pendingRequests,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load counts", error: err.message });
+  }
 }
 
 //edit asset all fields
@@ -131,30 +132,30 @@ AssetsCtrl.EditAllFieldAsset = async (req, res) => {
 };
 
 
-AssetsCtrl.UserStatsDashboard=async (req,res) => {
+AssetsCtrl.UserStatsDashboard = async (req, res) => {
 
-    try{
+  try {
 
-        const userassets=await Asset.find({assignedTo:req.userid}).countDocuments()
-        const activeworkorders=await RaiseRequest.countDocuments({userid:req.userid,status:["assigned","in-process"]})
-        const pendingrequests=await RaiseRequest.countDocuments({userid:req.userid,status:"pending"})
-        const completedrequests=await RaiseRequest.countDocuments({userid:req.userid,status:"completed"})
-        res.status(200).json({
-            userassets,activeworkorders,pendingrequests,completedrequests
-        })
+    const userassets = await Asset.find({ assignedTo: req.userid }).countDocuments()
+    const activeworkorders = await RaiseRequest.countDocuments({ userid: req.userid, status: ["assigned", "in-process"] })
+    const pendingrequests = await RaiseRequest.countDocuments({ userid: req.userid, status: "pending" })
+    const completedrequests = await RaiseRequest.countDocuments({ userid: req.userid, status: "completed" })
+    res.status(200).json({
+      userassets, activeworkorders, pendingrequests, completedrequests
+    })
 
 
-    }catch(err){
-        console.log(err.message)
-        res.status(400).json({err:"something went wrong while fetching user stats!!!"})
-    }
-    
+  } catch (err) {
+    console.log(err.message)
+    res.status(400).json({ err: "something went wrong while fetching user stats!!!" })
+  }
+
 }
 
 
 AssetsCtrl.AssignAssetToSelf = async (req, res) => {
   const { assetid } = req.params;
-  const userid = req.userid; 
+  const userid = req.userid;
 
   try {
     const asset = await Asset.findByIdAndUpdate(
@@ -178,18 +179,18 @@ AssetsCtrl.AssignAssetToSelf = async (req, res) => {
 };
 
 AssetsCtrl.UnassignAsset = async (req, res) => {
-  const assetid  = req.params.assetid;
+  const assetid = req.params.assetid;
 
   try {
     const asset = await Asset.findOneAndUpdate(
-      { _id: assetid, assignedTo: req.userid }, 
+      { _id: assetid, assignedTo: req.userid },
       { assignedTo: null, status: "unassigned" },
       { new: true }
     );
 
-   if(!asset){
-    res.status(400).json({err:"Asset not found!!!"})
-   }
+    if (!asset) {
+      res.status(400).json({ err: "Asset not found!!!" })
+    }
 
     res.status(200).json({ message: "asset successfully unassigned", asset });
   } catch (err) {
@@ -199,5 +200,34 @@ AssetsCtrl.UnassignAsset = async (req, res) => {
 };
 
 
+
+// Upload image to Cloudinary and return the secure URL
+AssetsCtrl.UploadAssetImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ err: "No image file provided" });
+    }
+    const imageUrl = await uploadToCloudinary(req.file.buffer, "asset-maintenance");
+    res.status(200).json({ imageUrl });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ err: "Image upload failed" });
+  }
+};
+
+// Delete an asset by ID
+AssetsCtrl.DeleteAsset = async (req, res) => {
+  const { assetid } = req.params;
+  try {
+    const deleted = await Asset.findByIdAndDelete(assetid);
+    if (!deleted) {
+      return res.status(404).json({ err: "Asset not found" });
+    }
+    res.status(200).json({ message: "Asset deleted successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ err: "Failed to delete asset" });
+  }
+};
 
 export default AssetsCtrl;

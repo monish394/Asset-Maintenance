@@ -4,40 +4,46 @@ import cors from "cors"
 import express from "express";
 import { ConfigureDB } from "./config/config.js";
 import UserCtrl from "./app/controllers/UsersControllers.js";
-import  AssetsCtrl  from "./app/controllers/AssetsControllers.js";
+import AssetsCtrl from "./app/controllers/AssetsControllers.js";
 import RaiseRequestCtrl from "./app/controllers/RaiseRequest.js";
 import { AuthenticateUser } from "./app/middlewares/AuthenticateUser.js";
 import NotificationCtrl from "./app/controllers/NotificationControllers.js";
 import PaymentCtrl from "./app/controllers/PaymentCtrl.js";
 import RequestCtrl from "./app/controllers/RequestAssetCtrl.js";
 import GeneralRequestCtrl from "./app/controllers/GeneralRequestCtrl.js";
+import EnquiryCtrl from "./app/controllers/EnquiryControllers.js";
 import Payment from "./app/models/Payment.js";
-const app=express();
+import { upload } from "./app/middlewares/cloudinaryUpload.js";
+const app = express();
 app.use(cors())
 app.use(express.json())
 
 
-const PORT=process.env.PORT;
+//made changes
+
+
+const PORT = process.env.PORT;
 console.log(PORT)
 ConfigureDB();
 
 // register route
 
-app.post("/api/usersregister",UserCtrl.Registeruser)
-app.post("/api/userslogin",UserCtrl.Loginuser)
-app.get("/api/dashboardroute",AuthenticateUser,UserCtrl.dashboardRoute)
-app.get("/api/findusers",UserCtrl.FindAllUser)
-app.get("/api/findtechnicians",UserCtrl.FindAllTechnician)
-app.delete("/api/deleteuser/:id",UserCtrl.DeleteUser)
-app.put("/api/updateuser/:id",UserCtrl.EditUser)
-app.get("/api/userinfo",AuthenticateUser,UserCtrl.GetuserInfo)
+app.post("/api/usersregister", UserCtrl.Registeruser)
+app.post("/api/userslogin", UserCtrl.Loginuser)
+app.get("/api/dashboardroute", AuthenticateUser, UserCtrl.dashboardRoute)
+app.get("/api/findusers", UserCtrl.FindAllUser)
+app.get("/api/findtechnicians", UserCtrl.FindAllTechnician)
+app.delete("/api/deleteuser/:id", UserCtrl.DeleteUser)
+app.put("/api/updateuser/:id", UserCtrl.EditUser)
+app.get("/api/userinfo", AuthenticateUser, UserCtrl.GetuserInfo)
+app.put("/api/changepassword", AuthenticateUser, UserCtrl.ChangePassword)
 
 
 //dashboard stats
-app.get("/api/dashboardstats",AssetsCtrl.DashboardStats)
-app.get("/api/userdashboardstats",AuthenticateUser,AssetsCtrl.UserStatsDashboard)
-app.get("/api/raiserequeststats",RaiseRequestCtrl.getRaiserequestStats)
-app.get("/api/technicianstats",AuthenticateUser,RaiseRequestCtrl.getTechnicianStats)
+app.get("/api/dashboardstats", AssetsCtrl.DashboardStats)
+app.get("/api/userdashboardstats", AuthenticateUser, AssetsCtrl.UserStatsDashboard)
+app.get("/api/raiserequeststats", RaiseRequestCtrl.getRaiserequestStats)
+app.get("/api/technicianstats", AuthenticateUser, RaiseRequestCtrl.getTechnicianStats)
 
 
 
@@ -45,31 +51,35 @@ app.get("/api/technicianstats",AuthenticateUser,RaiseRequestCtrl.getTechnicianSt
 
 
 //assets route
-app.post("/api/assets",AssetsCtrl.CreateAsset)
-app.get("/api/assets",AssetsCtrl.GetAsset)
-app.put("/api/assets/:assetid",AuthenticateUser,AssetsCtrl.Assignuser)
-app.get("/api/userassets",AuthenticateUser,AssetsCtrl.Userasset)
-app.put("/api/editassert/:assetid",AssetsCtrl.EditAllFieldAsset)
-app.put("/api/user/assign-asset/:assetid",AuthenticateUser,AssetsCtrl.AssignAssetToSelf)
+app.post("/api/assets/upload-image", upload.single("image"), AssetsCtrl.UploadAssetImage)
+app.post("/api/assets", AssetsCtrl.CreateAsset)
+app.get("/api/assets", AssetsCtrl.GetAsset)
+app.put("/api/assets/:assetid", AuthenticateUser, AssetsCtrl.Assignuser)
+app.get("/api/userassets", AuthenticateUser, AssetsCtrl.Userasset)
+app.put("/api/editassert/:assetid", AssetsCtrl.EditAllFieldAsset)
+app.put("/api/user/assign-asset/:assetid", AuthenticateUser, AssetsCtrl.AssignAssetToSelf)
 app.put("/api/user/unassign-asset/:assetid", AuthenticateUser, AssetsCtrl.UnassignAsset);
+app.delete("/api/assets/:assetid", AssetsCtrl.DeleteAsset);
 
 
 
 //raise request route
 
-app.post("/api/raiserequest",AuthenticateUser,RaiseRequestCtrl.Postissue)
-app.get("/api/userraiserequest",AuthenticateUser,RaiseRequestCtrl.Getuserissue)
-app.get("/api/allraiserequest",RaiseRequestCtrl.Getallrequest)
+app.post("/api/raiserequest", AuthenticateUser, RaiseRequestCtrl.Postissue)
+app.get("/api/userraiserequest", AuthenticateUser, RaiseRequestCtrl.Getuserissue)
+app.get("/api/allraiserequest", RaiseRequestCtrl.Getallrequest)
 app.put("/api/assigntechnician/:requestid", RaiseRequestCtrl.AssignTechnician)
-app.get("/api/alltechnicianrequest",AuthenticateUser, RaiseRequestCtrl.getTechnicianrequests)
-app.put("/api/raiserequest/accept/:requestid",AuthenticateUser,RaiseRequestCtrl.TechnicianAccept)
-app.put("/api/technicianstatusupdate/:requestid",RaiseRequestCtrl.TechnicianStatusUpdate)
+app.get("/api/alltechnicianrequest", AuthenticateUser, RaiseRequestCtrl.getTechnicianrequests)
+app.put("/api/raiserequest/accept/:requestid", AuthenticateUser, RaiseRequestCtrl.TechnicianAccept)
+app.put("/api/technicianstatusupdate/:requestid", RaiseRequestCtrl.TechnicianStatusUpdate)
 
 
 //Notification route
 
-app.get("/api/usersnotifications",AuthenticateUser,NotificationCtrl.UsersNotification)
-app.get("/api/techniciansnotifications",AuthenticateUser,NotificationCtrl.TechniciansNotification)
+app.get("/api/usersnotifications", AuthenticateUser, NotificationCtrl.UsersNotification)
+app.get("/api/techniciansnotifications", AuthenticateUser, NotificationCtrl.TechniciansNotification)
+app.put("/api/notifications/:id/read", AuthenticateUser, NotificationCtrl.MarkAsRead)
+app.put("/api/notifications/mark-all-read", AuthenticateUser, NotificationCtrl.MarkAllAsRead)
 
 
 
@@ -79,8 +89,8 @@ app.post("/api/create-order", AuthenticateUser, PaymentCtrl.createOrder);
 app.post("/api/verify-payment", AuthenticateUser, PaymentCtrl.verifyPayment);
 app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
   try {
-    const payments = await Payment.find({ userId: req.userid }); 
-    res.status(200).json({ payments }); 
+    const payments = await Payment.find({ userId: req.userid });
+    res.status(200).json({ payments });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Failed to fetch payments" });
@@ -93,39 +103,43 @@ app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
 // Request for Assets
 
 
-app.post("/api/requestasset",AuthenticateUser,RequestCtrl.CreateRequest)
-app.get("/api/getallrequestasset",RequestCtrl.GetAllRequests)
-app.put("/api/updaterequeststatus/:id",RequestCtrl.StausUpdate)
-app.get("/api/getusersrequest",AuthenticateUser,RequestCtrl.GetUsersRequest)
+app.post("/api/requestasset", AuthenticateUser, RequestCtrl.CreateRequest)
+app.get("/api/getallrequestasset", RequestCtrl.GetAllRequests)
+app.put("/api/updaterequeststatus/:id", RequestCtrl.StausUpdate)
+app.get("/api/getusersrequest", AuthenticateUser, RequestCtrl.GetUsersRequest)
 
 
 //GeneralRequest route
 
-app.post("/api/generalraiserequest",AuthenticateUser,GeneralRequestCtrl.createGeneralrequest)
-app.get("/api/usergeneralrequest",AuthenticateUser,GeneralRequestCtrl.Getusergeneralrequest)
+app.post("/api/generalraiserequest", AuthenticateUser, GeneralRequestCtrl.createGeneralrequest)
+app.get("/api/usergeneralrequest", AuthenticateUser, GeneralRequestCtrl.Getusergeneralrequest)
 
 //nearby technician
 app.post("/api/getnearbytechnician", AuthenticateUser, UserCtrl.getNearbyTechnicians);
-app.post("/api/admin/update-tech-coordinates",AuthenticateUser,UserCtrl.updateTechCoordinates );
+app.post("/api/admin/update-tech-coordinates", AuthenticateUser, UserCtrl.updateTechCoordinates);
 
-app.get("/api/technician/general-requests",AuthenticateUser,GeneralRequestCtrl.getNearbyOpenRequests)
+app.get("/api/technician/general-requests", AuthenticateUser, GeneralRequestCtrl.getNearbyOpenRequests)
 
-app.post("/api/technician/general-request/:id/accept",AuthenticateUser, GeneralRequestCtrl.acceptGeneralRequest);
-app.get("/api/technician/general-request/assigned",AuthenticateUser,GeneralRequestCtrl.getAssignedRequests)
+app.post("/api/technician/general-request/:id/accept", AuthenticateUser, GeneralRequestCtrl.acceptGeneralRequest);
+app.get("/api/technician/general-request/assigned", AuthenticateUser, GeneralRequestCtrl.getAssignedRequests)
 
-app.get("/api/gettechnicianaccepetedgeneralrequest",AuthenticateUser,GeneralRequestCtrl.getTechnicianAccecptedGeneralReqeust)
+app.get("/api/gettechnicianaccepetedgeneralrequest", AuthenticateUser, GeneralRequestCtrl.getTechnicianAccecptedGeneralReqeust)
 
 
-app.get("/api/user/location", AuthenticateUser,UserCtrl.UserLocation)
+app.get("/api/user/location", AuthenticateUser, UserCtrl.UserLocation)
 app.patch(
   "/api/technician/general-request/:id/complete",
   AuthenticateUser,
   GeneralRequestCtrl.completeGeneralRequest
 );
-app.get("/api/getnearbyassetrequest",AuthenticateUser,RaiseRequestCtrl.getNearbyAssetRequests)
+app.get("/api/getnearbyassetrequest", AuthenticateUser, RaiseRequestCtrl.getNearbyAssetRequests)
+
+// Enquiry route
+app.post("/api/enquiry", EnquiryCtrl.createEnquiry);
+app.get("/api/enquiries", EnquiryCtrl.getAllEnquiries); // Useful for admin later
 
 
 
-app.listen(PORT,()=>{
-    console.log(`server is running on port  ${PORT}`)
+app.listen(PORT, () => {
+  console.log(`server is running on port  ${PORT}`)
 })
