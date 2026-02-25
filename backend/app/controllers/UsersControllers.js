@@ -2,16 +2,23 @@
 import axios from "axios";
 import bcryptjs from "bcryptjs"
 import jsonwebtoken from "jsonwebtoken"
+import { OAuth2Client } from "google-auth-library";
 import User from "../models/Registeruser.js";
+import Asset from "../models/AssertSchema.js";
+import RaiseRequest from "../models/RaiseRequest.js";
 import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 async function geocodeAddress(address) {
   try {
     const res = await axios.get("https://nominatim.openstreetmap.org/search", {
       params: { q: address, format: "json", limit: 1 },
+      headers: {
+        "User-Agent": "AssertMaintananceApp/1.0"
+      }
     });
 
     if (res.data.length > 0) {
@@ -52,7 +59,22 @@ UserCtrl.Registeruser = async (req, res) => {
       value.role = "admin"
     }
 
+    // Set isApproved to false if registering as technician or user
+    if (value.role === "technician" || value.role === "user") {
+      value.isApproved = false;
+    }
+
     const Newuser = new User(value)
+
+    // Automatically fill coordinates based on address
+    if (Newuser.address) {
+      const coords = await geocodeAddress(Newuser.address);
+      if (coords) {
+        Newuser.location = { type: "Point", coordinates: coords };
+        console.log(`Auto-geocoded ${Newuser.name}: ${coords}`);
+      }
+    }
+
     const salt = await bcryptjs.genSalt(10)
     const hashpassword = await bcryptjs.hash(Newuser.password, salt)
     Newuser.password = hashpassword;
@@ -87,6 +109,7 @@ UserCtrl.Loginuser = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ err: "Invalid Password!!" })
     }
+
     const tokendata = { userid: user._id, role: user.role };
     const token = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "10d" })
 
@@ -124,8 +147,15 @@ UserCtrl.dashboardRoute = async (req, res) => {
 UserCtrl.FindAllUser = async (req, res) => {
 
   try {
-    const user = await User.find({ role: "user" })
-    res.status(200).json(user);
+    const users = await User.find({ role: "user" }).lean();
+
+    const usersWithStats = await Promise.all(users.map(async (user) => {
+      const assetCount = await Asset.countDocuments({ assignedTo: user._id });
+      const requestCount = await RaiseRequest.countDocuments({ userid: user._id });
+      return { ...user, assetCount, requestCount };
+    }));
+
+    res.status(200).json(usersWithStats);
 
   } catch (err) {
     console.log(err.message)
@@ -166,12 +196,26 @@ UserCtrl.EditUser = async (req, res) => {
   const { name, email, phone, address, profile } = req.body;
 
   try {
-    const updateduser = await User.findByIdAndUpdate(id, { name, email, phone, address, profile }, { new: true })
+    const userToUpdate = await User.findById(id);
+    if (!userToUpdate) {
+      return res.status(404).json({ err: "User not found" });
+    }
+
+    
+    if (address && address !== userToUpdate.address) {
+      const coords = await geocodeAddress(address);
+      if (coords) {
+        req.body.location = { type: "Point", coordinates: coords };
+        console.log(`Updated coordinates for ${name}: ${coords}`);
+      }
+    }
+
+    const updateduser = await User.findByIdAndUpdate(id, req.body, { new: true })
     res.status(200).json(updateduser)
 
   } catch (err) {
     console.log(err.message)
-    res.status(400).josn({ err: "something went wrong wile edit user!!" })
+    res.status(400).json({ err: "something went wrong while editing user!!" })
   }
 
 }
@@ -196,21 +240,20 @@ UserCtrl.GetuserInfo = async (req, res) => {
 
 UserCtrl.getNearbyTechnicians = async (req, res) => {
   try {
-    const user = await User.findById(req.userid);
-
-    if (!user?.location?.coordinates || user.location.coordinates.length !== 2) {
-      return res.status(400).json({ error: "User location not found" });
+    const { lat, lng, radius } = req.body;
+    if (!lat || !lng) {
+      return res.status(400).json({ error: "User coordinates are missing." });
     }
-
-    const [lng, lat] = user.location.coordinates;
+    const parsedRadius = parseInt(radius);
+    const searchRadius = isNaN(parsedRadius) ? 5000 : parsedRadius * 1000;
 
     const technicians = await User.aggregate([
       {
         $geoNear: {
-          near: { type: "Point", coordinates: [lng, lat] },
+          near: { type: "Point", coordinates: [parseFloat(lng), parseFloat(lat)] },
           distanceField: "distance",
           spherical: true,
-          maxDistance: 5000,
+          maxDistance: searchRadius,
           query: { role: "technician" }
         }
       }
@@ -312,6 +355,13 @@ UserCtrl.ChangePassword = async (req, res) => {
       return res.status(400).json({ err: "Invalid old password" });
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        err: "New password must be 8-15 characters and include uppercase, lowercase, number, and special character"
+      });
+    }
+
     const salt = await bcryptjs.genSalt(10);
     const hashPassword = await bcryptjs.hash(newPassword, salt);
     user.password = hashPassword;
@@ -321,6 +371,61 @@ UserCtrl.ChangePassword = async (req, res) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({ err: "Something went wrong while changing password" });
+  }
+};
+
+UserCtrl.GoogleLogin = async (req, res) => {
+  const { credential } = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const { name, email, picture } = ticket.getPayload();
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({
+        name,
+        email,
+        password: await bcryptjs.hash(Math.random().toString(36).slice(-8), 10),
+        phone: "0000000000",
+        address: "Not Provided Yet",
+        profile: picture,
+        role: "user",
+        isApproved: false 
+      });
+      await user.save();
+    }
+
+    const tokendata = { userid: user._id, role: user.role };
+    const token = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, {
+      expiresIn: "10d",
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      token: token,
+      role: user.role,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ err: "Google login failed" });
+  }
+};
+
+UserCtrl.ApproveTechnician = async (req, res) => {
+  const { id } = req.params;
+  const { isApproved } = req.body;
+  try {
+    if (req.role !== "admin") {
+      return res.status(403).json({ err: "Access denied. Admins only." });
+    }
+    const user = await User.findByIdAndUpdate(id, { isApproved }, { new: true });
+    res.status(200).json(user);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err: "Failed to update technician status" });
   }
 };
 

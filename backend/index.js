@@ -12,6 +12,7 @@ import PaymentCtrl from "./app/controllers/PaymentCtrl.js";
 import RequestCtrl from "./app/controllers/RequestAssetCtrl.js";
 import GeneralRequestCtrl from "./app/controllers/GeneralRequestCtrl.js";
 import EnquiryCtrl from "./app/controllers/EnquiryControllers.js";
+import AiCtrl from "./app/controllers/AiController.js";
 import Payment from "./app/models/Payment.js";
 import { upload } from "./app/middlewares/cloudinaryUpload.js";
 const app = express();
@@ -19,7 +20,7 @@ app.use(cors())
 app.use(express.json())
 
 
-//made changes
+//made changes add google Login
 
 
 const PORT = process.env.PORT;
@@ -30,11 +31,13 @@ ConfigureDB();
 
 app.post("/api/usersregister", UserCtrl.Registeruser)
 app.post("/api/userslogin", UserCtrl.Loginuser)
+app.post("/api/google-login", UserCtrl.GoogleLogin)
 app.get("/api/dashboardroute", AuthenticateUser, UserCtrl.dashboardRoute)
 app.get("/api/findusers", UserCtrl.FindAllUser)
 app.get("/api/findtechnicians", UserCtrl.FindAllTechnician)
 app.delete("/api/deleteuser/:id", UserCtrl.DeleteUser)
 app.put("/api/updateuser/:id", UserCtrl.EditUser)
+app.put("/api/approve-technician/:id", AuthenticateUser, UserCtrl.ApproveTechnician)
 app.get("/api/userinfo", AuthenticateUser, UserCtrl.GetuserInfo)
 app.put("/api/changepassword", AuthenticateUser, UserCtrl.ChangePassword)
 
@@ -134,9 +137,11 @@ app.patch(
 );
 app.get("/api/getnearbyassetrequest", AuthenticateUser, RaiseRequestCtrl.getNearbyAssetRequests)
 
+app.post("/api/generate-description", AuthenticateUser, AiCtrl.GenerateDescription);
+
 // Enquiry route
 app.post("/api/enquiry", EnquiryCtrl.createEnquiry);
-app.get("/api/enquiries", EnquiryCtrl.getAllEnquiries); // Useful for admin later
+app.get("/api/enquiries", EnquiryCtrl.getAllEnquiries);
 
 
 

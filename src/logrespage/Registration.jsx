@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { GoogleLogin } from "@react-oauth/google"
 import { useNavigate, Link } from "react-router-dom"
 import axios from "../config/api"
 import { toast } from "sonner"
@@ -54,6 +55,30 @@ export default function Register() {
       const serverMessage = err?.response?.data?.error || "Unable to complete registration. Please try again."
       setError(String(serverMessage).replace(/"/g, ""))
       setLoading(false)
+    }
+  }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post("/google-login", {
+        credential: credentialResponse.credential,
+      })
+
+      localStorage.setItem("token", response.data.token)
+      localStorage.setItem("role", response.data.role)
+      toast.success("Welcome back!", { duration: 1000 })
+
+      setTimeout(() => {
+        const role = response.data.role
+        if (role === "admin") navigate("/admin", { replace: true })
+        else if (role === "user") navigate("/user", { replace: true })
+        else if (role === "technician")
+          navigate("/technician/home", { replace: true })
+        else navigate("/dashboard", { replace: true })
+      }, 1000)
+    } catch (err) {
+      console.error(err)
+      toast.error("Google login failed")
     }
   }
 
@@ -199,7 +224,7 @@ export default function Register() {
 
             <div className="grid grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Security Code</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Password</label>
                 <div className="relative group">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">
                     <FaLock size={12} />
@@ -287,6 +312,30 @@ export default function Register() {
               )}
             </motion.button>
           </form>
+
+          <div className="mt-8">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-100"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+                <span className="bg-white px-4 text-slate-400 font-bold">Registration via Social</span>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  toast.error("Google Registration Failed")
+                }}
+                useOneTap
+                theme="outline"
+                shape="pill"
+                width="100%"
+              />
+            </div>
+          </div>
 
           <div className="mt-12 text-center border-t border-slate-100 pt-10">
             <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">

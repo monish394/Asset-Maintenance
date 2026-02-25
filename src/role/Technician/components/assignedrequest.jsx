@@ -2,25 +2,20 @@ import { useState, useEffect } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
 import axios from "../../../config/api";
 import OSMTrackMap from "./techniciantrack";
+import { FaMapMarkerAlt, FaPhone, FaEdit, FaTimes, FaCheckCircle } from "react-icons/fa";
 
 export default function AssignedRequest() {
   const [showMap, setShowMap] = useState(false);
   const [trackAddress, setTrackAddress] = useState("");
-  const [acceptedtechniciangeneralreqeust, setAcceptedtechniciangeneralreqeust] = useState([])
-  console.log(acceptedtechniciangeneralreqeust)
+  const [acceptedtechniciangeneralreqeust, setAcceptedtechniciangeneralreqeust] = useState([]);
   const [nearbyAssetRequests, setNearbyAssetRequests] = useState([]);
-  console.log("nearbyAsset - ", nearbyAssetRequests)
-
-
-
   const [costEstimateEdit, setCostEstimateEdit] = useState("");
-  const [requestid, setRequestid] = useState("")
-  const [statusedit, setStatusedit] = useState("")
-  const [showeditform, setShoweditform] = useState(false)
+  const [requestid, setRequestid] = useState("");
+  const [statusedit, setStatusedit] = useState("");
+  const [showeditform, setShoweditform] = useState(false);
+  
   const { technicianassignedassert, setTechnicianassignedassert, requests, setRequests } = TechData();
-  console.log(technicianassignedassert)
 
-  console.log("general -", requests)
   useEffect(() => {
     const fetchNearby = async () => {
       try {
@@ -32,29 +27,16 @@ export default function AssignedRequest() {
         console.error("Failed to fetch nearby requests:", err.response?.data || err.message);
       }
     };
-
     fetchNearby();
   }, []);
 
-
-
   useEffect(() => {
-    axios.get("/gettechnicianaccepetedgeneralrequest",
-      {
-        headers: {
-          Authorization: localStorage.getItem("token")
-
-        }
-      })
-      .then((res) => {
-        setAcceptedtechniciangeneralreqeust(res.data)
-        // console.log(res.data)
-      })
-      .catch((err) => console.log(err.message))
-
-  }, [])
-
-
+    axios.get("/gettechnicianaccepetedgeneralrequest", {
+      headers: { Authorization: localStorage.getItem("token") }
+    })
+      .then((res) => setAcceptedtechniciangeneralreqeust(res.data))
+      .catch((err) => console.log(err.message));
+  }, []);
 
   const handleAccept = async (requestId) => {
     try {
@@ -63,7 +45,6 @@ export default function AssignedRequest() {
         null,
         { headers: { Authorization: localStorage.getItem("token") } }
       );
-
       setTechnicianassignedassert(prev =>
         prev.map(req =>
           req._id === requestId
@@ -71,8 +52,6 @@ export default function AssignedRequest() {
             : req
         )
       );
-
-
     } catch (err) {
       if (err.response?.status === 400) {
         alert(err.response.data.err || "This request has already been assigned.");
@@ -81,8 +60,6 @@ export default function AssignedRequest() {
       }
     }
   };
-
-
 
   const handleEdit = (request) => {
     setRequestid(request._id);
@@ -98,11 +75,7 @@ export default function AssignedRequest() {
       if (costEstimateEdit !== "" && costEstimateEdit !== null)
         payload.costEstimate = Number(costEstimateEdit);
 
-      const res = await axios.put(
-        `/technicianstatusupdate/${requestid}`,
-        payload
-      );
-
+      const res = await axios.put(`/technicianstatusupdate/${requestid}`, payload);
       setTechnicianassignedassert(prev =>
         prev.map(item =>
           item._id === res.data.updated._id
@@ -114,12 +87,9 @@ export default function AssignedRequest() {
             }
             : item
         )
-      )
-
-
-      console.log(res.data)
+      );
       setShoweditform(false);
-      setCostEstimateEdit("")
+      setCostEstimateEdit("");
     } catch (err) {
       console.log(err.message);
     }
@@ -131,9 +101,6 @@ export default function AssignedRequest() {
     setShowMap(true);
   };
 
-
-
-
   const handleGeneralAccept = async (id) => {
     try {
       const res = await axios.post(
@@ -141,10 +108,8 @@ export default function AssignedRequest() {
         {},
         { headers: { Authorization: localStorage.getItem("token") } }
       );
-
       setRequests(prev => prev.filter(req => req._id !== id));
       setAcceptedtechniciangeneralreqeust(prev => [...prev, res.data]);
-
     } catch (err) {
       if (err.response?.status === 400) {
         alert(err.response.data.err || "This request is already accepted by another technician");
@@ -155,10 +120,6 @@ export default function AssignedRequest() {
     }
   };
 
-
-
-
-
   const handleComplete = async (requestId) => {
     try {
       const res = await axios.patch(
@@ -166,7 +127,6 @@ export default function AssignedRequest() {
         {},
         { headers: { Authorization: localStorage.getItem("token") } }
       );
-
       setAcceptedtechniciangeneralreqeust((prev) =>
         prev.map((req) => (req._id === requestId ? res.data : req))
       );
@@ -175,12 +135,6 @@ export default function AssignedRequest() {
     }
   };
 
-
-  const filteredRequests = nearbyAssetRequests.filter(
-    (req) =>
-      req.aiPriority &&
-      ["low", "medium"].includes(req.aiPriority.toLowerCase())
-  );
   const handleNearbyAssetAccept = async (requestId) => {
     try {
       const res = await axios.put(
@@ -188,538 +142,426 @@ export default function AssignedRequest() {
         {},
         { headers: { Authorization: localStorage.getItem("token") } }
       );
-
       setTechnicianassignedassert(prev => [...prev, res.data]);
-
-      setNearbyAssetRequests(prev =>
-        prev.filter(req => req._id !== requestId)
-      );
-
+      setNearbyAssetRequests(prev => prev.filter(req => req._id !== requestId));
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
   };
 
+  const getStatusStyle = (status) => {
+    const statusLower = status?.toLowerCase();
+    switch (statusLower) {
+      case "completed":
+        return "bg-emerald-50 text-emerald-600 border border-emerald-100";
+      case "in-process":
+      case "in_progress":
+      case "accepted":
+        return "bg-indigo-50 text-indigo-600 border border-indigo-100";
+      case "pending":
+        return "bg-amber-50 text-amber-600 border border-amber-100";
+      case "assigned":
+        return "bg-blue-50 text-blue-600 border border-blue-100";
+      case "open":
+        return "bg-amber-50 text-amber-600 border border-amber-100";
+      default:
+        return "bg-slate-50 text-slate-600 border border-slate-100";
+    }
+  };
 
+  const getPriorityStyle = (priority) => {
+    switch (priority?.toLowerCase()) {
+      case "high": return "bg-rose-50 text-rose-600 border border-rose-100";
+      case "medium": return "bg-amber-50 text-amber-600 border border-amber-100";
+      case "low": return "bg-emerald-50 text-emerald-600 border border-emerald-100";
+      default: return "bg-slate-50 text-slate-600 border border-slate-100";
+    }
+  };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+  };
 
-
-
-
-
-
-
+  const filteredRequests = nearbyAssetRequests.filter(
+    (req) => req.aiPriority && ["low", "medium"].includes(req.aiPriority.toLowerCase())
+  );
 
   return (
-    <div className="p-6">
+    <div className="p-6" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+      
+      {/* Edit Modal */}
       {showeditform && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShoweditform(false)}
-          />
-
-          <div className="relative z-10 w-80 rounded-xl bg-white p-6 shadow-2xl">
-
-            <h3 className="mb-4 text-base font-semibold text-gray-800">
-              Update Request Status
-            </h3>
-
-            <select
-              value={statusedit}
-              onChange={(e) => setStatusedit(e.target.value)}
-              className="mb-6 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm
-                   text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              <option value="assigned">Assigned</option>
-              <option value="in-process">In Process</option>
-              <option value="completed">Completed</option>
-            </select>
-            <input
-              type="number"
-              placeholder="Enter cost estimate"
-              value={costEstimateEdit}
-              onChange={(e) => setCostEstimateEdit(e.target.value)}
-              className="mb-6 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm
-             text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => { setCostEstimateEdit(""); setShoweditform(false) }}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium
-                     text-gray-600 hover:bg-gray-100 transition"
-              >
-                Cancel
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShoweditform(false)} />
+          <div className="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-900">Update Request</h3>
+              <button onClick={() => setShoweditform(false)} className="text-slate-400 hover:text-slate-600">
+                <FaTimes size={20} />
               </button>
+            </div>
 
-              <button
-                onClick={handleUpdate}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium
-                     text-white hover:bg-blue-700 transition"
-              >
-                Update
-              </button>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Status</label>
+                <select
+                  value={statusedit}
+                  onChange={(e) => setStatusedit(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                >
+                  <option value="assigned">Assigned</option>
+                  <option value="in-process">In Process</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Cost Estimate</label>
+                <input
+                  type="number"
+                  placeholder="Enter cost estimate"
+                  value={costEstimateEdit}
+                  onChange={(e) => setCostEstimateEdit(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => { setCostEstimateEdit(""); setShoweditform(false); }}
+                  className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdate}
+                  className="flex-1 px-4 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                >
+                  Update
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {showMap && trackAddress && (
-        <OSMTrackMap
-          userAddress={trackAddress}
-          onClose={() => setShowMap(false)}
-        />
+        <OSMTrackMap userAddress={trackAddress} onClose={() => setShowMap(false)} />
       )}
 
+      {/* Recent Assets Requests Table */}
+      <div className="mb-20">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Recent Assets Requests</h2>
+          <p className="text-slate-400 text-sm font-medium mt-1">Manage all asset maintenance requests</p>
+        </div>
 
-
-
-
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        Recent  Assets Requests
-      </h2>
-
-      <div className="overflow-x-auto">
-        <div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200 font-[Inter] p-4">
-          <table className="min-w-full text-base table-auto">
-            <thead className="bg-gradient-to-r from-gray-100 to-gray-50 border-b border-gray-200 sticky top-0 z-10">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Asset</th>
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider">Issue</th>
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Raised By</th>
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider">Address</th>
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Priority</th>
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Status</th>
-                {/* <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">AssignedAt</th> */}
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Cost</th>
-                <th className="px-6 py-3 text-left text-sm font-[Poppins] font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Action</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-100">
-              {technicianassignedassert.map((ele, idx) => (
-                <tr
-                  key={ele._id}
-                  className={`transition duration-200 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
-                >
-                  <td className="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">{ele.assetid?.assetName || "N/A"}</td>
-                  <td className="px-6 py-4 text-gray-700">{ele.description || "N/A"}</td>
-                  <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{ele.userid?.name || "N/A"}</td>
-                  <td className="px-6 py-4 text-gray-700">{ele.userid?.address || "N/A"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${ele.aiPriority === "high"
-                          ? "bg-gradient-to-r from-red-200 to-red-100 text-red-800"
-                          : ele.aiPriority === "medium"
-                            ? "bg-gradient-to-r from-yellow-200 to-yellow-100 text-yellow-800"
-                            : ele.aiPriority === "low"
-                              ? "bg-gradient-to-r from-green-200 to-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-600"
-                        }`}
-                    >
-                      {ele.aiPriority || "N/A"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${ele.status === "pending"
-                          ? "bg-gradient-to-r from-yellow-200 to-yellow-100 text-yellow-800"
-                          : ele.status === "assigned"
-                            ? "bg-gradient-to-r from-blue-200 to-blue-100 text-blue-800"
-                            : ele.status === "in-process"
-                              ? "bg-gradient-to-r from-purple-200 to-purple-100 text-purple-800"
-                              : ele.status === "completed"
-                                ? "bg-gradient-to-r from-green-200 to-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-600"
-                        }`}
-                    >
-                      {ele.status}
-                    </span>
-                  </td>
-                  {/* <td className="px-6 py-4 text-gray-600 text-sm whitespace-nowrap">{ele.assignAt ? new Date(ele.assignAt).toLocaleDateString() : "N/A"}</td> */}
-                  <td className="px-6 py-4 text-gray-800 font-semibold whitespace-nowrap">₹ {ele.costEstimate || "N/A"}</td>
-                  <td className="px-6 py-4 space-x-2 whitespace-nowrap">
-                    {ele.status === "pending" && (
-                      <button
-                        onClick={() => handleAccept(ele._id)}
-                        disabled={ele.status !== "pending"}
-                        className={`px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 ${ele.status !== "pending" ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                      >
-                        Accept
-                      </button>
-
-                    )}
-                    {["assigned", "in-process", "completed"].includes(ele.status) && (
-                      <button
-                        className="px-4 py-2 text-sm font-[Poppins] font-semibold bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
-                        onClick={() => handleEdit(ele)}
-                      >
-                        Edit
-                      </button>
-                    )}
-                  </td>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-slate-50/50 border-b border-slate-100">
+                <tr>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Asset</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Raised By</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Priority</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Status</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Cost</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {technicianassignedassert.map((ele, idx) => (
+                  <tr key={ele._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{ele.assetid?.assetName || "N/A"}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{ele.description || "N/A"}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{ele.userid?.name || "N/A"}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{ele.userid?.address || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-block px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider whitespace-nowrap ${getPriorityStyle(ele.aiPriority)}`}>
+                        {ele.aiPriority || "N/A"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-block px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider whitespace-nowrap ${getStatusStyle(ele.status)}`}>
+                        {ele.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-800 whitespace-nowrap">₹{ele.costEstimate || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex gap-2">
+                        {ele.status === "pending" && (
+                          <button
+                            onClick={() => handleAccept(ele._id)}
+                            className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition whitespace-nowrap"
+                          >
+                            Accept
+                          </button>
+                        )}
+                        {["assigned", "in-process", "completed"].includes(ele.status) && (
+                          <button
+                            onClick={() => handleEdit(ele)}
+                            className="px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 transition flex items-center gap-1 whitespace-nowrap"
+                          >
+                            <FaEdit size={10} />
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Assigned Requests Cards */}
+      <div className="mb-20">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Assigned Requests</h2>
+          <p className="text-slate-400 text-sm font-medium mt-1">Track assigned requests and contact details</p>
         </div>
 
-
-
-
-
-        <div className="p-6 rounded-2xl font-[Poppins] mt-15">
-          <h1 className="md:text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
-            Assigned Requests
-          </h1>
-
-          {technicianassignedassert.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {technicianassignedassert.filter((ele) => ele.status !== "completed").map((item) => (
-                <div
-                  key={item._id}
-                  className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition duration-200 p-4 flex flex-col justify-between"
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-lg">
-                        {item.userid?.name?.charAt(0) || "U"}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-gray-900 font-semibold text-base truncate">
-                        {item.userid?.name || "Unknown User"}
-                      </h4>
-                      <div className="text-sm text-gray-600 mt-0.5 space-y-0.5">
-                        {item.userid?.phone && (
-                          <p>
-                            <span className="font-medium text-gray-700">Phone:</span>{" "}
-                            <a
-                              href={`tel:${item.userid?.phone}`}
-                              className="text-blue-600 hover:underline"
-                            >
-                              {item.userid?.phone}
-                            </a>
-                          </p>
-                        )}
-                        {item.userid?.address && (
-                          <p>
-                            <span className="font-medium text-gray-700">Address:</span>{" "}
-                            {item.userid?.address}
-                          </p>
-                        )}
-                        {item.assetid?.assetName && (
-                          <p>
-                            <span className="font-medium text-gray-700">Asset:</span>{" "}
-                            {item.assetid?.assetName}
-                          </p>
-                        )}
-                        {item.description && (
-                          <p>
-                            <span className="font-medium text-gray-700">Issue:</span>{" "}
-                            {item.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+        {technicianassignedassert.filter((ele) => ele.status === "assigned").length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {technicianassignedassert.filter((ele) => ele.status === "assigned").map((item) => (
+              <div
+                key={item._id}
+                className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow p-5"
+              >
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                    {item.userid?.name?.charAt(0) || "U"}
                   </div>
-
-                  <button
-                    onClick={() => handleTrack(item.userid?.address)}
-                    className="mt-3 w-full py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200"
-                  >
-                    Track
-                  </button>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-slate-900 font-bold text-sm truncate">{item.userid?.name || "Unknown User"}</h4>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">{item.assetid?.assetName}</p>
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500 text-sm">
-              No assigned requests available.
-            </div>
-          )}
+
+                <div className="space-y-2 mb-4 text-xs">
+                  {item.userid?.phone && (
+                    <div className="flex items-center gap-2">
+                      <FaPhone className="text-slate-400" size={10} />
+                      <a href={`tel:${item.userid?.phone}`} className="text-indigo-600 hover:underline font-medium">
+                        {item.userid?.phone}
+                      </a>
+                    </div>
+                  )}
+                  {item.userid?.address && (
+                    <div className="flex items-start gap-2">
+                      <FaMapMarkerAlt className="text-slate-400 mt-0.5" size={10} />
+                      <p className="text-slate-600 line-clamp-2">{item.userid?.address}</p>
+                    </div>
+                  )}
+                  {item.description && (
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Issue</p>
+                      <p className="text-slate-600 line-clamp-2">{item.description}</p>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => handleTrack(item.userid?.address)}
+                  className="w-full py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition flex items-center justify-center gap-2"
+                >
+                  <FaMapMarkerAlt size={12} />
+                  Track
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
+            <p className="text-slate-400 text-sm">No assigned requests available.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Nearby General Requests Table */}
+      <div className="mb-20">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Nearby General Requests</h2>
+          <p className="text-slate-400 text-sm font-medium mt-1">New general maintenance requests in your area</p>
         </div>
 
-
-
-
-
-        <div className="p-6 bg-gray-50 rounded-xl font-[Poppins] mt-15">
-
-          <h2 className=" md:text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
-            Nearby General Requests
-          </h2>
-
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {requests.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 text-base">
-              No general requests available
+            <div className="p-12 text-center">
+              <p className="text-slate-400 text-sm">No general requests available</p>
             </div>
           ) : (
-            <div className="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
-              <table className="min-w-full text-base">
-
-                <thead className="bg-gray-100">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
                   <tr>
-                    <th className="px-5 py-4 text-left font-semibold text-gray-700">
-                      User
-                    </th>
-                    <th className="px-5 py-4 text-left font-semibold text-gray-700">
-                      Issue
-                    </th>
-                    <th className="px-5 py-4 text-left font-semibold text-gray-700">
-                      Phone
-                    </th>
-                    <th className="px-5 py-4 text-left font-semibold text-gray-700">
-                      Address
-                    </th>
-                    <th className="px-5 py-4 text-left font-semibold text-gray-700">
-                      Status
-                    </th>
-                    <th className="px-5 py-4 text-left font-semibold text-gray-700">
-                      Action
-                    </th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">User</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Phone</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Status</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Action</th>
                   </tr>
                 </thead>
-
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-50">
                   {requests.map((req) => (
-                    <tr
-                      key={req._id}
-                      className="hover:bg-gray-50 transition duration-200"
-                    >
-                      <td className="px-5 py-4 font-medium text-gray-900">
-                        {req.userId?.name}
-                      </td>
-
-                      <td className="px-5 py-4 text-gray-700">
-                        {req.issue}
-                      </td>
-
-                      <td className="px-5 py-4 text-gray-700">
-                        {req.userId?.phone}
-                      </td>
-
-                      <td className="px-5 py-4 text-gray-700">
-                        {req.userId?.address}
-                      </td>
-
-                      <td className="px-5 py-4">
-                        <span
-                          className={`px-3 py-1.5 rounded-full text-sm font-semibold ${req.status === "OPEN"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-green-100 text-green-700"
-                            }`}
-                        >
+                    <tr key={req._id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{req.userId?.name}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{req.issue}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{req.userId?.phone}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{req.userId?.address}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-block px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider whitespace-nowrap ${getStatusStyle(req.status)}`}>
                           {req.status}
                         </span>
                       </td>
-
-                      <td className="px-5 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         {req.status === "OPEN" && (
                           <button
                             onClick={() => handleGeneralAccept(req._id)}
-                            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
+                            className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition whitespace-nowrap"
                           >
                             Accept
                           </button>
                         )}
                       </td>
-
                     </tr>
                   ))}
                 </tbody>
-
               </table>
             </div>
           )}
+        </div>
+      </div>
 
+      {/* Accepted General Requests Table */}
+      <div className="mb-20">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Accepted General Requests</h2>
+          <p className="text-slate-400 text-sm font-medium mt-1">Requests you've accepted and are working on</p>
         </div>
 
-
-
-
-
-        <div className="p-6 mt-15 bg-gray-50 rounded-xl font-[Montserrat]">
-
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">
-            Accepted General Requests
-          </h2>
-
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {acceptedtechniciangeneralreqeust.length === 0 ? (
-            <p className="text-gray-500 text-center text-base py-6">
-              No accepted requests yet
-            </p>
+            <div className="p-12 text-center">
+              <p className="text-slate-400 text-sm">No accepted requests yet</p>
+            </div>
           ) : (
-            <div className="overflow-x-auto bg-white rounded-lg shadow-sm border border-gray-200">
-              <table className="min-w-full text-base">
-
-                <thead className="bg-gray-100">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
                   <tr>
-                    <th className="px-6 py-4 text-left font-semibold text-gray-700">User</th>
-                    <th className="px-6 py-4 text-left font-semibold text-gray-700">Issue</th>
-                    <th className="px-6 py-4 text-left font-semibold text-gray-700">Phone</th>
-                    <th className="px-6 py-4 text-left font-semibold text-gray-700 whitespace-nowrap">Address</th>
-                    <th className="px-6 py-4 text-left font-semibold text-gray-700">Status</th>
-                    <th className="px-6 py-4 text-left font-semibold text-gray-700">Action</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">User</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Phone</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Status</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Action</th>
                   </tr>
                 </thead>
-
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-50">
                   {acceptedtechniciangeneralreqeust.map((req) => (
-                    <tr
-                      key={req._id}
-                      className="hover:bg-gray-50 transition duration-200"
-                    >
-                      <td className="px-6 py-4 font-medium text-gray-900">
-                        {req.userId?.name}
-                      </td>
-
-                      <td className="px-6 py-4 text-gray-700">
-                        {req.issue}
-                      </td>
-
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
-                        {req.userId?.phone}
-                      </td>
-
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
-                        {req.userId?.address}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1.5 rounded-full text-sm font-semibold ${req.status === "COMPLETED"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-blue-100 text-blue-700"
-                            }`}
-                        >
+                    <tr key={req._id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{req.userId?.name}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{req.issue}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{req.userId?.phone}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{req.userId?.address}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-block px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider whitespace-nowrap ${getStatusStyle(req.status)}`}>
                           {req.status}
                         </span>
                       </td>
-
-                      <td className="px-6 py-4 flex gap-3 whitespace-nowrap">
-                        <button
-                          onClick={() => handleTrack(req.userId?.address)}
-                          className="px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-                        >
-                          Track
-                        </button>
-
-                        {req.status !== "COMPLETED" && (
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex gap-2">
                           <button
-                            onClick={() => handleComplete(req._id)}
-                            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                            onClick={() => handleTrack(req.userId?.address)}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-medium hover:bg-emerald-600 transition whitespace-nowrap"
                           >
-                            Complete
+                            Track
                           </button>
-                        )}
+                          {req.status !== "COMPLETED" && (
+                            <button
+                              onClick={() => handleComplete(req._id)}
+                              className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition flex items-center gap-1 whitespace-nowrap"
+                            >
+                              <FaCheckCircle size={10} />
+                              Complete
+                            </button>
+                          )}
+                        </div>
                       </td>
-
                     </tr>
                   ))}
                 </tbody>
-
               </table>
             </div>
           )}
         </div>
+      </div>
 
-        <div className="p-6 mt-15">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">
-            Nearby Asset Requests
-          </h2>
+      {/* Nearby Asset Requests Table */}
+      <div className="mb-20">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Nearby Asset Requests</h2>
+          <p className="text-slate-400 text-sm font-medium mt-1">Low and medium priority requests in your vicinity</p>
+        </div>
 
-          <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
-            <table className="min-w-full text-sm text-left text-gray-600">
-              <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
-                <tr>
-                  <th className="px-6 py-4">Raised By</th>
-
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4">Priority</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4">Description</th>
-                  <th className="px-6 py-4">Created</th>
-                  <th className="px-6 py-4 text-center">Action</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredRequests.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          {filteredRequests.length === 0 ? (
+            <div className="p-12 text-center">
+              <p className="text-slate-400 text-sm">No nearby requests</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
                   <tr>
-                    <td
-                      colSpan="6"
-                      className="text-center py-8 text-gray-400 font-medium"
-                    >
-                      No Nearby Requests
-                    </td>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Raised By</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Category</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Priority</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Type</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Description</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Created</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Action</th>
                   </tr>
-                ) : (
-                  filteredRequests.map((ele) => (
-                    <tr
-                      key={ele._id}
-                      className="border-b hover:bg-gray-50 transition duration-200"
-                    >
-                      <td className="px-6 py-4 font-medium text-gray-800">
-                        {ele.userid?.name}
-                      </td>
-                      <td className="px-6 py-4 font-medium text-gray-800">
-                        {ele.aiCategory}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 text-xs font-semibold rounded-full ${ele.aiPriority?.toLowerCase() === "high"
-                              ? "bg-red-100 text-red-600"
-                              : ele.aiPriority?.toLowerCase() === "medium"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-green-100 text-green-600"
-                            }`}
-                        >
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {filteredRequests.map((ele) => (
+                    <tr key={ele._id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{ele.userid?.name}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{ele.aiCategory}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-block px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider whitespace-nowrap ${getPriorityStyle(ele.aiPriority)}`}>
                           {ele.aiPriority}
                         </span>
                       </td>
-
-                      <td className="px-6 py-4 capitalize">
-                        {ele.requesttype}
-                      </td>
-
-                      <td className="px-6 py-4 max-w-xs truncate">
-                        {ele.description}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        {new Date(ele.createdAt).toLocaleDateString()}
-                      </td>
-
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-4 text-sm text-slate-600 capitalize whitespace-nowrap">{ele.requesttype}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">{ele.description}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{formatDate(ele.createdAt)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <button
                           onClick={() => handleNearbyAssetAccept(ele._id)}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition duration-200"
+                          className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition whitespace-nowrap"
                         >
                           Accept
                         </button>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-
-
-
-
-
-
-
-
-
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import GeneralRequestForm from "./generalrequstform";
 import RaiseRequestForm from "./raiserequestform";
+import AiTechBot from "./AiTechBot";
 
 function FitBounds({ origin, destination }) {
   const map = useMap();
@@ -82,6 +83,9 @@ export default function RaiseRequest() {
   const [trackingCoords, setTrackingCoords] = useState(null);
   const [showMap, setShowMap] = useState(false);
   const [usersrequestasset, setUsersrequestasset] = useState([]);
+  const [draftDescription, setDraftDescription] = useState("");
+  const [searchRadius, setSearchRadius] = useState(5);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const {
     myasset,
@@ -111,7 +115,8 @@ export default function RaiseRequest() {
       .catch((err) => console.error(err.message));
   }, []);
 
-  const handleNearbyTechnician = useCallback(async () => {
+  const handleNearbyTechnician = useCallback(async (radiusVal = searchRadius) => {
+    setIsRefreshing(true);
     try {
       const resUser = await axios.get("/user/location", {
         headers: { Authorization: localStorage.getItem("token") },
@@ -120,15 +125,22 @@ export default function RaiseRequest() {
       setUserCoords(coords);
       const resTech = await axios.post(
         "/getnearbytechnician",
-        { lat: coords.lat, lng: coords.lng },
+        { lat: coords.lat, lng: coords.lng, radius: radiusVal },
         { headers: { Authorization: localStorage.getItem("token") } }
       );
       setNearbyTechs(resTech.data);
       setShowNearbyMap(true);
     } catch (err) {
       console.error(err.message);
+      if (err.response?.status === 404) {
+        alert("Your location is not set. Please update your profile address first.");
+      } else {
+        alert("Failed to fetch technicians. Please try again later.");
+      }
+    } finally {
+      setIsRefreshing(false);
     }
-  }, []);
+  }, [searchRadius]);
 
   const handleRaiseSubmit = useCallback(
     async (assetid, description) => {
@@ -251,39 +263,90 @@ export default function RaiseRequest() {
       )}
 
       {showNearbyMap && userCoords && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-          <div className="relative bg-white w-full max-w-[700px] h-[500px] rounded-xl shadow-lg">
-            <button
-              onClick={() => setShowNearbyMap(false)}
-              className="absolute top-3 right-3 z-[1000] bg-white px-3 py-1 rounded-full shadow text-lg font-bold"
-            >
-              ✕
-            </button>
-            <MapContainer
-              center={[userCoords.lat, userCoords.lng]}
-              zoom={12}
-              className="w-full h-full rounded-xl"
-            >
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <Marker position={[userCoords.lat, userCoords.lng]}>
-                <Tooltip permanent direction="bottom">
-                  You
-                </Tooltip>
-              </Marker>
-              {nearbyTechs.map((tech) => (
-                <Marker
-                  key={tech._id}
-                  position={[
-                    tech.location.coordinates[1],
-                    tech.location.coordinates[0],
-                  ]}
-                >
-                  <Tooltip permanent direction="top" offset={[0, -10]}>
-                    Tech {tech.name}
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="relative bg-white w-full max-w-4xl h-[600px] rounded-[2.5rem] shadow-3xl overflow-hidden flex flex-col border border-white/20">
+            {/* Header with Slider */}
+            <div className="p-6 bg-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+
+              <div className="relative z-10">
+                <h2 className="text-xl font-extrabold tracking-tight mb-1">Nearby Support</h2>
+                <p className="text-slate-400 text-[10px] uppercase font-bold tracking-[0.2em]">Finding technicians within {searchRadius}km</p>
+              </div>
+
+              <div className="flex flex-1 max-w-md items-center gap-6 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-md relative z-10">
+                <span className="text-xs font-bold text-slate-300 whitespace-nowrap">Radius: <span className="text-blue-400">{searchRadius}km</span></span>
+                <input
+                  type="range"
+                  min="1"
+                  max="50"
+                  value={searchRadius}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSearchRadius(val);
+                    handleNearbyTechnician(val);
+                  }}
+                  className="flex-1 accent-blue-500 h-1.5 rounded-lg appearance-none bg-slate-700 cursor-pointer"
+                />
+                <div className="flex gap-1">
+                  {[5, 15, 30, 50].map(km => (
+                    <button
+                      key={km}
+                      onClick={() => {
+                        setSearchRadius(km);
+                        handleNearbyTechnician(km);
+                      }}
+                      className={`w-8 py-1 rounded-md text-[9px] font-bold transition-all ${searchRadius == km ? 'bg-blue-600 text-white' : 'bg-white/10 text-slate-400 hover:bg-white/20'}`}
+                    >
+                      {km}k
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowNearbyMap(false)}
+                className="absolute top-4 right-4 bg-white/10 hover:bg-red-500 w-10 h-10 rounded-full flex items-center justify-center transition-all group z-20"
+              >
+                <span className="text-white font-bold text-lg">✕</span>
+              </button>
+            </div>
+            <div className="flex-1 relative">
+              {isRefreshing && (
+                <div className="absolute inset-0 z-[1001] bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center">
+                  <div className="bg-white p-4 rounded-2xl shadow-2xl flex items-center gap-3">
+                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent animate-spin rounded-full"></div>
+                    <span className="text-xs font-bold text-slate-700 tracking-tight">Scanning Area...</span>
+                  </div>
+                </div>
+              )}
+
+              <MapContainer
+                center={[userCoords.lat, userCoords.lng]}
+                zoom={searchRadius > 20 ? 10 : searchRadius > 10 ? 11 : 12}
+                className="w-full h-full"
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker position={[userCoords.lat, userCoords.lng]}>
+                  <Tooltip permanent direction="bottom">
+                    You
                   </Tooltip>
                 </Marker>
-              ))}
-            </MapContainer>
+                {nearbyTechs.map((tech) => (
+                  <Marker
+                    key={tech._id}
+                    position={[
+                      tech.location.coordinates[1],
+                      tech.location.coordinates[0],
+                    ]}
+                  >
+                    <Tooltip permanent direction="top" offset={[0, -10]}>
+                      Tech {tech.name}
+                    </Tooltip>
+                  </Marker>
+                ))}
+              </MapContainer>
+            </div>
           </div>
         </div>
       )}
@@ -291,8 +354,12 @@ export default function RaiseRequest() {
       {showRaiseForm && (
         <RaiseRequestForm
           assets={myasset}
+          initialDescription={draftDescription}
           onSubmit={handleRaiseSubmit}
-          onCancel={() => setShowRaiseForm(false)}
+          onCancel={() => {
+            setShowRaiseForm(false);
+            setDraftDescription("");
+          }}
         />
       )}
 
@@ -331,9 +398,8 @@ export default function RaiseRequest() {
               {reversedRequests.map((ele, i) => (
                 <tr
                   key={ele._id || i}
-                  className={`border-t border-gray-200 hover:bg-gray-50 transition duration-150 ${
-                    i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
+                  className={`border-t border-gray-200 hover:bg-gray-50 transition duration-150 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
                 >
                   <td className="px-5 py-3 text-gray-900 font-medium">
                     {typeof ele.assetid === "object"
@@ -370,17 +436,16 @@ export default function RaiseRequest() {
                   </td>
                   <td className="px-5 py-3">
                     <span
-                      className={`font-medium whitespace-nowrap px-3 py-1 rounded-full ${
-                        ele.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : ele.status === "assigned"
-                            ? "bg-blue-100 text-blue-800"
-                            : ele.status === "in-process"
-                              ? "bg-purple-100 text-purple-800"
-                              : ele.status === "completed"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-500"
-                      }`}
+                      className={`font-medium whitespace-nowrap px-3 py-1 rounded-full ${ele.status === "pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : ele.status === "assigned"
+                          ? "bg-blue-100 text-blue-800"
+                          : ele.status === "in-process"
+                            ? "bg-purple-100 text-purple-800"
+                            : ele.status === "completed"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-500"
+                        }`}
                     >
                       {ele.status.replace("-", " ")}
                     </span>
@@ -460,8 +525,12 @@ export default function RaiseRequest() {
 
       <GeneralRequestForm
         show={showGeneralForm}
-        onClose={() => setShowGeneralForm(false)}
+        onClose={() => {
+          setShowGeneralForm(false);
+          setDraftDescription("");
+        }}
         onSubmit={handleGeneralSubmit}
+        initialIssue={draftDescription}
       />
 
       <div className="mt-20 px-4 font-[Poppins]">
@@ -477,7 +546,7 @@ export default function RaiseRequest() {
               <FaPlus /> Raise Request
             </button>
             <button
-              onClick={handleNearbyTechnician}
+              onClick={() => handleNearbyTechnician()}
               className="px-5 py-2 bg-green-200 text-green-800 font-semibold rounded-lg border border-teal-200 hover:bg-teal-100 transition"
             >
               Nearby Technicians
@@ -522,13 +591,12 @@ export default function RaiseRequest() {
                       </td>
                       <td className="px-6 py-3">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                            ele.status === "OPEN"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : ele.status === "ACCEPTED"
-                                ? "bg-purple-100 text-purple-800"
-                                : "bg-green-100 text-green-800"
-                          }`}
+                          className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${ele.status === "OPEN"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : ele.status === "ACCEPTED"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-green-100 text-green-800"
+                            }`}
                         >
                           {ele.status.charAt(0).toUpperCase() +
                             ele.status.slice(1)}
@@ -556,6 +624,15 @@ export default function RaiseRequest() {
           </table>
         </div>
       </div>
+
+      {(showRaiseForm || showGeneralForm) && (
+        <AiTechBot
+          autoOpen={showGeneralForm}
+          onApplyDescription={(text) => {
+            setDraftDescription(text);
+          }}
+        />
+      )}
     </div>
   );
 }

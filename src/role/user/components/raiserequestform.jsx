@@ -1,8 +1,14 @@
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 
-function RaiseRequestForm({ assets, onSubmit, onCancel }) {
+function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" }) {
   const [assetid, setAssetid] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(initialDescription);
+
+  useEffect(() => {
+    if (initialDescription) {
+      setDescription(initialDescription);
+    }
+  }, [initialDescription]);
 
   const handleSubmit = () => {
     onSubmit(assetid, description);

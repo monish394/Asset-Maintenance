@@ -189,20 +189,29 @@ export default function UserNavbar() {
 
       <div className="flex items-center gap-4">
 
-        <ul className="hidden lg:flex items-center gap-8 text-gray-700 font-medium text-base">
+        <ul className="hidden lg:flex items-center gap-1 text-gray-700 font-medium text-sm">
           {menu.map((item) => (
             <li key={item.to}>
               <NavLink
                 to={item.to}
                 className={({ isActive }) =>
-                  `transition px-3 py-2 rounded flex items-center gap-2 ${isActive
-                    ? "bg-blue-400 text-white"
-                    : "text-gray-700 hover:bg-gray-100"
+                  `relative flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 group ${isActive
+                    ? "bg-indigo-50 text-indigo-700 font-bold shadow-sm"
+                    : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/80"
                   }`
                 }
               >
-                {item.icon}
-                <span>{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    <span className={`transition-colors duration-300 ${isActive ? "text-indigo-600" : "text-gray-400 group-hover:text-gray-600"}`}>
+                      {item.icon}
+                    </span>
+                    <span className="tracking-tight">{item.label}</span>
+                    {isActive && (
+                      <></>
+                    )}
+                  </>
+                )}
               </NavLink>
             </li>
           ))}
@@ -522,7 +531,7 @@ export default function UserNavbar() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-[2] px-6 py-3.5 rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-xl transition transform active:scale-[0.98]"
+                      className="flex-[2] px-6 py-3.5 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-xl shadow-blue-200 transition transform active:scale-[0.98]"
                     >
                       Update Password
                     </button>
@@ -538,17 +547,28 @@ export default function UserNavbar() {
             </button>
 
             {showMobileMenu && (
-              <div className="absolute right-0 mt-3 w-64 bg-white shadow-xl rounded-xl p-2 z-50 border border-gray-200">
+              <div className="absolute right-0 mt-3 w-64 bg-white shadow-xl rounded-2xl p-3 z-50 border border-gray-100">
                 <ul className="space-y-1">
                   {menu.map((item) => (
                     <li key={item.to}>
                       <NavLink
                         to={item.to}
                         onClick={() => setShowMobileMenu(false)}
-                        className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 flex items-center gap-3"
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
+                            ? "bg-indigo-50 text-indigo-700 font-bold"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+                          }`
+                        }
                       >
-                        {item.icon}
-                        <span>{item.label}</span>
+                        {({ isActive }) => (
+                          <>
+                            <span className={isActive ? "text-indigo-600" : "text-gray-400"}>
+                              {item.icon}
+                            </span>
+                            <span>{item.label}</span>
+                          </>
+                        )}
                       </NavLink>
                     </li>
                   ))}

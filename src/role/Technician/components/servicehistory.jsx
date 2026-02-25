@@ -1,27 +1,27 @@
 import { TechData } from "../context/Techniciandatamaintenance"
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
+import { FaTools, FaCheckCircle } from "react-icons/fa";
 
 export default function ServiceHistory() {
   const { technicianassignedassert } = TechData()
   const [loading, setLoading] = useState(true);
-    console.log(technicianassignedassert)
-  
-    useEffect(() => {
-      if (technicianassignedassert) {
-        setTimeout(() => {
-          setLoading(false)
-          
-        }, 500);
-      }
-       }, [technicianassignedassert]);
-  
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center mt-20">
-          <p className="text-gray-500 text-lg">Loading request details...</p>
-        </div>
-      );
+
+  useEffect(() => {
+    if (technicianassignedassert) {
+      setTimeout(() => {
+        setLoading(false)
+      }, 500);
     }
+  }, [technicianassignedassert]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-center mt-32 gap-4">
+        <div className="w-10 h-10 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+        <p className="text-slate-400 text-sm font-medium tracking-wide">Loading service records...</p>
+      </div>
+    );
+  }
 
   const inProgress = technicianassignedassert.filter(
     ele => ele.status === "in-process"
@@ -31,134 +31,166 @@ export default function ServiceHistory() {
     ele => ele.status === "completed"
   )
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+  };
+
   return (
-<div
-  className="p-8 space-y-10 min-h-screen bg-gray-50"
-  style={{ fontFamily: "Calibri, Segoe UI, sans-serif",fontSize:"30px"}}
->
-  <h1 className="text-3xl font-semibold text-gray-800">
-    Service Details
-  </h1>
+    <div
+      className="p-8 space-y-8 min-h-screen"
+      style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}
+    >
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Service History</h1>
+        <p className="text-slate-400 text-sm font-medium mt-1">Track your active and completed maintenance operations.</p>
+      </div>
 
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-    <div className="flex items-center justify-between mb-4">
-      <h2 className="text-xl font-semibold text-gray-800">
-        In Progress Work Orders
-      </h2>
-      <span className="text-sm text-gray-500 font-medium">
-        {inProgress.length} Active
-      </span>
-    </div>
+      {/* In Progress Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+              <FaTools className="text-amber-500" size={16} />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-800">In Progress</h2>
+              <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Active work orders</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-100">
+            {inProgress.length} Active
+          </span>
+        </div>
 
-    <div className="overflow-x-auto border border-gray-200 rounded-lg">
-      <table className="min-w-full text-sm text-gray-700">
-        <thead className="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
-          <tr>
-            <th className="px-5 py-3 text-left font-semibold">Asset</th>
-            <th className="px-5 py-3 text-left font-semibold">Issue</th>
-            <th className="px-5 py-3 text-left font-semibold">Priority</th>
-            <th className="px-5 py-3 text-left font-semibold">Cost</th>
-          </tr>
-        </thead>
-
-        <tbody className="divide-y divide-gray-200">
-          {inProgress.length ? (
-            inProgress.map((ele) => (
-              <tr key={ele._id} className="hover:bg-gray-50 transition">
-                <td className="px-5 py-3 font-medium text-gray-900">
-                  {ele.assetid?.assetName}
-                </td>
-
-                <td className="px-5 py-3 text-gray-600 max-w-md">
-                  {ele.description}
-                </td>
-
-                <td className="px-5 py-3">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium capitalize
-                      ${ele.aiPriority === "high" && "bg-red-100 text-red-700"}
-                      ${ele.aiPriority === "medium" && "bg-yellow-100 text-yellow-700"}
-                      ${ele.aiPriority === "low" && "bg-green-100 text-green-700"}
-                    `}
-                  >
-                    {ele.aiPriority}
-                  </span>
-                </td>
-
-                <td className="px-5 py-3 font-semibold text-gray-800">
-                  {ele.costEstimate ? `₹${ele.costEstimate}` : "N/A"}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="bg-slate-50/80">
+                <th className="px-6 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Asset Name</th>
+                <th className="px-6 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Issue Description</th>
+                <th className="px-6 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Priority</th>
+                <th className="px-6 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Est. Cost</th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4" className="px-5 py-6 text-center text-gray-400">
-                No in-progress work orders
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  </div>
+            </thead>
 
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-    <div className="flex items-center justify-between mb-4">
-      <h2 className="text-xl font-semibold text-gray-800">
-        Completed Work Orders
-      </h2>
-      <span className="text-sm text-gray-500 font-medium">
-        {completed.length} Completed
-      </span>
-    </div>
+            <tbody className="divide-y divide-slate-50">
+              {inProgress.length ? (
+                inProgress.map((ele) => (
+                  <tr key={ele._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-semibold text-slate-800">{ele.assetid?.assetName}</p>
+                    </td>
 
-    <div className="overflow-x-auto border border-gray-200 rounded-lg">
-      <table className="min-w-full text-sm text-gray-700">
-        <thead className="bg-gray-100 text-xs uppercase tracking-wide text-gray-600">
-          <tr>
-            <th className="px-5 py-3 text-left font-semibold">Asset</th>
-            <th className="px-5 py-3 text-left font-semibold">Issue</th>
-            <th className="px-5 py-3 text-left font-semibold">Completed At</th>
-            <th className="px-5 py-3 text-left font-semibold">Cost</th>
-          </tr>
-        </thead>
+                    <td className="px-6 py-4 max-w-xs">
+                      <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{ele.description}</p>
+                    </td>
 
-        <tbody className="divide-y divide-gray-200">
-          {completed.length ? (
-            completed.map((ele) => (
-              <tr key={ele._id} className="hover:bg-gray-50 transition">
-                <td className="px-5 py-3 font-medium text-gray-900">
-                  {ele.assetid?.assetName}
-                </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider
+                          ${ele.aiPriority === "high" ? "bg-rose-50 text-rose-600 border border-rose-100" : ""}
+                          ${ele.aiPriority === "medium" ? "bg-amber-50 text-amber-600 border border-amber-100" : ""}
+                          ${ele.aiPriority === "low" ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : ""}
+                        `}
+                      >
+                        {ele.aiPriority || "N/A"}
+                      </span>
+                    </td>
 
-                <td className="px-5 py-3 text-gray-600 max-w-md">
-                  {ele.description}
-                </td>
+                    <td className="px-6 py-4 text-right">
+                      <p className="text-sm font-bold text-slate-800">
+                        {ele.costEstimate ? `₹${ele.costEstimate.toLocaleString()}` : "—"}
+                      </p>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">
+                        <FaTools className="text-slate-300" size={20} />
+                      </div>
+                      <p className="text-slate-400 text-sm font-medium">No active work orders</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-                <td className="px-5 py-3 text-gray-600">
-                  {ele.completedAt
-                    ? new Date(ele.completedAt).toLocaleString()
-                    : "-"}
-                </td>
+      {/* Completed Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <FaCheckCircle className="text-emerald-500" size={16} />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-800">Completed</h2>
+              <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Resolved maintenance jobs</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+            {completed.length} Done
+          </span>
+        </div>
 
-                <td className="px-5 py-3 font-semibold text-gray-800">
-                  ₹{ele.costEstimate}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="bg-slate-50/80">
+                <th className="px-6 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Asset Name</th>
+                <th className="px-6 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Issue Description</th>
+                <th className="px-6 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Resolved On</th>
+                <th className="px-6 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">Final Cost</th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4" className="px-5 py-6 text-center text-gray-400">
-                No completed work orders
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </thead>
+
+            <tbody className="divide-y divide-slate-50">
+              {completed.length ? (
+                completed.map((ele) => (
+                  <tr key={ele._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-semibold text-slate-800">{ele.assetid?.assetName}</p>
+                    </td>
+
+                    <td className="px-6 py-4 max-w-xs">
+                      <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{ele.description}</p>
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <p className="text-xs font-medium text-slate-500">{formatDate(ele.completedAt)}</p>
+                    </td>
+
+                    <td className="px-6 py-4 text-right">
+                      <p className="text-sm font-bold text-slate-800">₹{ele.costEstimate?.toLocaleString() || "0"}</p>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">
+                        <FaCheckCircle className="text-slate-300" size={20} />
+                      </div>
+                      <p className="text-slate-400 text-sm font-medium">No completed work orders yet</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-
   )
 }

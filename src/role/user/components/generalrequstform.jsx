@@ -1,12 +1,12 @@
 import { memo, useState, useEffect } from "react";
 
-function GeneralRequestForm({ show, onClose, onSubmit }) {
-  const [issue, setIssue] = useState("");
+function GeneralRequestForm({ show, onClose, onSubmit, initialIssue = "" }) {
+  const [issue, setIssue] = useState(initialIssue);
 
 
   useEffect(() => {
-    if (show) setIssue("");
-  }, [show]);
+    if (show) setIssue(initialIssue);
+  }, [show, initialIssue]);
 
   if (!show) return null;
 

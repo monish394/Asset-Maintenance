@@ -41,6 +41,10 @@ const Userschema = new mongoose.Schema(
     profile: {
       type: String,
       default: ""
+    },
+    isApproved: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }
