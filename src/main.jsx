@@ -6,7 +6,9 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { BrowserRouter } from "react-router-dom"
 import ScrollToTop from './scrooltotop.jsx'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+// Fallback to a placeholder so the app doesn't crash when env var is missing.
+// Set VITE_GOOGLE_CLIENT_ID in Render Dashboard > Environment (Build Env Vars)
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "placeholder-set-in-render";
 
 createRoot(document.getElementById('root')).render(
   <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
@@ -16,3 +18,4 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </GoogleOAuthProvider>,
 )
+
