@@ -18,6 +18,11 @@ import AiCtrl from "./app/controllers/AiController.js";
 import Payment from "./app/models/Payment.js";
 import ChatMessage from "./app/models/ChatMessage.js";
 import { upload } from "./app/middlewares/cloudinaryUpload.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
@@ -284,6 +289,22 @@ app.get("/api/chat/:requestId", AuthenticateUser, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch chat history" });
   }
 });
+
+// Serve static assets in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../dist")));
+
+  // The "catch-all" handler: for any request that doesn't
+  // match one above, send back React's index.html file.
+  app.get("*", (req, res) => {
+    // Only redirect to index.html if it's not an API call
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, "../dist/index.html"));
+    } else {
+      res.status(404).json({ message: "API route not found" });
+    }
+  });
+}
 
 httpServer.listen(PORT, () => {
   console.log(`server is running on port  ${PORT}`)

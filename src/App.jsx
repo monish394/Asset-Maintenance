@@ -5,7 +5,8 @@ import { Toaster } from "sonner";
 import Dashboard from "./dashboard.jsx";
 
 //public routes
-import PublicHome from "./logrespage/home.jsx";
+// import PublicHome from "./logrespage/home.jsx";
+import PublicHome from "./logrespage/Home.jsx";
 
 //private route
 import PrivateRoute from "./logrespage/publicandprotected/privateroute.jsx";
