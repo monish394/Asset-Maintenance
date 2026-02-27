@@ -1,7 +1,14 @@
 import axios from "axios";
 
+// In production (Render), the Express server serves both frontend and API
+// on the same domain, so we use a relative path '/api'.
+// In development, Vite's proxy forwards '/api' to localhost:5000.
+const baseURL = import.meta.env.DEV
+    ? "http://localhost:5000/api"
+    : "/api";
+
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+    baseURL
 });
 
 axiosInstance.interceptors.request.use(
