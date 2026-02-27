@@ -284,9 +284,19 @@ export default function Users() {
             {allusers.length > 0 ? (
               users.map((user) => (
                 <tr key={user._id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td>
-                    <img src={user.profile}  />
-                  </td>
+                 <td className="px-6 py-5">
+  {user.profile ? (
+    <img
+      src={user.profile}
+      alt={user.name}
+      className="w-10 h-10 rounded-full object-cover border border-slate-200"
+    />
+  ) : (
+    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border border-indigo-200">
+      {user.name?.charAt(0).toUpperCase()}
+    </div>
+  )}
+</td>
                   <td className="px-6 py-5">
                     <p className="text-sm font-bold text-slate-800">{user.name}</p>
                     <p className="text-[10px] text-slate-400 font-medium tracking-wide mt-1">
