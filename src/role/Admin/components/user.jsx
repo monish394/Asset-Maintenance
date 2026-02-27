@@ -284,18 +284,22 @@ export default function Users() {
             {allusers.length > 0 ? (
               users.map((user) => (
                 <tr key={user._id} className="hover:bg-slate-50/50 transition-colors group">
-                 <td className="px-6 py-5">
-  {user.profile ? (
-    <img
-      src={user.profile}
-      alt={user.name}
-      className="w-10 h-10 rounded-full object-cover border border-slate-200"
-    />
-  ) : (
-    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border border-indigo-200">
-      {user.name?.charAt(0).toUpperCase()}
-    </div>
-  )}
+  <td className="px-6 py-5">
+  <div className="min-w-[40px] min-h-[40px] w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-sm border border-indigo-200">
+    
+    {user.profile ? (
+      <img
+        src={user.profile}
+        alt={user.name}
+        onError={(e) => (e.target.style.display = "none")}
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      user.name?.charAt(0).toUpperCase()
+    )}
+
+    {!user.profile && user.name?.charAt(0).toUpperCase()}
+  </div>
 </td>
                   <td className="px-6 py-5">
                     <p className="text-sm font-bold text-slate-800">{user.name}</p>
