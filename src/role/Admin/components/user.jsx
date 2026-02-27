@@ -269,6 +269,8 @@ export default function Users() {
         <table className="min-w-full divide-y divide-slate-100">
           <thead className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold tracking-[0.1em]">
             <tr>
+              <th className="px-6 py-5 text-left">Profile</th>
+
               <th className="px-6 py-5 text-left">User</th>
               <th className="px-6 py-5 text-left">Contact Info</th>
               <th className="px-6 py-5 text-left">Location</th>
@@ -282,6 +284,9 @@ export default function Users() {
             {allusers.length > 0 ? (
               users.map((user) => (
                 <tr key={user._id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td>
+                    <img src={user.profile}  />
+                  </td>
                   <td className="px-6 py-5">
                     <p className="text-sm font-bold text-slate-800">{user.name}</p>
                     <p className="text-[10px] text-slate-400 font-medium tracking-wide mt-1">
