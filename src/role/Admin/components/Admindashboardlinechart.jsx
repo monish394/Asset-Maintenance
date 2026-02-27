@@ -4,18 +4,23 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
+  BarController,
   LineElement,
+  LineController,
   PointElement,
   Tooltip,
   Legend,
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
 
+// Must register both BarController and LineController for mixed chart types
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  BarController,
   LineElement,
+  LineController,
   PointElement,
   Tooltip,
   Legend
@@ -70,7 +75,7 @@ const AdminDashboardLineBarChart = ({ stats }) => {
     plugins: {
       legend: {
         position: "bottom",
-        onClick: () => {},
+        onClick: () => { },
         labels: {
           usePointStyle: true,
           filter: (item) => item.text !== "Pending Trend",

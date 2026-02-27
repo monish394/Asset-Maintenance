@@ -1,8 +1,9 @@
 import React from "react";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, BarController, Tooltip, Legend } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import { TechData } from "../context/Techniciandatamaintenance";
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, BarController, Tooltip, Legend);
+
 
 const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
 
