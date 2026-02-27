@@ -9,8 +9,7 @@ import RaiseRequest from "../models/RaiseRequest.js";
 import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
-// NOTE: Do NOT create OAuth2Client at module level - env vars may not be loaded yet
-// It is created lazily inside GoogleLogin instead
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 async function geocodeAddress(address) {
@@ -378,18 +377,9 @@ UserCtrl.ChangePassword = async (req, res) => {
 UserCtrl.GoogleLogin = async (req, res) => {
   const { credential } = req.body;
   try {
-    const googleClientId = process.env.GOOGLE_CLIENT_ID;
-    if (!googleClientId) {
-      console.error("GOOGLE_CLIENT_ID env var is not set!");
-      return res.status(500).json({ err: "Server misconfiguration: Google Client ID not set" });
-    }
-
-    // Create client lazily so we always use the loaded env var
-    const client = new OAuth2Client(googleClientId);
-
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: googleClientId,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
     const { name, email, picture } = ticket.getPayload();
 
@@ -419,8 +409,8 @@ UserCtrl.GoogleLogin = async (req, res) => {
       role: user.role,
     });
   } catch (err) {
-    console.log("Google login error:", err.message);
-    res.status(400).json({ err: "Google login failed: " + err.message });
+    console.log(err);
+    res.status(400).json({ err: "Google login failed" });
   }
 };
 
