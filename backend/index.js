@@ -1,5 +1,11 @@
 import dotenv from "dotenv";
-dotenv.config()
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, ".env") });
 import cors from "cors"
 import express from "express";
 import { createServer } from "http";
@@ -18,11 +24,7 @@ import AiCtrl from "./app/controllers/AiController.js";
 import Payment from "./app/models/Payment.js";
 import ChatMessage from "./app/models/ChatMessage.js";
 import { upload } from "./app/middlewares/cloudinaryUpload.js";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
@@ -259,6 +261,6 @@ app.get("/{*splat}", (req, res) => {
   }
 });
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`server is running on port ${PORT}`);
 });

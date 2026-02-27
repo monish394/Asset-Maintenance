@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: asset-maintenance
+    env: node
+    region: singapore
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npm run build
+    startCommand: node backend/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
