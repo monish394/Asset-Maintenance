@@ -54,20 +54,15 @@ export default function Admin() {
 
 
   const recentAssigned = allraiserequest
-    .filter(a => a.assignAt)
-    .sort((a, b) => new Date(b.assignAt) - new Date(a.assignAt))
+    .filter(a => a.assignedto)
+    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
     .slice(0, 5);
 
   return (
     <div>
-      <div className="ml-70 mt-10 mb-6 max-w-5xl">
-
-
-      </div>
-
       {admindashboardstats && (
         <div
-          className="bg-gray-30 p-8 rounded-2xl border border-gray-200 shadow-md
+          className="bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-md
                w-full lg:w-[calc(100%-16rem)] ml-0 lg:ml-64"
         >
           <h1 className="text-3xl font-serif font-semibold text-gray-800 tracking-wide mb-8">
@@ -143,9 +138,9 @@ export default function Admin() {
 
 
 
-      <div className="mt-15 px-4 border-sm">
+      <div className="mt-10 px-4">
         {admindashboardstats && admindashboardraiserequeststats && (
-          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center ml-40">
+          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center ml-0 lg:ml-64">
             <AdminDashboardPieChart stats={admindashboardstats} />
             <AdminDashboardLineBarChart stats={admindashboardraiserequeststats} />
           </div>
@@ -261,7 +256,7 @@ export default function Admin() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {allraiserequest.slice(-5).reverse().map((ele, index) => (
                   <tr
-                    key={ele._id}
+                    key={ele._id || index}
                     className={`transition-colors duration-200 ${index % 2 === 0
                       ? "bg-white hover:bg-gray-50"
                       : "bg-gray-50 hover:bg-gray-100"
@@ -451,21 +446,25 @@ export default function Admin() {
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {recentAssigned.map((asset) => (
+            {recentAssigned.map((asset, index) => (
               <tr
-                key={asset._id}
+                key={asset._id || index}
                 className="align-top hover:bg-gray-50 transition-colors"
               >
                 <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
-                  {asset.assetid.assetName}
+                  {asset.assetid?.assetName || "N/A"}
                 </td>
 
                 <td className="px-4 py-3">
-                  <img
-                    src={asset.assetid.assetImg}
-                    alt={asset.assetid.assetName}
-                    className="h-16 w-16 rounded-sm object-cover border border-gray-200"
-                  />
+                  {asset.assetid?.assetImg ? (
+                    <img
+                      src={asset.assetid.assetImg}
+                      alt={asset.assetid?.assetName || "asset"}
+                      className="h-16 w-16 rounded-sm object-cover border border-gray-200"
+                    />
+                  ) : (
+                    <div className="h-16 w-16 rounded-sm bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 text-xs">No img</div>
+                  )}
                 </td>
 
                 <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
