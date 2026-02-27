@@ -62,7 +62,7 @@ export default function Admin() {
     <div>
       {admindashboardstats && (
         <div
-          className=" mt-50 bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-md
+          className=" mt-20 bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-md
                w-full lg:w-[calc(100%-16rem)] ml-0 lg:ml-64"
         >
           <h1 className="text-3xl font-serif font-semibold text-gray-800 tracking-wide mb-8">
