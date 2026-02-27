@@ -9,7 +9,8 @@ import RaiseRequest from "../models/RaiseRequest.js";
 import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+// NOTE: Do NOT create OAuth2Client at module level - env vars may not be loaded yet
+// It is created lazily inside GoogleLogin instead
 
 
 async function geocodeAddress(address) {
@@ -201,7 +202,7 @@ UserCtrl.EditUser = async (req, res) => {
       return res.status(404).json({ err: "User not found" });
     }
 
-    
+
     if (address && address !== userToUpdate.address) {
       const coords = await geocodeAddress(address);
       if (coords) {
@@ -377,9 +378,18 @@ UserCtrl.ChangePassword = async (req, res) => {
 UserCtrl.GoogleLogin = async (req, res) => {
   const { credential } = req.body;
   try {
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    if (!googleClientId) {
+      console.error("GOOGLE_CLIENT_ID env var is not set!");
+      return res.status(500).json({ err: "Server misconfiguration: Google Client ID not set" });
+    }
+
+    // Create client lazily so we always use the loaded env var
+    const client = new OAuth2Client(googleClientId);
+
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: googleClientId,
     });
     const { name, email, picture } = ticket.getPayload();
 
@@ -393,7 +403,7 @@ UserCtrl.GoogleLogin = async (req, res) => {
         address: "Not Provided Yet",
         profile: picture,
         role: "user",
-        isApproved: false 
+        isApproved: false
       });
       await user.save();
     }
@@ -409,8 +419,8 @@ UserCtrl.GoogleLogin = async (req, res) => {
       role: user.role,
     });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ err: "Google login failed" });
+    console.log("Google login error:", err.message);
+    res.status(400).json({ err: "Google login failed: " + err.message });
   }
 };
 
