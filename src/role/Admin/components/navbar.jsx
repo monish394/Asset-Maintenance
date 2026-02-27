@@ -19,7 +19,7 @@ export default function Navbar() {
   }, []);
 
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role") || localStorage.getItem("role");
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -190,6 +190,8 @@ export default function Navbar() {
                     onClick={() => {
                       localStorage.removeItem("token");
                       localStorage.removeItem("role");
+                      sessionStorage.removeItem("token");
+                      sessionStorage.removeItem("role");
                       navigate("/");
                     }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-xl transition group"

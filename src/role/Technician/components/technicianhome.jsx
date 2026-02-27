@@ -11,14 +11,23 @@ import {
   FaTools,
   FaClock,
 } from "react-icons/fa";
+import { socket } from "../../../socket";
 import TechnicianStatusPieChart from "./technicianstatspiechart";
 import TechnicianRequestCostChart from "./techniciancostlinechart";
+import AcceptedRequestsChart from "./AcceptedRequestsChart";
 
 export default function TechnicianHome() {
   const [technicianstats, setTechnicianstats] = useState(null);
+  const [acceptedGeneralRequests, setAcceptedGeneralRequests] = useState([]);
   const { technicianassignedassert, techinfo } = TechData();
 
   useEffect(() => {
+
+    if (techinfo?._id) {
+      socket.connect();
+      socket.emit("join", techinfo._id);
+    }
+
     axios
       .get("/technicianstats", {
         headers: {
@@ -31,7 +40,25 @@ export default function TechnicianHome() {
       .catch((err) => {
         console.log(err.message);
       });
-  }, []);
+
+
+    axios
+      .get("/gettechnicianaccepetedgeneralrequest", {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setAcceptedGeneralRequests(res.data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [techinfo]);
 
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
@@ -180,11 +207,17 @@ export default function TechnicianHome() {
       )}
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-shadow">
           <TechnicianStatusPieChart stats={technicianstats} />
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-shadow">
+          <AcceptedRequestsChart
+            raiseRequests={technicianassignedassert.filter(r => r.status !== 'pending')}
+            generalRequests={acceptedGeneralRequests}
+          />
+        </div>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-shadow">
           <TechnicianRequestCostChart
             technicianassignedassert={technicianassignedassert}
           />

@@ -63,11 +63,11 @@ const TechnicianStatsPieChart = ({ stats }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md mx-auto">
-      <h3 className="text-lg font-semibold text-gray-800 text-center mb-4">
-        Technician Request Status
+    <div className="w-full h-full flex flex-col items-center">
+      <h3 className="text-lg font-semibold text-slate-800 text-center mb-6">
+        Request Status Distribution
       </h3>
-      <div style={{ height: 300, width: 300, margin: "0 auto" }}>
+      <div className="relative w-full aspect-square max-h-[300px]">
         <Pie data={data} options={options} />
       </div>
     </div>

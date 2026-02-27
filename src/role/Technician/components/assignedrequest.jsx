@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
 import axios from "../../../config/api";
 import OSMTrackMap from "./techniciantrack";
-import { FaMapMarkerAlt, FaPhone, FaEdit, FaTimes, FaCheckCircle } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhone, FaEdit, FaTimes, FaCheckCircle, FaComments } from "react-icons/fa";
+import { socket } from "../../../socket";
+import Chat from "../../../components/Chat";
 
 export default function AssignedRequest() {
   const [showMap, setShowMap] = useState(false);
@@ -13,8 +15,56 @@ export default function AssignedRequest() {
   const [requestid, setRequestid] = useState("");
   const [statusedit, setStatusedit] = useState("");
   const [showeditform, setShoweditform] = useState(false);
-  
-  const { technicianassignedassert, setTechnicianassignedassert, requests, setRequests } = TechData();
+  const [activeChat, setActiveChat] = useState(null);
+
+  const { technicianassignedassert, setTechnicianassignedassert, requests, setRequests, techinfo } = TechData();
+  const [unreadChats, setUnreadChats] = useState({});
+
+  useEffect(() => {
+    if (techinfo?._id) {
+      socket.connect();
+      socket.emit("join", techinfo._id);
+
+      const handleNewMsg = (msg) => {
+
+        if (!activeChat || String(activeChat.requestId) !== String(msg.requestId)) {
+          setUnreadChats(prev => ({
+            ...prev,
+            [msg.requestId]: true
+          }));
+        }
+      };
+
+      socket.on("receiveMessage", handleNewMsg);
+      return () => {
+        socket.off("receiveMessage", handleNewMsg);
+      };
+    }
+  }, [techinfo, activeChat]);
+
+  const openChat = (chatData) => {
+    setActiveChat(chatData);
+
+    setUnreadChats(prev => {
+      const updated = { ...prev };
+      delete updated[chatData.requestId];
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    if (techinfo?._id) {
+      axios.get("/chat/unread", {
+        headers: { Authorization: localStorage.getItem("token") }
+      })
+        .then(res => {
+          const unreadMap = {};
+          res.data.forEach(id => unreadMap[id] = true);
+          setUnreadChats(unreadMap);
+        })
+        .catch(err => console.error("Error fetching unread status:", err));
+    }
+  }, [techinfo]);
 
   useEffect(() => {
     const fetchNearby = async () => {
@@ -193,7 +243,7 @@ export default function AssignedRequest() {
 
   return (
     <div className="p-6" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
-      
+
       {/* Edit Modal */}
       {showeditform && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -313,6 +363,24 @@ export default function AssignedRequest() {
                             Edit
                           </button>
                         )}
+                        {ele.status === "assigned" && (
+                          <button
+                            onClick={() => openChat({
+                              requestId: ele._id,
+                              requestModel: 'RaiseRequest',
+                              senderId: techinfo._id,
+                              receiverId: ele.userid?._id,
+                              receiverName: ele.userid?.name
+                            })}
+                            className="relative px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-600 text-xs font-medium hover:bg-indigo-200 transition"
+                            title="Chat with User"
+                          >
+                            <FaComments />
+                            {unreadChats[ele._id] && (
+                              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                            )}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -370,13 +438,33 @@ export default function AssignedRequest() {
                   )}
                 </div>
 
-                <button
-                  onClick={() => handleTrack(item.userid?.address)}
-                  className="w-full py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition flex items-center justify-center gap-2"
-                >
-                  <FaMapMarkerAlt size={12} />
-                  Track
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleTrack(item.userid?.address)}
+                    className="flex-1 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition flex items-center justify-center gap-2"
+                  >
+                    <FaMapMarkerAlt size={12} />
+                    Track
+                  </button>
+                  {(item.status === "assigned" || item.status === "in-process") && (
+                    <button
+                      onClick={() => openChat({
+                        requestId: item._id,
+                        requestModel: 'RaiseRequest',
+                        senderId: techinfo._id,
+                        receiverId: item.userid?._id,
+                        receiverName: item.userid?.name
+                      })}
+                      className="relative px-3 py-2.5 bg-indigo-100 text-indigo-600 rounded-xl hover:bg-indigo-200 transition"
+                      title="Chat with User"
+                    >
+                      <FaComments />
+                      {unreadChats[item._id] && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -488,6 +576,24 @@ export default function AssignedRequest() {
                           >
                             Track
                           </button>
+                          {req.status === "ACCEPTED" && (
+                            <button
+                              onClick={() => openChat({
+                                requestId: req._id,
+                                requestModel: 'GeneralRequest',
+                                senderId: techinfo._id,
+                                receiverId: req.userId?._id,
+                                receiverName: req.userId?.name
+                              })}
+                              className="relative px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-600 text-xs font-medium hover:bg-indigo-200 transition"
+                              title="Chat with User"
+                            >
+                              <FaComments />
+                              {unreadChats[req._id] && (
+                                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                              )}
+                            </button>
+                          )}
                           {req.status !== "COMPLETED" && (
                             <button
                               onClick={() => handleComplete(req._id)}
@@ -563,6 +669,13 @@ export default function AssignedRequest() {
           )}
         </div>
       </div>
+
+      {activeChat && (
+        <Chat
+          {...activeChat}
+          onClose={() => setActiveChat(null)}
+        />
+      )}
     </div>
   );
 }

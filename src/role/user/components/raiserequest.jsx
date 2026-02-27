@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useUserAsset } from "../context/userassetprovider";
 import { FcIdea } from "react-icons/fc";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaComments } from "react-icons/fa6";
 import axios from "../../../config/api";
+import { socket } from "../../../socket";
+import { toast } from "sonner";
 import {
   MapContainer,
   TileLayer,
@@ -16,6 +18,7 @@ import L from "leaflet";
 import GeneralRequestForm from "./generalrequstform";
 import RaiseRequestForm from "./raiserequestform";
 import AiTechBot from "./AiTechBot";
+import Chat from "../../../components/Chat";
 
 function FitBounds({ origin, destination }) {
   const map = useMap();
@@ -86,6 +89,8 @@ export default function RaiseRequest() {
   const [draftDescription, setDraftDescription] = useState("");
   const [searchRadius, setSearchRadius] = useState(5);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [activeChat, setActiveChat] = useState(null);
+  const [unreadChats, setUnreadChats] = useState({});
 
   const {
     myasset,
@@ -95,6 +100,56 @@ export default function RaiseRequest() {
     usergeneralrequest,
     setUsergeneralrequest,
   } = useUserAsset();
+
+  useEffect(() => {
+    if (userinfo?._id) {
+      socket.connect();
+      socket.emit("join", userinfo._id);
+
+      const handleNewMsg = (msg) => {
+        if (!activeChat || String(activeChat.requestId) !== String(msg.requestId)) {
+          setUnreadChats((prev) => ({
+            ...prev,
+            [msg.requestId]: true,
+          }));
+        }
+      };
+
+      socket.on("receiveMessage", handleNewMsg);
+      socket.on("notification", (data) => {
+        toast.info(data.message, {});
+      });
+
+      return () => {
+        socket.off("receiveMessage", handleNewMsg);
+        socket.off("notification");
+        socket.disconnect();
+      };
+    }
+  }, [userinfo, activeChat]);
+
+  const openChat = (chatData) => {
+    setActiveChat(chatData);
+    setUnreadChats((prev) => {
+      const updated = { ...prev };
+      delete updated[chatData.requestId];
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    if (userinfo?._id) {
+      axios.get("/chat/unread", {
+        headers: { Authorization: localStorage.getItem("token") }
+      })
+        .then(res => {
+          const unreadMap = {};
+          res.data.forEach(id => unreadMap[id] = true);
+          setUnreadChats(unreadMap);
+        })
+        .catch(err => console.error("Error fetching unread status:", err));
+    }
+  }, [userinfo]);
 
   const reversedRequests = useMemo(
     () => [...myraiserequest].reverse(),
@@ -265,7 +320,7 @@ export default function RaiseRequest() {
       {showNearbyMap && userCoords && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="relative bg-white w-full max-w-4xl h-[600px] rounded-[2.5rem] shadow-3xl overflow-hidden flex flex-col border border-white/20">
-            {/* Header with Slider */}
+
             <div className="p-6 bg-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
 
@@ -507,12 +562,32 @@ export default function RaiseRequest() {
                   <span className="font-semibold">Status:</span>{" "}
                   {ele.status.replace("-", " ")}
                 </p>
-                <button
-                  onClick={() => handleTrack(ele)}
-                  className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
-                >
-                  Track Technician
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleTrack(ele)}
+                    className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                  >
+                    Track
+                  </button>
+                  {(ele.status === "assigned" || ele.status === "in-process") && (
+                    <button
+                      onClick={() => openChat({
+                        requestId: ele._id,
+                        requestModel: 'RaiseRequest',
+                        senderId: userinfo._id,
+                        receiverId: ele.assignedto._id,
+                        receiverName: ele.assignedto.name
+                      })}
+                      className="relative px-3 py-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
+                      title="Chat with Technician"
+                    >
+                      <FaComments />
+                      {unreadChats[ele._id] && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             ))
           ) : (
@@ -522,6 +597,13 @@ export default function RaiseRequest() {
           )}
         </div>
       </div>
+
+      {activeChat && (
+        <Chat
+          {...activeChat}
+          onClose={() => setActiveChat(null)}
+        />
+      )}
 
       <GeneralRequestForm
         show={showGeneralForm}
@@ -554,26 +636,30 @@ export default function RaiseRequest() {
           </div>
         </div>
         <div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200 table-auto">
+          <table className="min-w-full table-fixed divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                <th className="w-16 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   S.No
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                <th className="w-2/5 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Issue
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                <th className="w-32 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                <th className="w-40 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Accepted By
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                <th className="w-48 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Requested At
+                </th>
+                <th className="w-24 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                  Action
                 </th>
               </tr>
             </thead>
+
             <tbody className="bg-white divide-y divide-gray-100">
               {usergeneralrequest.length > 0 ? (
                 usergeneralrequest
@@ -581,39 +667,67 @@ export default function RaiseRequest() {
                   .map((ele, index) => (
                     <tr
                       key={ele._id}
-                      className="hover:bg-gray-50 transition duration-150"
+                      className="hover:bg-gray-50 transition-colors duration-150"
                     >
                       <td className="px-6 py-3 text-gray-700 font-medium">
                         {index + 1}
                       </td>
-                      <td className="px-6 py-3 text-gray-700 line-clamp-2">
-                        {ele.issue}
+
+                      <td className="px-6 py-3 align-top">
+                        <p className="text-gray-700 text-sm whitespace-normal break-words">
+                          {ele.issue}
+                        </p>
                       </td>
+
                       <td className="px-6 py-3">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${ele.status === "OPEN"
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${ele.status === "OPEN"
                             ? "bg-yellow-100 text-yellow-800"
                             : ele.status === "ACCEPTED"
                               ? "bg-purple-100 text-purple-800"
                               : "bg-green-100 text-green-800"
                             }`}
                         >
-                          {ele.status.charAt(0).toUpperCase() +
-                            ele.status.slice(1)}
+                          {ele.status
+                            ? ele.status.charAt(0).toUpperCase() + ele.status.slice(1).toLowerCase()
+                            : ""}
                         </span>
                       </td>
-                      <td className="px-6 py-3 text-gray-700 font-medium">
+
+                      <td className="px-6 py-3 text-gray-700 font-medium truncate">
                         {ele.acceptedBy?.name || "N/A"}
                       </td>
-                      <td className="px-6 py-3 text-gray-500">
+
+                      <td className="px-6 py-3 text-gray-500 text-sm whitespace-nowrap">
                         {new Date(ele.createdAt).toLocaleString()}
+                      </td>
+
+                      <td className="px-6 py-3">
+                        {ele.status === "ACCEPTED" && (
+                          <button
+                            onClick={() => openChat({
+                              requestId: ele._id,
+                              requestModel: 'GeneralRequest',
+                              senderId: userinfo._id,
+                              receiverId: ele.acceptedBy?._id,
+                              receiverName: ele.acceptedBy?.name
+                            })}
+                            className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
+                            title="Chat with Technician"
+                          >
+                            <FaComments />
+                            {unreadChats[ele._id] && (
+                              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                            )}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
               ) : (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan={6}
                     className="px-6 py-8 text-center text-gray-400 font-medium"
                   >
                     No General Requests Found

@@ -1,7 +1,7 @@
 import RaiseRequest from "../models/RaiseRequest.js";
 import User from "../models/Registeruser.js";
 import Notification from "../models/NotificationUser.js";
-const RaiseRequestCtrl={};
+const RaiseRequestCtrl = {};
 
 
 
@@ -25,7 +25,7 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
     aiCategory: "General",
     aiPriority: "medium",
     requesttype: "repair",
-    
+
   };
 
   try {
@@ -61,7 +61,7 @@ Issue:
         aiData.aiCategory = parsed.category || aiData.aiCategory;
         aiData.aiPriority = parsed.priority || aiData.aiPriority;
         aiData.requesttype = parsed.requestType || aiData.requesttype;
-       
+
       }
     }
   } catch (err) {
@@ -120,36 +120,36 @@ Issue:
 
 //get all user Raise request
 
-RaiseRequestCtrl.Getuserissue=async (req,res) => {
-    try{
-        const alluserissue=await RaiseRequest.find({userid:req.userid}).populate("assetid", "assetName assetImg") .populate("assignedto", "name address phone")
-        res.status(200).json(alluserissue)
+RaiseRequestCtrl.Getuserissue = async (req, res) => {
+  try {
+    const alluserissue = await RaiseRequest.find({ userid: req.userid }).populate("assetid", "assetName assetImg").populate("assignedto", "name address phone")
+    res.status(200).json(alluserissue)
 
-    }catch(err){
-        console.log(err.message)
-        res.status(400).json({err:"something went wrong while getting all userraiserequest!!!"})
-    }
-    
+  } catch (err) {
+    console.log(err.message)
+    res.status(400).json({ err: "something went wrong while getting all userraiserequest!!!" })
+  }
+
 }
 
 RaiseRequestCtrl.Getallrequest = async (req, res) => {
   try {
     const allraiserequest = await RaiseRequest.find()
       .populate({
-        path: 'assetid', 
-        select: 'assetName assetImg', 
+        path: 'assetid',
+        select: 'assetName assetImg',
       })
       .populate({
-        path: 'userid', 
-        select: 'name phone',  
+        path: 'userid',
+        select: 'name phone',
       })
       .populate({
         path: 'assignedto',
-        select: 'name address phone', 
+        select: 'name address phone',
       });
 
     res.status(200).json(allraiserequest);
-  } catch(err) {
+  } catch (err) {
     console.log(err.message);
     res.status(400).json({
       err: "Something went wrong while fetching all raise requests",
@@ -158,24 +158,24 @@ RaiseRequestCtrl.Getallrequest = async (req, res) => {
 };
 
 RaiseRequestCtrl.AssignTechnician = async (req, res) => {
-  const  {requestid }  = req.params;
-  console.log(requestid )
+  const { requestid } = req.params;
+  console.log(requestid)
   const { technicianid } = req.body;
 
   try {
-    const technician=await User.findById(technicianid)
-     if (!technician) return res.status(404).json({ err: "Technician not found" });
+    const technician = await User.findById(technicianid)
+    if (!technician) return res.status(404).json({ err: "Technician not found" });
     const updated = await RaiseRequest.findByIdAndUpdate(
-      requestid ,
+      requestid,
       { assignedto: technicianid, },
       { new: true }
     ).populate('assetid');
 
-    const message=`Your request for ${updated.assetid.assetName} has been assigned to ${technician.name} `
+    const message = `Your request for ${updated.assetid.assetName} has been assigned to ${technician.name} `
     await Notification.create({
-      userid:updated.userid,
-      message:message,
-      requestid:updated._id
+      userid: updated.userid,
+      message: message,
+      requestid: updated._id
     })
     const techMessage = `You have been assigned to "${updated.assetid.assetName}"`;
     await Notification.create({
@@ -185,12 +185,12 @@ RaiseRequestCtrl.AssignTechnician = async (req, res) => {
     });
 
     res.status(200).json({
-  success: true,
-  message: 'Technician assigned and user notified',
-  updatedRequest: updated
-});
+      success: true,
+      message: 'Technician assigned and user notified',
+      updatedRequest: updated
+    });
 
-  } catch(err) {
+  } catch (err) {
     console.log(err.message)
     res.status(500).json({ err: "Update failed" });
   }
@@ -199,11 +199,11 @@ RaiseRequestCtrl.AssignTechnician = async (req, res) => {
 
 RaiseRequestCtrl.getTechnicianrequests = async (req, res) => {
   try {
-    const technicianId = req.userid; 
+    const technicianId = req.userid;
 
-   const requests = await RaiseRequest.find({ assignedto: technicianId })
-  .populate({ path: "assetid", select: "assetName assetImg" })
-  .populate({ path: "userid", select: "name address phone" }); 
+    const requests = await RaiseRequest.find({ assignedto: technicianId })
+      .populate({ path: "assetid", select: "assetName assetImg" })
+      .populate({ path: "userid", select: "name address phone" });
 
     res.status(200).json(requests);
   } catch (err) {
@@ -251,6 +251,17 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
       }
 
       return res.status(400).json({ err: "Request already accepted" });
+    }
+
+    // Real-time notification via Socket.IO
+    const io = req.app.get("io");
+    if (io) {
+      const technician = await User.findById(techId); // Fetch technician details for the message
+      io.to(updated.userid.toString()).emit("notification", {
+        type: "ACCEPT_REQUEST",
+        message: `Technician ${technician.name} has accepted your request for ${updated.assetid?.assetName || "your asset"}.`,
+        requestId: updated._id,
+      });
     }
 
     await Notification.create({
@@ -343,40 +354,40 @@ RaiseRequestCtrl.TechnicianStatusUpdate = async (req, res) => {
 
 
 
-RaiseRequestCtrl.getRaiserequestStats=async (req,res) => {
-  try{
-    const pendingrequest=await RaiseRequest.countDocuments({status:"pending"})
-    const inprocessrequest=await RaiseRequest.countDocuments({status:"in-process"})
-    const completedrequest=await RaiseRequest.countDocuments({status:"completed"})
+RaiseRequestCtrl.getRaiserequestStats = async (req, res) => {
+  try {
+    const pendingrequest = await RaiseRequest.countDocuments({ status: "pending" })
+    const inprocessrequest = await RaiseRequest.countDocuments({ status: "in-process" })
+    const completedrequest = await RaiseRequest.countDocuments({ status: "completed" })
 
     res.status(200).json({
-      pendingrequest,inprocessrequest,completedrequest
+      pendingrequest, inprocessrequest, completedrequest
     })
 
-  }catch(err){
+  } catch (err) {
     console.log(err.message)
-    res.status(400).json({err:"something went wrong wile fetching Raiserequest Stats!!!"})
+    res.status(400).json({ err: "something went wrong wile fetching Raiserequest Stats!!!" })
   }
-  
+
 }
 
-RaiseRequestCtrl.getTechnicianStats=async (req,res) => {
-  try{
+RaiseRequestCtrl.getTechnicianStats = async (req, res) => {
+  try {
 
-    const technicianassignstats=await RaiseRequest.countDocuments({assignedto:req.userid})
-    const technicianpendingrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:"pending"})
-    const inprocessrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:["in-process","assigned"]})
-    const completedrequest=await RaiseRequest.countDocuments({assignedto:req.userid,status:"completed"})
+    const technicianassignstats = await RaiseRequest.countDocuments({ assignedto: req.userid })
+    const technicianpendingrequest = await RaiseRequest.countDocuments({ assignedto: req.userid, status: "pending" })
+    const inprocessrequest = await RaiseRequest.countDocuments({ assignedto: req.userid, status: ["in-process", "assigned"] })
+    const completedrequest = await RaiseRequest.countDocuments({ assignedto: req.userid, status: "completed" })
 
-    res.status(200).json({technicianassignstats,technicianpendingrequest,inprocessrequest,completedrequest})
+    res.status(200).json({ technicianassignstats, technicianpendingrequest, inprocessrequest, completedrequest })
 
-  }catch(err){
+  } catch (err) {
     console.log(err.message)
-    res.status(400).json({err:"something went wrong while fetching fetchtechnician Stats!!!"})
+    res.status(400).json({ err: "something went wrong while fetching fetchtechnician Stats!!!" })
   }
-  
+
 }
- 
+
 RaiseRequestCtrl.getNearbyAssetRequests = async (req, res) => {
   try {
     const tech = await User.findById(req.userid);

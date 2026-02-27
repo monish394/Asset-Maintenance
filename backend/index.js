@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 dotenv.config()
 import cors from "cors"
 import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import { ConfigureDB } from "./config/config.js";
 import UserCtrl from "./app/controllers/UsersControllers.js";
 import AssetsCtrl from "./app/controllers/AssetsControllers.js";
@@ -14,20 +16,137 @@ import GeneralRequestCtrl from "./app/controllers/GeneralRequestCtrl.js";
 import EnquiryCtrl from "./app/controllers/EnquiryControllers.js";
 import AiCtrl from "./app/controllers/AiController.js";
 import Payment from "./app/models/Payment.js";
+import ChatMessage from "./app/models/ChatMessage.js";
 import { upload } from "./app/middlewares/cloudinaryUpload.js";
+
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+  }
+});
+
 app.use(cors())
 app.use(express.json())
 
-
-//made changes add google Login
-
-
-const PORT = process.env.PORT;
-console.log(PORT)
+const PORT = process.env.PORT || 5000;
 ConfigureDB();
 
-// register route
+
+
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
+  socket.on("join", (userId) => {
+    const roomId = userId.toString();
+    socket.join(roomId);
+    console.log(`User ${roomId} joined room ${roomId}`);
+  });
+
+  socket.on("sendMessage", async (data) => {
+    const { sender, receiver, requestId, requestModel, message } = data;
+    try {
+      const newMessage = new ChatMessage({
+        sender,
+        receiver,
+        requestId,
+        requestModel,
+        message
+      });
+      await newMessage.save();
+
+      const messageData = {
+        ...newMessage.toObject(),
+        sender: newMessage.sender.toString(),
+        receiver: newMessage.receiver.toString(),
+        requestId: newMessage.requestId.toString()
+      };
+
+      io.to(messageData.receiver).emit("receiveMessage", messageData);
+      io.to(messageData.sender).emit("receiveMessage", messageData);
+    } catch (err) {
+      console.error("Socket chat error:", err);
+    }
+  });
+
+  socket.on("markAsRead", async ({ requestId, userId }) => {
+    try {
+      await ChatMessage.updateMany(
+        { requestId, receiver: userId, isRead: false },
+        { isRead: true }
+      );
+
+      const messages = await ChatMessage.find({ requestId });
+      const uniqueSenders = [...new Set(messages.map(m => m.sender.toString()))];
+      uniqueSenders.forEach(sender => {
+        if (sender !== userId) {
+          io.to(sender).emit("messagesRead", { requestId, readerId: userId });
+        }
+      });
+    } catch (err) {
+      console.error("Mark read error:", err);
+    }
+  });
+
+  socket.on("deleteMessage", async ({ messageId, userId }) => {
+    try {
+      const msg = await ChatMessage.findById(messageId);
+      if (msg && msg.sender.toString() === userId) {
+        msg.isDeleted = true;
+        msg.message = "This message was deleted";
+        await msg.save();
+        io.to(msg.receiver.toString()).emit("messageDeleted", { messageId });
+        io.to(msg.sender.toString()).emit("messageDeleted", { messageId });
+      }
+    } catch (err) {
+      console.error("Delete message error:", err);
+    }
+  });
+
+  socket.on("editMessage", async ({ messageId, userId, newMessage }) => {
+    try {
+      const msg = await ChatMessage.findById(messageId);
+      if (msg && msg.sender.toString() === userId && !msg.isDeleted) {
+        msg.message = newMessage;
+        msg.isEdited = true;
+        await msg.save();
+        io.to(msg.receiver.toString()).emit("messageEdited", { messageId, newMessage, isEdited: true });
+        io.to(msg.sender.toString()).emit("messageEdited", { messageId, newMessage, isEdited: true });
+      }
+    } catch (err) {
+      console.error("Edit message error:", err);
+    }
+  });
+
+  socket.on("addReaction", async ({ messageId, userId, emoji }) => {
+    try {
+      const msg = await ChatMessage.findById(messageId);
+      if (msg) {
+        const existingIndex = msg.reactions.findIndex(r => r.user.toString() === userId);
+        if (existingIndex > -1) {
+          msg.reactions[existingIndex].emoji = emoji;
+        } else {
+          msg.reactions.push({ user: userId, emoji });
+        }
+        await msg.save();
+        io.to(msg.receiver.toString()).emit("reactionUpdated", { messageId, reactions: msg.reactions });
+        io.to(msg.sender.toString()).emit("reactionUpdated", { messageId, reactions: msg.reactions });
+      }
+    } catch (err) {
+      console.error("Add reaction error:", err);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+
+app.set("io", io);
+
 
 app.post("/api/usersregister", UserCtrl.Registeruser)
 app.post("/api/userslogin", UserCtrl.Loginuser)
@@ -139,12 +258,33 @@ app.get("/api/getnearbyassetrequest", AuthenticateUser, RaiseRequestCtrl.getNear
 
 app.post("/api/generate-description", AuthenticateUser, AiCtrl.GenerateDescription);
 
-// Enquiry route
+
 app.post("/api/enquiry", EnquiryCtrl.createEnquiry);
 app.get("/api/enquiries", EnquiryCtrl.getAllEnquiries);
 
 
+app.get("/api/chat/unread", AuthenticateUser, async (req, res) => {
+  try {
+    const unread = await ChatMessage.find({ receiver: req.userid, isRead: false });
+    const ids = [...new Set(unread.map(m => m.requestId.toString()))];
+    res.json(ids);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-app.listen(PORT, () => {
+app.get("/api/chat/:requestId", AuthenticateUser, async (req, res) => {
+  try {
+    const messages = await ChatMessage.find({ requestId: req.params.requestId })
+      .sort({ createdAt: 1 })
+      .populate("sender", "name");
+    res.status(200).json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch chat history" });
+  }
+});
+
+httpServer.listen(PORT, () => {
   console.log(`server is running on port  ${PORT}`)
 })

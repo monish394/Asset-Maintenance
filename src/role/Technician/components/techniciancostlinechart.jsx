@@ -10,21 +10,21 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
   if (!technicianassignedassert || technicianassignedassert.length === 0) return null;
 
   const data = {
-    labels: technicianassignedassert.map((req) => req.assetid.assetName),
+    labels: technicianassignedassert.map((req) => req.assetid?.assetName || "N/A"),
     datasets: [
       {
         label: "Request Cost",
         data: technicianassignedassert.map((req) => req.costEstimate || 0),
         backgroundColor: technicianassignedassert.map((req) => {
-          switch (req.status.toLowerCase()) {
+          switch (req.status?.toLowerCase()) {
             case "completed":
-              return "#22c55e"; 
+              return "#22c55e";
             case "in-process":
               return "#3b82f6";
             case "pending":
               return "#f97316";
             case "assigned":
-              return "#f1cb33"; 
+              return "#f1cb33";
             default:
               return "#fa4134";
           }
@@ -35,7 +35,7 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
   };
 
   const options = {
-    indexAxis: "y", 
+    indexAxis: "y",
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -44,7 +44,7 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
         callbacks: {
           label: (context) => {
             const req = technicianassignedassert[context.dataIndex];
-            return `${req.assetid.assetName}: ₹${req.costEstimate || 0} (${req.status})`;
+            return `${req.assetid?.assetName || "N/A"}: ₹${req.costEstimate || 0} (${req.status})`;
           },
         },
       },
@@ -67,11 +67,11 @@ const TechnicianRequestCostChart = ({ technicianassignedassert }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-2xl mx-auto h-[400px] mt-6">
-      <h3 className="text-lg font-semibold text-gray-800 text-center mb-4">
+    <div className="w-full h-full flex flex-col">
+      <h3 className="text-lg font-semibold text-slate-800 text-center mb-6">
         Request Cost Overview
       </h3>
-      <div className="h-[320px]">
+      <div className="flex-1 w-full min-h-[300px]">
         <Chart type="bar" data={data} options={options} />
       </div>
     </div>

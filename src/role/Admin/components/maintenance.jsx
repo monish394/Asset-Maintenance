@@ -196,7 +196,7 @@ export default function Maintenance() {
                     </td>
                     <td className="px-6 py-5 text-right">
                       <p className="text-sm font-bold text-slate-900">₹{req.costEstimate || "0"}</p>
-                      <p className="text-[8px] text-emerald-500 font-bold uppercase tracking-widest">Paid</p>
+                      {/* <p className="text-[8px] text-emerald-500 font-bold uppercase tracking-widest">Paid</p> */}
                     </td>
                   </tr>
                 ))

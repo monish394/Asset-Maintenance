@@ -144,6 +144,8 @@ export default function UserNavbar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("role");
     navigate("/");
   };
 

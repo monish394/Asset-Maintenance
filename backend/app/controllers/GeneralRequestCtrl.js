@@ -63,8 +63,8 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
 
 GeneralRequestCtrl.Getusergeneralrequest = async (req, res) => {
   try {
-     const getusergeneralrequest = await GeneralRequest.find({ userId: req.userid })
-    .populate("acceptedBy", "name");
+    const getusergeneralrequest = await GeneralRequest.find({ userId: req.userid })
+      .populate("acceptedBy", "name");
     res.status(200).json(getusergeneralrequest);
   } catch (err) {
     console.log(err.message);
@@ -98,11 +98,11 @@ GeneralRequestCtrl.getNearbyOpenRequests = async (req, res) => {
       {
         $match: {
           status: "OPEN",
-          acceptedBy: null 
+          acceptedBy: null
         }
       },
       {
-        $sort: { distance: 1 } 
+        $sort: { distance: 1 }
       }
     ]);
 
@@ -136,6 +136,23 @@ GeneralRequestCtrl.acceptGeneralRequest = async (req, res) => {
       return res
         .status(400)
         .json({ err: "Request already accepted by another technician" });
+    }
+
+    // Store notification in DB for the user
+    await Notification.create({
+      userid: request.userId._id,
+      message: `Your general request "${request.issue}" has been accepted by a technician.`,
+      requestid: request._id
+    });
+
+    // Real-time notification via Socket.IO
+    const io = req.app.get("io");
+    if (io) {
+      io.to(request.userId.toString()).emit("notification", {
+        type: "GENERAL_REQUEST_ACCEPTED",
+        message: `Your general request "${request.issue}" has been accepted by technician.`,
+        requestId: request._id,
+      });
     }
 
     const otherTechs = await User.find({ role: "technician", _id: { $ne: techId } });
@@ -176,7 +193,7 @@ GeneralRequestCtrl.getAssignedRequests = async (req, res) => {
 GeneralRequestCtrl.getTechnicianAccecptedGeneralReqeust = async (req, res) => {
   try {
     const techacceptedgeneral = await GeneralRequest.find({ acceptedBy: req.userid })
-      .populate("userId", "name phone address"); 
+      .populate("userId", "name phone address");
 
     res.status(200).json(techacceptedgeneral);
   } catch (err) {
@@ -199,7 +216,7 @@ GeneralRequestCtrl.completeGeneralRequest = async (req, res) => {
       },
       { status: "COMPLETED" },
       { new: true }
-    ).populate("userId", "name phone"); 
+    ).populate("userId", "name phone");
 
     if (!request) {
       return res
@@ -207,7 +224,7 @@ GeneralRequestCtrl.completeGeneralRequest = async (req, res) => {
         .json({ err: "Request not found or not assigned to you" });
     }
 
- 
+
     await Notification.create({
       userid: request.userId._id,
       message: `Your request "${request.issue}" has been completed by the technician.`,
