@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    // For production, "/api" is the correct way to hit the same server
-    baseURL: "https://asset-maintenance.onrender.com/api" 
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api"
 });
 
 axiosInstance.interceptors.request.use(
