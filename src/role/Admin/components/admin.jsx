@@ -317,7 +317,7 @@ export default function Admin() {
 
 
 
-      <div className="ml-64 mt-10 p-6 bg-white rounded-md border border-gray-200 shadow-sm overflow-x-auto font-sans">
+      <div className="ml-0 lg:ml-64 mt-10 p-4 md:p-6 bg-white rounded-md border border-gray-200 shadow-sm overflow-x-auto font-sans">
         <h2 className="mb-5 text-xl font-serif font-semibold text-gray-900">
           Recently Added Assets
         </h2>
@@ -416,7 +416,7 @@ export default function Admin() {
 
 
 
-      <div className="ml-64 mt-10 p-6 bg-white border border-gray-200 rounded-md shadow-sm overflow-x-auto font-sans">
+      <div className="ml-0 lg:ml-64 mt-10 p-4 md:p-6 bg-white border border-gray-200 rounded-md shadow-sm overflow-x-auto font-sans">
         <h2 className="mb-5 text-xl font-serif font-semibold text-gray-900">
           Recently Assigned Work Orders
         </h2>

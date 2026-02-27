@@ -102,7 +102,8 @@ export default function Users() {
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
 
   return (
-    <div className="p-8 ml-64 mt-5 font-sans selection:bg-indigo-100 selection:text-indigo-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
+    <div className="p-4 md:p-8 ml-0 lg:ml-64 mt-16 md:mt-5 font-sans selection:bg-indigo-100 selection:text-indigo-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
       `}</style>
