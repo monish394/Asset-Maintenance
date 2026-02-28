@@ -8,7 +8,7 @@ import ScrollToTop from './scrooltotop.jsx'
 
 // Fallback to a placeholder so the app doesn't crash when env var is missing.
 // Set VITE_GOOGLE_CLIENT_ID in Render Dashboard > Environment (Build Env Vars)
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "placeholder-set-in-render";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "353111875231-so1gcepre25roe2m622luj73dboapqvj.apps.googleusercontent.com";
 
 createRoot(document.getElementById('root')).render(
   <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

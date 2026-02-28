@@ -113,7 +113,6 @@ export default function Login() {
 
         <div className="max-w-md w-full mx-auto mt-15">
           <div className="mb-12">
-            {/* Fixed: Changed from text-4xl to text-2xl */}
             <h1 className="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">Sign In</h1>
             <p className="text-slate-500 text-sm font-medium">Access your enterprise asset management portal.</p>
           </div>
