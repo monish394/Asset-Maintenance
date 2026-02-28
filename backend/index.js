@@ -5,7 +5,9 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, ".env") });
+// Load env vars BEFORE any other imports that might use them
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
 import cors from "cors"
 import express from "express";
 import { createServer } from "http";
@@ -37,6 +39,12 @@ const io = new Server(httpServer, {
 
 app.use(cors())
 app.use(express.json())
+
+// Fix Cross-Origin-Opener-Policy for Google Login
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  next();
+});
 
 const PORT = process.env.PORT || 5000;
 ConfigureDB();
@@ -284,7 +292,7 @@ app.get("/api/chat/:requestId", AuthenticateUser, async (req, res) => {
 
 app.use(express.static(path.join(__dirname, "../dist")));
 
-app.get("/{*splat}", (req, res) => {
+app.get("*", (req, res) => {
   if (!req.path.startsWith("/api")) {
     res.sendFile(path.join(__dirname, "../dist/index.html"));
   } else {
