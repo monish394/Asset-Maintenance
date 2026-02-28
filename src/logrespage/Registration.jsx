@@ -164,7 +164,7 @@ export default function Register() {
         transition={{ duration: 0.8 }}
         className="flex-1 flex flex-col justify-center px-8 sm:px-16 md:px-24 bg-white py-12 relative overflow-y-auto"
       >
-        <Link to="/home" className="absolute top-12 left-12 flex items-center gap-2 text-slate-700 hover:text-indigo-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all group">
+        <Link to="/home" className="absolute top-10 left-12 flex items-center gap-2 text-slate-700 hover:text-indigo-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all group">
           <FaArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
           Back to Home
         </Link>

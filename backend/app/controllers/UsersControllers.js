@@ -9,8 +9,7 @@ import RaiseRequest from "../models/RaiseRequest.js";
 import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
-// Moved client initialization into the function for safer env var access
-// const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 async function geocodeAddress(address) {
@@ -377,12 +376,7 @@ UserCtrl.ChangePassword = async (req, res) => {
 
 UserCtrl.GoogleLogin = async (req, res) => {
   const { credential } = req.body;
-  if (!credential) {
-    return res.status(400).json({ err: "No credential received" });
-  }
-
   try {
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     const ticket = await client.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -415,12 +409,8 @@ UserCtrl.GoogleLogin = async (req, res) => {
       role: user.role,
     });
   } catch (err) {
-    console.error("Google verify error details:", {
-      message: err.message,
-      client_id_exists: !!process.env.GOOGLE_CLIENT_ID,
-      client_id_starts: process.env.GOOGLE_CLIENT_ID?.substring(0, 10)
-    });
-    res.status(400).json({ err: "Google login verification failed: " + err.message });
+    console.log(err);
+    res.status(400).json({ err: "Google login failed" });
   }
 };
 
