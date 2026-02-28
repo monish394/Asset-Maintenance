@@ -62,8 +62,7 @@ export default function Admin() {
     <div>
       {admindashboardstats && (
         <div
-          className=" mt-10 bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-md
-               w-full lg:w-[calc(100%-16rem)] ml-0 lg:ml-64"
+          className="mt-6 bg-gray-50 p-4 md:p-8 rounded-2xl border border-gray-200 shadow-md w-full"
         >
           <h1 className="text-3xl font-serif font-semibold text-gray-800 tracking-wide mb-8">
             Assets Overview
@@ -140,14 +139,14 @@ export default function Admin() {
 
       <div className="mt-10 px-4">
         {admindashboardstats && admindashboardraiserequeststats && (
-          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center ml-0 lg:ml-64">
+          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center">
             <AdminDashboardPieChart stats={admindashboardstats} />
             <AdminDashboardLineBarChart stats={admindashboardraiserequeststats} />
           </div>
         )}
       </div>
 
-      <div className="p-8 mt-20 ml-64 font-sans">
+      <div className="p-4 md:p-8 mt-10 font-sans">
         {showdetails && requestinfo && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
@@ -235,19 +234,19 @@ export default function Admin() {
             <table className="min-w-full divide-y divide-gray-200 rounded-md overflow-hidden border border-gray-200">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 whitespace-nowrap">
                     Asset Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 whitespace-nowrap">
                     Issue
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 whitespace-nowrap">
                     Raised By
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 whitespace-nowrap">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 whitespace-nowrap">
                     Action
                   </th>
                 </tr>
@@ -270,7 +269,7 @@ export default function Admin() {
                       {ele.description || "No description"}
                     </td>
 
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
                       {ele.userid?.name || "Unknown"}
                     </td>
 
@@ -317,7 +316,7 @@ export default function Admin() {
 
 
 
-      <div className="ml-0 lg:ml-64 mt-10 p-4 md:p-6 bg-white rounded-md border border-gray-200 shadow-sm overflow-x-auto font-sans">
+      <div className="mt-10 p-4 md:p-6 bg-white rounded-md border border-gray-200 shadow-sm overflow-x-auto font-sans">
         <h2 className="mb-5 text-xl font-serif font-semibold text-gray-900">
           Recently Added Assets
         </h2>
@@ -325,28 +324,27 @@ export default function Admin() {
         <table className="w-full table-auto border-collapse text-sm">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-4 py-3 text-left font-medium text-gray-700">
+              <th className="px-4 py-3 text-left font-medium text-gray-700 whitespace-nowrap">
                 Asset
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700">
+              <th className="px-4 py-3 text-left font-medium text-gray-700 whitespace-nowrap">
                 Image
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700">
+              <th className="px-4 py-3 text-left font-medium text-gray-700 whitespace-nowrap">
                 Category
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700">
+              <th className="px-4 py-3 text-left font-medium text-gray-700 whitespace-nowrap">
                 Assigned To
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700 w-[400px]">
+              <th className="px-4 py-3 text-left font-medium text-gray-700 w-[400px] whitespace-nowrap">
                 Description
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700">
+              <th className="px-4 py-3 text-left font-medium text-gray-700 whitespace-nowrap">
                 Status
               </th>
-              <th className="px-4 py-3 text-left font-medium text-gray-700">
+              <th className="px-4 py-3 text-left font-medium text-gray-700 whitespace-nowrap">
                 Created
               </th>
-
             </tr>
           </thead>
 
@@ -416,7 +414,7 @@ export default function Admin() {
 
 
 
-      <div className="ml-0 lg:ml-64 mt-10 p-4 md:p-6 bg-white border border-gray-200 rounded-md shadow-sm overflow-x-auto font-sans">
+      <div className="mt-10 p-4 md:p-6 bg-white border border-gray-200 rounded-md shadow-sm overflow-x-auto font-sans">
         <h2 className="mb-5 text-xl font-serif font-semibold text-gray-900">
           Recently Assigned Work Orders
         </h2>

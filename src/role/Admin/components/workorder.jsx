@@ -49,7 +49,7 @@ export default function WorkOrder() {
 
 
   return (
-    <div className="p-4 md:p-8 mt-16 md:mt-20 ml-0 lg:ml-64">
+    <div className="p-4 md:p-8 mt-4">
       {showform && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="relative w-[400px] max-w-[90%] rounded-xl bg-white p-6 shadow-xl">
@@ -167,14 +167,14 @@ export default function WorkOrder() {
                   <span className="font-medium">Status:</span>{" "}
                   <span
                     className={`font-semibold ${ele.status === "pending"
-                        ? "text-yellow-600"
-                        : ele.status === "assigned"
-                          ? "text-blue-600"
-                          : ele.status === "in-process"
-                            ? "text-purple-600"
-                            : ele.status === "completed"
-                              ? "text-green-600"
-                              : "text-gray-500"
+                      ? "text-yellow-600"
+                      : ele.status === "assigned"
+                        ? "text-blue-600"
+                        : ele.status === "in-process"
+                          ? "text-purple-600"
+                          : ele.status === "completed"
+                            ? "text-green-600"
+                            : "text-gray-500"
                       }`}
                   >
                     {ele.status}
@@ -217,14 +217,14 @@ export default function WorkOrder() {
                     <td className="px-5 py-3 text-sm">
                       <span
                         className={`font-semibold ${ele.status === "pending"
-                            ? "text-yellow-600"
-                            : ele.status === "assigned"
-                              ? "text-blue-600"
-                              : ele.status === "in-process"
-                                ? "text-purple-600"
-                                : ele.status === "completed"
-                                  ? "text-green-600"
-                                  : "text-gray-500"
+                          ? "text-yellow-600"
+                          : ele.status === "assigned"
+                            ? "text-blue-600"
+                            : ele.status === "in-process"
+                              ? "text-purple-600"
+                              : ele.status === "completed"
+                                ? "text-green-600"
+                                : "text-gray-500"
                           }`}
                       >
                         {ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}
@@ -233,12 +233,12 @@ export default function WorkOrder() {
                     <td className="px-5 py-3">
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-semibold ${ele.aiPriority === "high"
-                            ? "bg-red-100 text-red-800"
-                            : ele.aiPriority === "medium"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : ele.aiPriority === "low"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
+                          ? "bg-red-100 text-red-800"
+                          : ele.aiPriority === "medium"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : ele.aiPriority === "low"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
                           }`}
                       >
                         {ele.aiPriority || "N/A"}

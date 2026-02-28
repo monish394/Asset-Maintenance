@@ -6,10 +6,11 @@ import { GrHostMaintenance } from "react-icons/gr";
 import logo from "../assets/logo.png";
 import { useState, useRef, useEffect } from "react";
 import axios from "../../../config/api";
-import { FaCamera, FaTimes, FaEdit, FaSignOutAlt, FaLock } from "react-icons/fa";
+import { FaCamera, FaTimes, FaEdit, FaSignOutAlt, FaLock, FaBars } from "react-icons/fa";
 
 export default function Navbar() {
   const [userinfo, setUserinfo] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -40,6 +41,17 @@ export default function Navbar() {
       });
     }
   }, [userinfo]);
+
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (sidebarOpen && !e.target.closest("#admin-sidebar") && !e.target.closest("#sidebar-toggle")) {
+        setSidebarOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [sidebarOpen]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -101,23 +113,35 @@ export default function Navbar() {
 
   return (
     <>
+      {/* ── TOP NAVBAR ── */}
       <div
         style={{ fontFamily: "calibri" }}
-        className="w-full h-24 flex items-center justify-between px-8 shadow-lg bg-gray-50 fixed top-0 left-0 z-50 font-sans"
-
+        className="w-full h-16 md:h-24 flex items-center justify-between px-4 md:px-8 shadow-lg bg-gray-50 fixed top-0 left-0 z-50 font-sans"
       >
-        <div>
+        {/* Left: hamburger (mobile) + logo */}
+        <div className="flex items-center gap-3">
+          {/* Hamburger — only visible on mobile */}
+          <button
+            id="sidebar-toggle"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-200 transition"
+            aria-label="Toggle sidebar"
+          >
+            {sidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+          </button>
+
           <img
             style={{ cursor: "pointer" }}
             onClick={() => navigate("/admin/dashboard")}
-            className="h-16 w-auto ml-10"
+            className="h-10 md:h-16 w-auto"
             src={logo}
             alt="Logo"
           />
         </div>
 
-        <div className="flex items-center gap-6 text-gray-700 font-medium text-base relative">
-          <div className="flex flex-col items-end">
+        {/* Right: role + avatar */}
+        <div className="flex items-center gap-3 md:gap-6 text-gray-700 font-medium text-base relative">
+          <div className="hidden sm:flex flex-col items-end">
             <p className="text-gray-900 font-bold text-sm tracking-wide capitalize">{role}</p>
             <p className="text-gray-400 text-[10px] font-medium uppercase tracking-widest">{userinfo?.name}</p>
           </div>
@@ -128,9 +152,9 @@ export default function Navbar() {
               className="group flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-all duration-300 border border-transparent hover:border-gray-200"
             >
               {userinfo?.profile ? (
-                <img src={userinfo.profile} alt="Avatar" className="h-10 w-10 rounded-full object-cover border-2 border-gray-200" />
+                <img src={userinfo.profile} alt="Avatar" className="h-9 w-9 md:h-10 md:w-10 rounded-full object-cover border-2 border-gray-200" />
               ) : (
-                <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
+                <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
                   {userinfo?.name?.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -205,6 +229,7 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Edit Profile Modal */}
         {showEditModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
@@ -215,7 +240,7 @@ export default function Navbar() {
                 </button>
               </div>
 
-              <form onSubmit={handleEditSubmit} className="p-8 space-y-6">
+              <form onSubmit={handleEditSubmit} className="p-6 md:p-8 space-y-6">
                 <div className="flex flex-col items-center gap-4">
                   <div className="relative group cursor-pointer">
                     <div className="h-32 w-32 rounded-full border-4 border-slate-100 shadow-lg overflow-hidden relative">
@@ -242,7 +267,7 @@ export default function Navbar() {
                   <p className="text-xs text-gray-500 font-medium italic">Click the camera icon to update photo</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
                     <input
@@ -305,6 +330,7 @@ export default function Navbar() {
           </div>
         )}
 
+        {/* Change Password Modal */}
         {showPasswordModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
@@ -374,18 +400,34 @@ export default function Navbar() {
             </div>
           </div>
         )}
-
       </div>
 
+      {/* ── MOBILE OVERLAY (backdrop when sidebar open) ── */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* ── SIDEBAR ── */}
       <div
+        id="admin-sidebar"
         style={{ fontFamily: "calibri" }}
-        className="w-60 bg-gray-50 shadow-lg p-6 flex flex-col fixed top-24 bottom-0 left-0"
+        className={`
+          fixed top-16 md:top-24 bottom-0 left-0 z-40
+          w-60 bg-gray-50 shadow-lg p-6 flex flex-col
+          transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+        `}
       >
         <ul className="flex flex-col gap-4 text-gray-700 font-medium text-base">
           {menu.map((item) => (
             <li key={item.to}>
               <NavLink
                 to={item.to}
+                onClick={() => setSidebarOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 p-3 text-xl rounded-lg transition-colors duration-300 ease-in-out
     ${isActive ? "bg-blue-400 text-white" : "text-gray-700"}`
@@ -394,7 +436,6 @@ export default function Navbar() {
                 {item.icon}
                 <span className="flex-1">{item.label}</span>
               </NavLink>
-
             </li>
           ))}
         </ul>

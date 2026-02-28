@@ -4,7 +4,7 @@ export default function Maintenance() {
   const { allraiserequest } = AdminData();
 
   return (
-    <div className="ml-64 p-8 space-y-8 font-sans" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="p-4 md:p-8 space-y-8 font-sans" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="overflow-x-auto rounded-3xl border border-slate-100 shadow-xl bg-white p-6">
         <h2 className="text-2xl font-bold mb-6 text-slate-900 tracking-tight">Active Issue Requests</h2>
         <table className="min-w-full divide-y divide-slate-100">

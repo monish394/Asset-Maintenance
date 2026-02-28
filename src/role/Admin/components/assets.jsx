@@ -251,7 +251,7 @@ export default function Assets() {
 
 
       <div>
-        <div className="ml-0 lg:ml-64 mt-16 md:mt-8 px-4 md:px-6 font-[Inter]">
+        <div className="mt-4 px-4 md:px-6 font-[Inter]">
         </div>
 
 
@@ -516,14 +516,14 @@ export default function Assets() {
         )}
 
 
-        <div className="ml-64 px-8 pt-8 pb-4">
+        <div className="px-4 md:px-8 pt-6 pb-4">
           <h1 className="text-2xl font-serif font-semibold text-gray-900 border-b border-gray-200 inline-block pb-1">
             All Assets
           </h1>
         </div>
 
 
-        <div className="ml-0 lg:ml-64 mt-8 flex flex-wrap items-center gap-4 px-4 md:px-0 font-sans">
+        <div className="mt-4 flex flex-wrap items-center gap-4 px-4 font-sans">
 
           <div className="relative">
             <input
@@ -577,7 +577,7 @@ export default function Assets() {
 
 
 
-        <div className="flex flex-wrap gap-4 justify-start p-4 ml-0 lg:ml-64 mt-10 md:mt-20">
+        <div className="flex flex-wrap gap-4 justify-start p-4 mt-6">
           {filtereddata.length > 0 ? filtereddata.reverse().map((ele, i) => (
             <motion.div
               key={i}

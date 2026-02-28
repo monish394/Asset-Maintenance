@@ -14,15 +14,19 @@ export default function AdminLayout() {
     }
   }, [navigate, token, role]);
 
-
-
   if (!token || role !== "admin") return null;
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="flex-1 p-8 mt-10">
-        <Outlet />
+      {/* 
+        On mobile: pt-16 to clear the 4rem (h-16) top nav, no left margin
+        On lg+:    pt-24 to clear the 6rem (h-24) top nav, pl-60 to clear the 15rem sidebar
+      */}
+      <div className="pt-16 md:pt-24 lg:pl-60">
+        <div className="p-4 md:p-6">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

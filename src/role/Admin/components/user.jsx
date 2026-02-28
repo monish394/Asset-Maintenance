@@ -102,7 +102,7 @@ export default function Users() {
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
 
   return (
-    <div className="p-4 md:p-8 ml-0 lg:ml-64 mt-16 md:mt-5 font-sans selection:bg-indigo-100 selection:text-indigo-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
+    <div className="p-4 md:p-8 mt-4 font-sans selection:bg-indigo-100 selection:text-indigo-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
@@ -284,23 +284,22 @@ export default function Users() {
             {allusers.length > 0 ? (
               users.map((user) => (
                 <tr key={user._id} className="hover:bg-slate-50/50 transition-colors group">
-  <td className="px-6 py-5">
-  <div className="min-w-[40px] min-h-[40px] w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-sm border border-indigo-200">
-    
-    {user.profile ? (
-      <img
-        src={user.profile}
-        alt={user.name}
-        onError={(e) => (e.target.style.display = "none")}
-        className="w-full h-full object-cover"
-      />
-    ) : (
-      user.name?.charAt(0).toUpperCase()
-    )}
+                  <td className="px-6 py-5">
+                    <div className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full overflow-hidden flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-sm border border-indigo-200 shrink-0">
 
-    {!user.profile && user.name?.charAt(0).toUpperCase()}
-  </div>
-</td>
+                      {user.profile ? (
+                        <img
+                          src={user.profile}
+                          alt={user.name}
+                          className="w-full h-full object-cover block pointer-events-none select-none"
+                          draggable={false}
+                        />
+                      ) : (
+                        user.name?.charAt(0).toUpperCase()
+                      )}
+
+                    </div>
+                  </td>
                   <td className="px-6 py-5">
                     <p className="text-sm font-bold text-slate-800">{user.name}</p>
                     <p className="text-[10px] text-slate-400 font-medium tracking-wide mt-1">
