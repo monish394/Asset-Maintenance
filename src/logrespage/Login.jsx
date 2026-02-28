@@ -99,6 +99,8 @@ export default function Login() {
         }
       `}</style>
 
+      <h1 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Login</h1>
+
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
