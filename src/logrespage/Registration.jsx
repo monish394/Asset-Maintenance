@@ -312,6 +312,13 @@ export default function Register() {
                 "Create Professional Account"
               )}
             </motion.button>
+
+            <p className="text-center mt-6 text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
+              Already have an account?{" "}
+              <Link to="/login" className="text-indigo-600 hover:text-indigo-700 hover:underline underline-offset-4 ml-1">
+                Sign In Instead
+              </Link>
+            </p>
           </form>
 
           <div className="mt-8">
@@ -320,11 +327,11 @@ export default function Register() {
                 <div className="w-full border-t border-slate-100"></div>
               </div>
               <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
-                <span className="bg-white px-4 text-slate-400 font-bold">Registration via Social</span>
+                <span className="bg-white px-2 text-slate-400 font-bold tracking-tighter">Registration via Social</span>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-center">
+            <div className="mt-4 flex justify-center">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => {
@@ -336,15 +343,6 @@ export default function Register() {
                 width="100%"
               />
             </div>
-          </div>
-
-          <div className="mt-12 text-center border-t border-slate-100 pt-10">
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
-              Already have an account?{" "}
-              <Link to="/login" className="text-indigo-600 hover:text-indigo-700 hover:underline underline-offset-4 ml-1">
-                Sign In Instead
-              </Link>
-            </p>
           </div>
         </div>
       </motion.div>
