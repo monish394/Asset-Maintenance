@@ -54,7 +54,7 @@ const raiseRequestSchema = new mongoose.Schema({
   aiPriority: { type: String, default: null },
   aiResponse: { type: String, default: null },
 
-  // ✅ ADD THIS
+
   location: {
     type: {
       type: String,

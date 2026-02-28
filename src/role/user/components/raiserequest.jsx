@@ -726,7 +726,7 @@ export default function RaiseRequest() {
                       </td>
 
                       <td className="px-6 py-3">
-                        {ele.status === "ACCEPTED" && (
+                        {["ACCEPTED", "APPROVED"].includes(ele.status) && (
                           <button
                             onClick={() => openChat({
                               requestId: ele._id,

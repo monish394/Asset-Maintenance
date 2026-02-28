@@ -244,7 +244,6 @@ export default function AssignedRequest() {
   return (
     <div className="p-6" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
 
-      {/* Edit Modal */}
       {showeditform && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShoweditform(false)} />
@@ -304,7 +303,6 @@ export default function AssignedRequest() {
         <OSMTrackMap userAddress={trackAddress} onClose={() => setShowMap(false)} />
       )}
 
-      {/* Recent Assets Requests Table */}
       <div className="mb-20">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Recent Assets Requests</h2>
@@ -372,7 +370,7 @@ export default function AssignedRequest() {
                               receiverId: ele.userid?._id,
                               receiverName: ele.userid?.name
                             })}
-                            className="relative px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-600 text-xs font-medium hover:bg-indigo-200 transition"
+                            className="relative p-2 rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors"
                             title="Chat with User"
                           >
                             <FaComments />
@@ -391,7 +389,6 @@ export default function AssignedRequest() {
         </div>
       </div>
 
-      {/* Assigned Requests Cards */}
       <div className="mb-20">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Assigned Requests</h2>
@@ -455,7 +452,7 @@ export default function AssignedRequest() {
                         receiverId: item.userid?._id,
                         receiverName: item.userid?.name
                       })}
-                      className="relative px-3 py-2.5 bg-indigo-100 text-indigo-600 rounded-xl hover:bg-indigo-200 transition"
+                      className="relative p-2.5 bg-indigo-100 text-indigo-600 rounded-xl hover:bg-indigo-200 transition-colors"
                       title="Chat with User"
                     >
                       <FaComments />
@@ -574,7 +571,7 @@ export default function AssignedRequest() {
                           >
                             Track
                           </button>
-                          {req.status === "ACCEPTED" && (
+                          {["ACCEPTED", "APPROVED"].includes(req.status) && (
                             <button
                               onClick={() => openChat({
                                 requestId: req._id,
@@ -583,7 +580,7 @@ export default function AssignedRequest() {
                                 receiverId: req.userId?._id,
                                 receiverName: req.userId?.name
                               })}
-                              className="relative px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-600 text-xs font-medium hover:bg-indigo-200 transition"
+                              className="relative p-2 rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors"
                               title="Chat with User"
                             >
                               <FaComments />
