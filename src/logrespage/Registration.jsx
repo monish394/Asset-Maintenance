@@ -312,13 +312,6 @@ export default function Register() {
                 "Create Professional Account"
               )}
             </motion.button>
-
-            <p className="text-center mt-6 text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
-              Already have an account?{" "}
-              <Link to="/login" className="text-indigo-600 hover:text-indigo-700 hover:underline underline-offset-4 ml-1">
-                Sign In Instead
-              </Link>
-            </p>
           </form>
 
           <div className="mt-8">
@@ -344,6 +337,13 @@ export default function Register() {
               />
             </div>
           </div>
+
+          <p className="text-center mt-10 text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
+            Already have an account?{" "}
+            <Link to="/login" className="text-indigo-600 hover:text-indigo-700 hover:underline underline-offset-4 ml-1">
+              Sign In Instead
+            </Link>
+          </p>
         </div>
       </motion.div>
     </div>
