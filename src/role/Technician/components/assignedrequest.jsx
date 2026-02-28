@@ -363,7 +363,7 @@ export default function AssignedRequest() {
                             Edit
                           </button>
                         )}
-                        {ele.status === "assigned" && (
+                        {["assigned", "in-process"].includes(ele.status) && (
                           <button
                             onClick={() => openChat({
                               requestId: ele._id,
@@ -398,9 +398,9 @@ export default function AssignedRequest() {
           <p className="text-slate-400 text-sm font-medium mt-1">Track assigned requests and contact details</p>
         </div>
 
-        {technicianassignedassert.filter((ele) => ele.status === "assigned").length > 0 ? (
+        {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {technicianassignedassert.filter((ele) => ele.status === "assigned").map((item) => (
+            {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).map((item) => (
               <div
                 key={item._id}
                 className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow p-5"
@@ -446,7 +446,7 @@ export default function AssignedRequest() {
                     <FaMapMarkerAlt size={12} />
                     Track
                   </button>
-                  {(item.status === "assigned" || item.status === "in-process") && (
+                  {["assigned", "in-process"].includes(item.status) && (
                     <button
                       onClick={() => openChat({
                         requestId: item._id,
@@ -475,7 +475,6 @@ export default function AssignedRequest() {
         )}
       </div>
 
-      {/* Nearby General Requests Table */}
       <div className="mb-20">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Nearby General Requests</h2>
@@ -531,7 +530,6 @@ export default function AssignedRequest() {
         </div>
       </div>
 
-      {/* Accepted General Requests Table */}
       <div className="mb-20">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Accepted General Requests</h2>
@@ -614,7 +612,6 @@ export default function AssignedRequest() {
         </div>
       </div>
 
-      {/* Nearby Asset Requests Table */}
       <div className="mb-20">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Nearby Asset Requests</h2>

@@ -447,6 +447,9 @@ export default function RaiseRequest() {
                 <th className="px-5 py-3 text-left font-semibold text-gray-700 uppercase tracking-wide">
                   Technician
                 </th>
+                <th className="px-5 py-3 text-left font-semibold text-gray-700 uppercase tracking-wide">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -508,12 +511,32 @@ export default function RaiseRequest() {
                   <td className="px-5 py-3 text-gray-700 font-medium">
                     {ele.assignedto ? ele.assignedto.name : "Unassigned"}
                   </td>
+                  <td className="px-5 py-3">
+                    {["assigned", "in-process"].includes(ele.status) && (
+                      <button
+                        onClick={() => openChat({
+                          requestId: ele._id,
+                          requestModel: 'RaiseRequest',
+                          senderId: userinfo._id,
+                          receiverId: ele.assignedto?._id,
+                          receiverName: ele.assignedto?.name
+                        })}
+                        className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
+                        title="Chat with Technician"
+                      >
+                        <FaComments />
+                        {unreadChats[ele._id] && (
+                          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                        )}
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
               {myraiserequest.length === 0 && (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="5"
                     className="px-5 py-6 text-center text-gray-500 font-medium"
                   >
                     No service requests found
@@ -569,7 +592,7 @@ export default function RaiseRequest() {
                   >
                     Track
                   </button>
-                  {(ele.status === "assigned" || ele.status === "in-process") && (
+                  {["assigned", "in-process"].includes(ele.status) && (
                     <button
                       onClick={() => openChat({
                         requestId: ele._id,
