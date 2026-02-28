@@ -113,14 +113,11 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ── TOP NAVBAR ── */}
       <div
         style={{ fontFamily: "calibri" }}
         className="w-full h-16 md:h-24 flex items-center justify-between px-4 md:px-8 shadow-lg bg-gray-50 fixed top-0 left-0 z-50 font-sans"
       >
-        {/* Left: hamburger (mobile) + logo */}
         <div className="flex items-center gap-3">
-          {/* Hamburger — only visible on mobile */}
           <button
             id="sidebar-toggle"
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -139,7 +136,6 @@ export default function Navbar() {
           />
         </div>
 
-        {/* Right: role + avatar */}
         <div className="flex items-center gap-3 md:gap-6 text-gray-700 font-medium text-base relative">
           <div className="hidden sm:flex flex-col items-end">
             <p className="text-gray-900 font-bold text-sm tracking-wide capitalize">{role}</p>
@@ -229,7 +225,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Edit Profile Modal */}
         {showEditModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
@@ -330,7 +325,6 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Change Password Modal */}
         {showPasswordModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
@@ -402,7 +396,6 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* ── MOBILE OVERLAY (backdrop when sidebar open) ── */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"
@@ -410,7 +403,6 @@ export default function Navbar() {
         />
       )}
 
-      {/* ── SIDEBAR ── */}
       <div
         id="admin-sidebar"
         style={{ fontFamily: "calibri" }}
