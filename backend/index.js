@@ -151,6 +151,9 @@ io.on("connection", (socket) => {
 
 app.set("io", io);
 
+
+//public route
+
 app.post("/api/usersregister", UserCtrl.Registeruser)
 app.post("/api/userslogin", UserCtrl.Loginuser)
 app.post("/api/google-login", UserCtrl.GoogleLogin)
@@ -163,10 +166,16 @@ app.put("/api/approve-technician/:id", AuthenticateUser, UserCtrl.ApproveTechnic
 app.get("/api/userinfo", AuthenticateUser, UserCtrl.GetuserInfo)
 app.put("/api/changepassword", AuthenticateUser, UserCtrl.ChangePassword)
 
+
+
+//all dashboard route
 app.get("/api/dashboardstats", AssetsCtrl.DashboardStats)
 app.get("/api/userdashboardstats", AuthenticateUser, AssetsCtrl.UserStatsDashboard)
 app.get("/api/raiserequeststats", RaiseRequestCtrl.getRaiserequestStats)
 app.get("/api/technicianstats", AuthenticateUser, RaiseRequestCtrl.getTechnicianStats)
+
+
+//assets route
 
 app.post("/api/assets/upload-image", upload.single("image"), AssetsCtrl.UploadAssetImage)
 app.post("/api/assets", AssetsCtrl.CreateAsset)
@@ -178,6 +187,10 @@ app.put("/api/user/assign-asset/:assetid", AuthenticateUser, AssetsCtrl.AssignAs
 app.put("/api/user/unassign-asset/:assetid", AuthenticateUser, AssetsCtrl.UnassignAsset)
 app.delete("/api/assets/:assetid", AssetsCtrl.DeleteAsset)
 
+
+
+//raise request route
+
 app.post("/api/raiserequest", AuthenticateUser, RaiseRequestCtrl.Postissue)
 app.get("/api/userraiserequest", AuthenticateUser, RaiseRequestCtrl.Getuserissue)
 app.get("/api/allraiserequest", RaiseRequestCtrl.Getallrequest)
@@ -186,11 +199,18 @@ app.get("/api/alltechnicianrequest", AuthenticateUser, RaiseRequestCtrl.getTechn
 app.put("/api/raiserequest/accept/:requestid", AuthenticateUser, RaiseRequestCtrl.TechnicianAccept)
 app.put("/api/technicianstatusupdate/:requestid", RaiseRequestCtrl.TechnicianStatusUpdate)
 
+
+
+//notification route
+
 app.get("/api/usersnotifications", AuthenticateUser, NotificationCtrl.UsersNotification)
 app.get("/api/techniciansnotifications", AuthenticateUser, NotificationCtrl.TechniciansNotification)
 app.put("/api/notifications/:id/read", AuthenticateUser, NotificationCtrl.MarkAsRead)
 app.put("/api/notifications/mark-all-read", AuthenticateUser, NotificationCtrl.MarkAllAsRead)
 
+
+
+//payment route
 app.post("/api/create-order", AuthenticateUser, PaymentCtrl.createOrder)
 app.post("/api/verify-payment", AuthenticateUser, PaymentCtrl.verifyPayment)
 app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
@@ -203,6 +223,7 @@ app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
   }
 });
 
+//request for asset
 app.post("/api/requestasset", AuthenticateUser, RequestCtrl.CreateRequest)
 app.get("/api/getallrequestasset", RequestCtrl.GetAllRequests)
 app.put("/api/updaterequeststatus/:id", RequestCtrl.StausUpdate)
@@ -213,6 +234,11 @@ app.get("/api/usergeneralrequest", AuthenticateUser, GeneralRequestCtrl.Getuserg
 
 app.post("/api/getnearbytechnician", AuthenticateUser, UserCtrl.getNearbyTechnicians)
 app.post("/api/admin/update-tech-coordinates", AuthenticateUser, UserCtrl.updateTechCoordinates)
+
+
+
+
+//general request route
 
 app.get("/api/technician/general-requests", AuthenticateUser, GeneralRequestCtrl.getNearbyOpenRequests)
 app.post("/api/technician/general-request/:id/accept", AuthenticateUser, GeneralRequestCtrl.acceptGeneralRequest)
@@ -228,6 +254,11 @@ app.post("/api/generate-description", AuthenticateUser, AiCtrl.GenerateDescripti
 
 app.post("/api/enquiry", EnquiryCtrl.createEnquiry)
 app.get("/api/enquiries", EnquiryCtrl.getAllEnquiries)
+
+
+
+
+// sockets route
 
 app.get("/api/chat/unread", AuthenticateUser, async (req, res) => {
   try {
