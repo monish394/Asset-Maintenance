@@ -99,7 +99,6 @@ export default function Login() {
         }
       `}</style>
 
-      <h1 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Login</h1>
 
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -109,7 +108,7 @@ export default function Login() {
       >
         <Link to="/home" className="absolute top-12 left-12 flex items-center gap-2 text-slate-700 hover:text-indigo-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all group">
           <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-          Back to Home
+          Back to Homee 
         </Link>
 
         <div className="max-w-md w-full mx-auto mt-15">
