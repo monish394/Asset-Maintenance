@@ -32,7 +32,7 @@ export const UserAssetProvider = ({ children }) => {
     axios.get("/usersnotifications")
       .then((res) => {
         setUsernotifications(res.data)
-        console.log(res.data)
+        // console.log(res.data)
       })
       .catch((err) => {
         console.log(err.message)

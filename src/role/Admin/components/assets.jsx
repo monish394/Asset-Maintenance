@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "../../../config/api";
 import { motion } from "framer-motion";
-console.log(motion)
+// console.log(motion)
 
 import { BsSearch } from "react-icons/bs";
 import { MdAddBox } from "react-icons/md";

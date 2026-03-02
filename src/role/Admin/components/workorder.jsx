@@ -6,13 +6,13 @@ export default function WorkOrder() {
 
 
   const [requestid, setRequestid] = useState("")
-  console.log("assetid ", requestid)
+  // console.log("assetid ", requestid)
   const [technicianid, setTechnicianid] = useState("")
-  console.log("tech -", technicianid)
+  // console.log("tech -", technicianid)
   const [showform, setShowform] = useState(false)
   const { allraiserequest, setAllraiserequest, alltechnicians } = AdminData();
-  console.log(alltechnicians)
-  console.log(allraiserequest)
+  // console.log(alltechnicians)
+  // console.log(allraiserequest)
 
 
 

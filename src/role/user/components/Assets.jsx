@@ -24,7 +24,7 @@ const categories = [...new Set(assets.map((a) => a.category))];
       .then((res) => setAssets(res.data))
       .catch((err) => console.log(err));
   }, []);
-  console.log(assets)
+  // console.log(assets)
 
   const unassignedAssets = assets.filter((ele) => ele.status !== "undermaintenance");
 

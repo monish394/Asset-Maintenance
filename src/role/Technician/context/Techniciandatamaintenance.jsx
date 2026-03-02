@@ -9,8 +9,8 @@ export const TechDataProvider = ({ children }) => {
   const [technicianassignedassert, setTechnicianassignedassert] = useState([])
   const [techniciansnotifications, setTechniciansnotifications] = useState([])
   const [techinfo, setTechinfo] = useState(null)
-  console.log(techinfo)
-  console.log(localStorage.getItem("token"))
+  // console.log(techinfo)
+  // console.log(localStorage.getItem("token"))
   useEffect(() => {
     axios.get("/alltechnicianrequest")
       .then((res) => setTechnicianassignedassert(res.data))

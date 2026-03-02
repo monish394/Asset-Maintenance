@@ -11,18 +11,18 @@ export default function Admin() {
 
   // const [userinfo,setUserinfo]=useState(null)
   const token = localStorage.getItem("token")
-  console.log(token)
+  // console.log(token)
 
 
   const [assets, setAssets] = useState([])
-  console.log(assets)
+  // console.log(assets)
   const [admindashboardstats, setAdmindashboardstats] = useState(null);
   const [admindashboardraiserequeststats, setAdmindashboardraiserequeststats] = useState(null);
   const { allraiserequest } = AdminData();
-  console.log(allraiserequest)
+  // console.log(allraiserequest)
   const [showdetails, setShowdetails] = useState(false);
   const [requestid, setRequestid] = useState("");
-  console.log(requestid)
+  // console.log(requestid)
   const [requestinfo, setRequestinfo] = useState(null);
 
   const handleRequestid = (reqid) => {

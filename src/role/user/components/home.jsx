@@ -15,15 +15,15 @@ import { MdDone } from "react-icons/md";
 export default function UserHome() {
   const [userdashboardstats, setUserdashboardstats] = useState([])
   const [selectedRemoveAsset, setSelectedRemoveAsset] = useState(null);
-  console.log(selectedRemoveAsset)
+  // console.log(selectedRemoveAsset)
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
 
   const token = localStorage.getItem("token")
-  console.log(token)
+  // console.log(token)
   const { myasset, myraiserequest, setMyasset } = useUserAsset();
-  console.log(myraiserequest)
-  console.log("User assets in Home:", myasset);
+  // console.log(myraiserequest)
+  // console.log("User assets in Home:", myasset);
 
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function UserHome() {
     })
       .then((res) => {
         setUserdashboardstats(res.data)
-        console.log(res.data)
+        // console.log(res.data)
       })
       .catch((err) => {
         console.log(err.message)
