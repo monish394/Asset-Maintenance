@@ -1,7 +1,7 @@
 import { useEffect, useState, useReducer } from "react";
 import axios from "../../../config/api";
 import { toast } from "sonner";
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaTrash, FaEdit, FaCheck, FaTimes, FaExclamationTriangle } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaTrash, FaEdit, FaCheck, FaTimes, FaExclamationTriangle, FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 const initialstate = {
@@ -37,6 +37,10 @@ export default function Users() {
   const [allusers, setAllusers] = useState([]);
   const [state, dispatch] = useReducer(userReducer, initialstate);
   const { users, editUser, deleteUser } = state;
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   useEffect(() => {
     axios
@@ -100,6 +104,21 @@ export default function Users() {
   };
 
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+
+  const filteredTechnicians = users.filter((user) =>
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.phone?.includes(searchTerm)
+  );
+
+  const totalPages = Math.ceil(filteredTechnicians.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredTechnicians.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="p-4 md:p-8 mt-4 font-sans selection:bg-indigo-100 selection:text-indigo-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
@@ -255,13 +274,29 @@ export default function Users() {
         )}
       </AnimatePresence>
 
-      <div className="mb-6 max-w-4xl">
-        <h1 className="text-3xl font-extrabold mb-2 text-gray-900">
-          Manage Technicians Personal Info
-        </h1>
-        <p className="text-gray-600 text-lg mb-6">
-          View, update, and manage registered technicians within the asset maintenance system.
-        </p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="max-w-xl">
+          <h1 className="text-4xl font-black mb-3 text-slate-900 tracking-tight">
+            Technician Management
+          </h1>
+          <p className="text-slate-500 text-lg font-medium leading-relaxed">
+            Monitor service experts, manage verification status, and maintain technical records.
+          </p>
+        </div>
+
+        <div className="relative group w-full md:w-80">
+          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={14} />
+          <input
+            type="text"
+            placeholder="Search by name, email..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-semibold shadow-sm"
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-3xl border border-slate-100 shadow-xl bg-white">
@@ -276,9 +311,9 @@ export default function Users() {
             </tr>
           </thead>
 
-          <tbody className="divide-y">
-            {allusers.length > 0 ? (
-              users.map((user) => (
+          <tbody className="divide-y divide-slate-50">
+            {currentItems.length > 0 ? (
+              currentItems.map((user) => (
                 <tr key={user._id} className="hover:bg-slate-50/50 transition-colors group">
                   <td className="px-6 py-5">
                     <p className="text-sm font-bold text-slate-800">{user.name}</p>
@@ -344,6 +379,39 @@ export default function Users() {
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4 mt-10">
+        <div className="text-sm font-semibold text-slate-500 order-2 md:order-1">
+          Showing <span className="text-slate-900">{indexOfFirstItem + 1}</span> to <span className="text-slate-900">{Math.min(indexOfLastItem, filteredTechnicians.length)}</span> of <span className="text-slate-900">{filteredTechnicians.length}</span> experts
+        </div>
+        <div className="flex items-center gap-2 order-1 md:order-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+          >
+            <FaChevronLeft size={12} />
+          </button>
+          <div className="flex items-center gap-1 ">
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`w-10 h-10 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+          >
+            <FaChevronRight size={12} />
+          </button>
+        </div>
       </div>
     </div>
   );

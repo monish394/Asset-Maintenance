@@ -3,6 +3,8 @@ import Login from "./logrespage/Login";
 import Register from "./logrespage/Registration";
 import { Toaster } from "sonner";
 import Dashboard from "./dashboard.jsx";
+import { Provider } from "react-redux";
+import store from "./store/ConfigureStore";
 
 //public routes
 // import PublicHome from "./logrespage/home.jsx";
@@ -40,10 +42,15 @@ import ServiceHistory from "./role/Technician/components/servicehistory.jsx";
 import PickAssets from "./role/user/components/Assets.jsx";
 import NotFound from "./logrespage/notfound.jsx";
 import ProtectedRoute from "./logrespage/publicandprotected/protectedroute.jsx";
+
+// console.log(store.getState())
+// store.subscribe(()=>console.log(store.getState()))
 export default function App() {
   return (
     <>
       <Toaster position="top-center" richColors />
+        <Provider store={store}>
+
       {/* public route */}
       <Routes>
 
@@ -56,6 +63,7 @@ export default function App() {
 
 
         {/* admin route */}
+
 
         <Route
           path="/admin"
@@ -125,6 +133,7 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
 
       </Routes>
+      </Provider>
     </>
 
 

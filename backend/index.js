@@ -252,6 +252,7 @@ app.get("/api/gettechnicianaccepetedgeneralrequest", AuthenticateUser, GeneralRe
 app.get("/api/user/location", AuthenticateUser, UserCtrl.UserLocation)
 app.patch("/api/technician/general-request/:id/complete", AuthenticateUser, GeneralRequestCtrl.completeGeneralRequest)
 app.get("/api/getnearbyassetrequest", AuthenticateUser, RaiseRequestCtrl.getNearbyAssetRequests)
+app.get("/api/getallgeneralrequest",AuthenticateUser, GeneralRequestCtrl.getAllGeneralRequest)
 
 app.post("/api/generate-description", AuthenticateUser, AiCtrl.GenerateDescription)
 

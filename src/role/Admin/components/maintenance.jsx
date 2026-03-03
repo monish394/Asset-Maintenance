@@ -1,7 +1,22 @@
 import { AdminData } from "../context/Admindatamaintenance";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { fetchAllGeneralRequest } from "../../../slices/generalrequestslices";
+
 
 export default function Maintenance() {
+  const dispatch = useDispatch()
   const { allraiserequest } = AdminData();
+  const GeneralRequest = useSelector((state) => {
+    return state.GeneralRequest.data
+  })
+  // console.log(GeneralRequest)
+
+  useEffect(() => {
+    dispatch(fetchAllGeneralRequest())
+
+
+  }, [])
 
   return (
     <div className="p-4 md:p-8 space-y-8 font-sans" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -209,9 +224,59 @@ export default function Maintenance() {
         </table>
       </div>
 
+      <div className="overflow-x-auto rounded-3xl border border-slate-100 shadow-xl bg-white p-6">
+        <h2 className="text-2xl font-bold mb-6 text-slate-900 tracking-tight">General Requests ({GeneralRequest.length})</h2>
+        <table className="min-w-full divide-y divide-slate-100">
+          <thead className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold tracking-[0.1em]">
+            <tr>
+              <th className="px-6 py-4 text-left">Requester</th>
+              <th className="px-6 py-4 text-left">Issue</th>
+              <th className="px-6 py-4 text-left">Status</th>
+              <th className="px-6 py-4 text-left">Technician</th>
+              <th className="px-6 py-4 text-left">Location / Address</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-50">
+            {GeneralRequest.length > 0 ? (
+              GeneralRequest.map((req) => (
+                <tr key={req._id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="px-6 py-5">
+                    <p className="text-xs font-bold text-slate-700">{req.userId?.name || "N/A"}</p>
+                    <p className="text-[10px] text-slate-400">{req.userId?.phone || "N/A"}</p>
+                  </td>
+                  <td className="px-6 py-5">
+                    <p className="text-xs text-slate-600 line-clamp-2 max-w-[200px]" title={req.issue}>
+                      {req.issue}
+                    </p>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className={`w-fit px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${req.status === "COMPLETED" ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
+                      req.status === "ACCEPTED" ? "bg-blue-50 text-blue-600 border border-blue-100" :
+                        "bg-amber-50 text-amber-600 border border-amber-100"
+                      }`}>
+                      {req.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <p className={`text-xs font-semibold ${req.acceptedBy ? "text-indigo-600" : "text-rose-500 italic"}`}>
+                      {req.acceptedBy?.name || "Not Accepted Yet"}
+                    </p>
+                  </td>
+                  <td className="px-6 py-5">
+                    <p className="text-[10px] text-slate-500 line-clamp-1 italic max-w-[250px]" title={req.userId?.address}>
+                      {req.userId?.address || "N/A"}
+                    </p>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="text-center px-4 py-6 text-gray-500">No general requests found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
-
-
-
   );
 }

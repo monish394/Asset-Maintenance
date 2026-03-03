@@ -253,10 +253,9 @@ RaiseRequestCtrl.TechnicianAccept = async (req, res) => {
       return res.status(400).json({ err: "Request already accepted" });
     }
 
-    // Real-time notification via Socket.IO
     const io = req.app.get("io");
     if (io) {
-      const technician = await User.findById(techId); // Fetch technician details for the message
+      const technician = await User.findById(techId);
       io.to(updated.userid.toString()).emit("notification", {
         type: "ACCEPT_REQUEST",
         message: `Technician ${technician.name} has accepted your request for ${updated.assetid?.assetName || "your asset"}.`,

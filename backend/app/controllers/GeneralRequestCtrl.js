@@ -239,4 +239,16 @@ GeneralRequestCtrl.completeGeneralRequest = async (req, res) => {
   }
 };
 
+GeneralRequestCtrl.getAllGeneralRequest = async (req, res) => {
+  // only admin can access this
+  try {
+    if (req.role !== "admin") return res.status(401).json({ err: "Acces Denied!!!" });
+    const requests = await GeneralRequest.find().populate("userId", "name phone address").populate("acceptedBy", "name");
+    res.status(200).json(requests);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err: "Failed to fetch general requests" });
+  }
+};
+
 export default GeneralRequestCtrl;
