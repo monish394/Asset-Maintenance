@@ -72,7 +72,7 @@ const userIcon = new L.Icon({
 });
 
 const techIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149059.png",
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/6009/6009047.png",
   iconSize: [35, 35],
   iconAnchor: [17, 35],
 });
@@ -91,6 +91,7 @@ export default function RaiseRequest() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeChat, setActiveChat] = useState(null);
   const [unreadChats, setUnreadChats] = useState({});
+  const [hoveredTech, setHoveredTech] = useState(null);
 
   const {
     myasset,
@@ -382,7 +383,7 @@ export default function RaiseRequest() {
                 className="w-full h-full"
               >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker position={[userCoords.lat, userCoords.lng]}>
+                <Marker position={[userCoords.lat, userCoords.lng]} icon={userIcon}>
                   <Tooltip permanent direction="bottom">
                     You
                   </Tooltip>
@@ -394,6 +395,10 @@ export default function RaiseRequest() {
                       tech.location.coordinates[1],
                       tech.location.coordinates[0],
                     ]}
+                    eventHandlers={{
+                      mouseover: () => setHoveredTech(tech),
+                      mouseout: () => setHoveredTech(null),
+                    }}
                   >
                     <Tooltip permanent direction="top" offset={[0, -10]}>
                       Tech {tech.name}
@@ -401,6 +406,60 @@ export default function RaiseRequest() {
                   </Marker>
                 ))}
               </MapContainer>
+
+              {hoveredTech && (
+                <div className="absolute top-4 right-4 z-[1002] animate-in fade-in slide-in-from-right-4 duration-300 pointer-events-none">
+                  <div className="bg-white/95 backdrop-blur-md p-6 rounded-[2rem] shadow-2xl border border-white/20 w-80 overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+
+                    <div className="flex items-center gap-4 mb-5 relative z-10">
+                      <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-500/30 overflow-hidden">
+                        {hoveredTech.profile ? (
+                          <img src={hoveredTech.profile} alt={hoveredTech.name} className="w-full h-full object-cover" />
+                        ) : (
+                          hoveredTech.name?.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-extrabold text-slate-900 leading-tight">{hoveredTech.name}</h3>
+                        <p className="text-blue-600 text-[10px] font-black uppercase tracking-[0.1em] mt-0.5">{hoveredTech.role}</p>
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <span className="w-2h-2 w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                          <span className="text-[10px] text-green-600 font-bold uppercase tracking-wider">Active Now</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 relative z-10">
+                      <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Location</p>
+                          <span className="bg-blue-600 text-white text-[9px] px-2.5 py-0.5 rounded-full font-black tracking-tighter">
+                            {(hoveredTech.distance / 1000).toFixed(1)}KM AWAY
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 font-medium leading-relaxed line-clamp-2 italic">
+                          "{hoveredTech.address}"
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between relative z-10">
+                      <div className="flex flex-col">
+                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-0.5">Experience</span>
+                        <span className="text-xs font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-lg">5.2 Years</span>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-0.5">Success Rate</span>
+                        <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                          <span className="text-xs font-black text-amber-700">98%</span>
+                          <span className="text-amber-500">★</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
