@@ -7,6 +7,7 @@ const RaiseRequestCtrl = {};
 
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 
 
 
@@ -28,44 +29,51 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
 
   };
 
-  try {
+  // Helper function to get AI diagnosis even if Gemini fails
+  const getAiDiagnosis = async (desc) => {
+    // 1. Try Gemini
     if (process.env.GEMINI_API_KEY) {
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-
-      const prompt = `
-You are a maintenance AI assistant.
-Respond ONLY in valid JSON:
-
-{
-  "response": "short maintenance advice",
-  "category": "asset category",
-  "priority": "low | medium | high",
-  "requestType": "repair | maintenance",
-  "costEstimate": number or null
-}
-
-Issue:
-"${description}"
-`;
-
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        aiData.aiResponse =
-          (parsed.response || aiData.aiResponse) +
-          " Technician will be assigned soon if applicable.";
-        aiData.aiCategory = parsed.category || aiData.aiCategory;
-        aiData.aiPriority = parsed.priority || aiData.aiPriority;
-        aiData.requesttype = parsed.requestType || aiData.requesttype;
-
+      try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `Analyze maintenance issue: "${desc}". Response JSON ONLY: {"response":"advice","category":"type","priority":"low|medium|high","requestType":"repair|maintenance"}`;
+        const result = await model.generateContent(prompt);
+        const jsonMatch = result.response.text().match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      } catch (e) {
+        console.error("Gemini failed:", e.message);
       }
     }
+
+    // 2. Try Pollinations (Free Fallback)
+    try {
+      const promptForAI = `Analyze maintenance issue: "${desc}". Response JSON ONLY: {"response":"advice","category":"type","priority":"low|medium|high","requestType":"repair|maintenance"}`;
+      const pollinationsUrl = `https://text.pollinations.ai/${encodeURIComponent(promptForAI)}?json=true`;
+      const response = await axios.get(pollinationsUrl, { timeout: 8000 });
+      if (response.data) {
+        return typeof response.data === 'string' ? JSON.parse(response.data.match(/\{[\s\S]*\}/)[0]) : response.data;
+      }
+    } catch (e) {
+      console.error("Pollinations failed:", e.message);
+    }
+
+    // 3. Local Fail-Safe
+    const p = desc.toLowerCase();
+    if (p.includes("power") || p.includes("shock") || p.includes("wire")) return { response: "Electrical safety risk!", category: "Electrical", priority: "high", requestType: "repair" };
+    if (p.includes("water") || p.includes("leak") || p.includes("pipe")) return { response: "Plumbing issue detected.", category: "Plumbing", priority: "high", requestType: "repair" };
+    return { response: "Issue logged.", category: "General", priority: "medium", requestType: "maintenance" };
+  };
+
+  try {
+    const parsed = await getAiDiagnosis(description);
+    if (parsed) {
+      aiData.aiResponse = (parsed.response || aiData.aiResponse) + " Technician will be assigned soon.";
+      aiData.aiCategory = parsed.category || aiData.aiCategory;
+      aiData.aiPriority = (parsed.priority || aiData.aiPriority).toLowerCase();
+      aiData.requesttype = (parsed.requestType || aiData.requesttype).toLowerCase();
+    }
   } catch (err) {
-    console.error("AI classification failed:", err.message);
+    console.error("Diagnosis classification failed:", err.message);
   }
 
   try {
@@ -87,26 +95,25 @@ Issue:
       ...aiData,
     });
 
-    if (newRequest.aiPriority !== "high") {
-      const nearbyTechs = await User.aggregate([
-        {
-          $geoNear: {
-            near: { type: "Point", coordinates: user.location.coordinates },
-            distanceField: "distance",
-            spherical: true,
-            maxDistance: 5000,
-            query: { role: "technician" },
-          },
+    // Send notifications to all nearby technicians regardless of priority
+    const nearbyTechs = await User.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: user.location.coordinates },
+          distanceField: "distance",
+          spherical: true,
+          maxDistance: 5000,
+          query: { role: "technician" },
         },
-      ]);
+      },
+    ]);
 
-      for (const tech of nearbyTechs) {
-        await Notification.create({
-          userid: tech._id,
-          message: `New request available: "${newRequest.description}". Click ACCEPT to take it.`,
-          requestid: newRequest._id,
-        });
-      }
+    for (const tech of nearbyTechs) {
+      await Notification.create({
+        userid: tech._id,
+        message: `New ${newRequest.aiPriority} priority request: "${newRequest.description.substring(0, 50)}...". Click ACCEPT to take it.`,
+        requestid: newRequest._id,
+      });
     }
 
     await newRequest.save();
@@ -410,7 +417,7 @@ RaiseRequestCtrl.getNearbyAssetRequests = async (req, res) => {
         $match: {
           status: "pending",
           assignedto: null,
-          aiPriority: { $regex: /^(low|medium)$/i }
+          aiPriority: { $regex: /^(low|medium|high)$/i }
         }
       },
       {

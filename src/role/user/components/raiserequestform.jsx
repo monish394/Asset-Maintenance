@@ -5,9 +5,7 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
   const [description, setDescription] = useState(initialDescription);
 
   useEffect(() => {
-    if (initialDescription) {
-      setDescription(initialDescription);
-    }
+    setDescription(initialDescription);
   }, [initialDescription]);
 
   const handleSubmit = () => {

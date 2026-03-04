@@ -218,6 +218,7 @@ export default function RaiseRequest() {
         };
         setMyraiserequest((prev) => [newRequest, ...prev]);
         setShowRaiseForm(false);
+        setDraftDescription("");
       } catch (err) {
         console.error(err.message);
       }
@@ -239,6 +240,7 @@ export default function RaiseRequest() {
         );
         setUsergeneralrequest((prev) => [res.data, ...prev]);
         setShowGeneralForm(false);
+        setDraftDescription("");
       } catch (err) {
         console.error(err.response?.data || err.message);
       }
@@ -756,9 +758,18 @@ export default function RaiseRequest() {
                       </td>
 
                       <td className="px-6 py-3 align-top">
-                        <p className="text-gray-700 text-sm whitespace-normal break-words">
+                        <p className="text-gray-700 text-sm whitespace-normal break-words mb-2">
                           {ele.issue}
                         </p>
+                        {ele.aiResponse && (
+                          <div className="mt-2 p-3 bg-blue-50 border-l-4 border-blue-400 rounded-lg shadow-sm text-gray-800 text-xs leading-relaxed">
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <FcIdea className="text-sm" />
+                              <span className="font-bold text-gray-900 uppercase tracking-tighter">AI Analysis:</span>
+                            </div>
+                            <div className="whitespace-pre-wrap italic opacity-90">{ele.aiResponse}</div>
+                          </div>
+                        )}
                       </td>
 
                       <td className="px-6 py-3">

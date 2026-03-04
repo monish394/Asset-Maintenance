@@ -237,9 +237,9 @@ export default function AssignedRequest() {
     });
   };
 
-  const filteredRequests = nearbyAssetRequests.filter(
-    (req) => req.aiPriority && ["low", "medium"].includes(req.aiPriority.toLowerCase())
-  );
+  // const filteredRequests = nearbyAssetRequests.filter(
+  //   (req) => req.aiPriority && ["low", "medium","high"].includes(req.aiPriority.toLowerCase())
+  // );
 
   return (
     <div className="p-6" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
@@ -616,7 +616,7 @@ export default function AssignedRequest() {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          {filteredRequests.length === 0 ? (
+          {nearbyAssetRequests.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-slate-400 text-sm">No nearby requests</p>
             </div>
@@ -635,7 +635,7 @@ export default function AssignedRequest() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {filteredRequests.map((ele) => (
+                  {nearbyAssetRequests.map((ele) => (
                     <tr key={ele._id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{ele.userid?.name}</td>
                       <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{ele.aiCategory}</td>

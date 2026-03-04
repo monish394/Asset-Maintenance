@@ -5,7 +5,7 @@ function GeneralRequestForm({ show, onClose, onSubmit, initialIssue = "" }) {
 
 
   useEffect(() => {
-    if (show) setIssue(initialIssue);
+    setIssue(initialIssue);
   }, [show, initialIssue]);
 
   if (!show) return null;

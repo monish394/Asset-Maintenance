@@ -31,6 +31,19 @@ const GeneralRequestSchema = new mongoose.Schema({
     ref: "User",
     default: null
   },
+  aiResponse: {
+    type: String,
+    default: ""
+  },
+  aiCategory: {
+    type: String,
+    default: "General"
+  },
+  aiPriority: {
+    type: String,
+    enum: ["low", "medium", "high"],
+    default: "medium"
+  },
   createdAt: {
     type: Date,
     default: Date.now
