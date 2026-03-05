@@ -739,9 +739,9 @@ export default function RaiseRequest() {
                 <th className="w-48 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Requested At
                 </th>
-                {/* <th className="w-24 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                <th className="w-24 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Action
-                </th> */}
+                </th>
               </tr>
             </thead>
 
