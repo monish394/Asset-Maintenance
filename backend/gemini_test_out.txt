@@ -1,0 +1,6 @@
+START
+[FAIL] gemini-1.5-flash: [GoogleGenerativeAI Error]: Error fetching from ht
+[FAIL] gemini-1.5-pro: [GoogleGenerativeAI Error]: Error fetching from ht
+[FAIL] gemini-1.5-flash-latest: [GoogleGenerativeAI Error]: Error fetching from ht
+[FAIL] gemini-2.0-flash: [GoogleGenerativeAI Error]: Error fetching from ht
+[FAIL] gemini-1.0-pro: [GoogleGenerativeAI Error]: Error fetching from ht

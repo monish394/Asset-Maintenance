@@ -1,8 +1,7 @@
 import GeneralRequest from "../models/GeneralRequest.js"
 import User from "../models/Registeruser.js";
 import Notification from "../models/NotificationUser.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import axios from "axios";
+
 const GeneralRequestCtrl = {};
 
 
@@ -19,65 +18,13 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
       return res.status(400).json({ err: "User location not set properly" });
     }
 
-    let aiData = {
-      aiResponse: "Technician will review the issue.",
-      aiCategory: "General",
-      aiPriority: "medium"
-    };
-
-    const getAiDiagnosis = async (desc) => {
-      // 1. Try Gemini
-      if (process.env.GEMINI_API_KEY) {
-        try {
-          const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-          const prompt = `Analyze maintenance issue: "${desc}". Response JSON ONLY: {"response":"advice","category":"type","priority":"low|medium|high"}`;
-          const result = await model.generateContent(prompt);
-          const jsonMatch = result.response.text().match(/\{[\s\S]*\}/);
-          if (jsonMatch) return JSON.parse(jsonMatch[0]);
-        } catch (e) {
-          console.error("Gemini failed:", e.message);
-        }
-      }
-
-      // 2. Try Pollinations
-      try {
-        const promptForAI = `Analyze maintenance issue: "${desc}". Response JSON ONLY: {"response":"advice","category":"type","priority":"low|medium|high"}`;
-        const pollinationsUrl = `https://text.pollinations.ai/${encodeURIComponent(promptForAI)}?json=true`;
-        const response = await axios.get(pollinationsUrl, { timeout: 8000 });
-        if (response.data) {
-          return typeof response.data === 'string' ? JSON.parse(response.data.match(/\{[\s\S]*\}/)[0]) : response.data;
-        }
-      } catch (e) {
-        console.error("Pollinations failed:", e.message);
-      }
-
-      // 3. Rule-based
-      const p = desc.toLowerCase();
-      if (p.includes("power") || p.includes("shock") || p.includes("wire")) return { response: "Electrical safety risk! Do not touch.", category: "Electrical", priority: "high" };
-      if (p.includes("water") || p.includes("leak") || p.includes("pipe")) return { response: "Plumbing leak detected. Stop main flow.", category: "Plumbing", priority: "high" };
-      return { response: "Issue logged. A professional will assess soon.", category: "General", priority: "medium" };
-    };
-
-    try {
-      const parsed = await getAiDiagnosis(issue);
-      if (parsed) {
-        aiData.aiResponse = (parsed.response || aiData.aiResponse) + " Technician will be assigned soon.";
-        aiData.aiCategory = parsed.category || aiData.aiCategory;
-        aiData.aiPriority = (parsed.priority || aiData.aiPriority).toLowerCase();
-      }
-    } catch (e) {
-      console.error("Diagnosis process failed:", e.message);
-    }
-
     const newGeneralRequest = new GeneralRequest({
       issue,
       userId: req.userid,
       location: {
         type: "Point",
         coordinates: user.location.coordinates
-      },
-      ...aiData
+      }
     });
 
     await newGeneralRequest.save();
@@ -85,10 +32,7 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
     const nearbyTechnicians = await User.aggregate([
       {
         $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: user.location.coordinates
-          },
+          near: { type: "Point", coordinates: user.location.coordinates },
           distanceField: "distance",
           spherical: true,
           maxDistance: 5000,
@@ -100,7 +44,7 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
     for (const tech of nearbyTechnicians) {
       await Notification.create({
         userid: tech._id,
-        message: `New General Request: "${issue}" ${user.name}`,
+        message: `New General Request from ${user.name}: "${issue.substring(0, 60)}"`,
         type: "general_request",
         referenceId: newGeneralRequest._id
       });
@@ -113,6 +57,7 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
     res.status(500).json({ err: "Failed to create general request" });
   }
 };
+
 
 
 GeneralRequestCtrl.Getusergeneralrequest = async (req, res) => {

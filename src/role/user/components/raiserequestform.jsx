@@ -4,12 +4,17 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
   const [assetid, setAssetid] = useState("");
   const [description, setDescription] = useState(initialDescription);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     setDescription(initialDescription);
   }, [initialDescription]);
 
-  const handleSubmit = () => {
-    onSubmit(assetid, description);
+  const handleSubmit = async () => {
+    if (!assetid || !description.trim()) return;
+    setIsSubmitting(true);
+    await onSubmit(assetid, description);
+    setIsSubmitting(false);
   };
 
   const handleCancel = () => {
@@ -35,7 +40,8 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
           <select
             value={assetid}
             onChange={(e) => setAssetid(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none transition"
+            disabled={isSubmitting}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none transition disabled:opacity-50"
           >
             <option value="">Select Asset</option>
             {assets.map((ele) => (
@@ -55,22 +61,28 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the problem..."
             rows={5}
-            className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none resize-none transition"
+            disabled={isSubmitting}
+            className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none resize-none transition disabled:opacity-50"
           />
         </div>
 
         <div className="flex justify-end gap-4">
           <button
             onClick={handleCancel}
-            className="px-5 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+            disabled={isSubmitting}
+            className="px-5 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+            disabled={isSubmitting || !assetid || !description.trim()}
+            className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            Submit
+            {isSubmitting && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
+            )}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>

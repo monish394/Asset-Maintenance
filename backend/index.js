@@ -227,6 +227,7 @@ app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
 });
 
 //request for asset
+
 app.post("/api/requestasset", AuthenticateUser, RequestCtrl.CreateRequest)
 app.get("/api/getallrequestasset", RequestCtrl.GetAllRequests)
 app.put("/api/updaterequeststatus/:id", RequestCtrl.StausUpdate)
@@ -252,7 +253,7 @@ app.get("/api/gettechnicianaccepetedgeneralrequest", AuthenticateUser, GeneralRe
 app.get("/api/user/location", AuthenticateUser, UserCtrl.UserLocation)
 app.patch("/api/technician/general-request/:id/complete", AuthenticateUser, GeneralRequestCtrl.completeGeneralRequest)
 app.get("/api/getnearbyassetrequest", AuthenticateUser, RaiseRequestCtrl.getNearbyAssetRequests)
-app.get("/api/getallgeneralrequest",AuthenticateUser, GeneralRequestCtrl.getAllGeneralRequest)
+app.get("/api/getallgeneralrequest", AuthenticateUser, GeneralRequestCtrl.getAllGeneralRequest)
 
 app.post("/api/generate-description", AuthenticateUser, AiCtrl.GenerateDescription)
 
@@ -296,6 +297,20 @@ app.get("/{*splat}", (req, res) => {
   }
 });
 
-httpServer.listen(PORT, "0.0.0.0", () => {
-  console.log(`server is running on port ${PORT}`);
+const startServer = () => {
+  httpServer.listen(PORT, "0.0.0.0", () => {
+    console.log(`server is running on port ${PORT}`);
+  });
+};
+
+httpServer.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.warn(`⚠️  Port ${PORT} busy — retrying in 4 seconds...`);
+    httpServer.close();
+    setTimeout(startServer, 4000);
+  } else {
+    throw err;
+  }
 });
+
+startServer();
