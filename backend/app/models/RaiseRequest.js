@@ -23,6 +23,11 @@ const raiseRequestSchema = new mongoose.Schema({
     required: true
   },
 
+  faultImg: {
+    type: String,
+    default: null
+  },
+
   status: {
     type: String,
     enum: ["pending", "assigned", "in-process", "completed"],

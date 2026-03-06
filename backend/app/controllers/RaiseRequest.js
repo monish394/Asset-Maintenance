@@ -2,11 +2,12 @@ import RaiseRequest from "../models/RaiseRequest.js";
 import User from "../models/Registeruser.js";
 import Notification from "../models/NotificationUser.js";
 import AiService from "../services/AiService.js";
+import Payment from "../models/Payment.js";
 
 const RaiseRequestCtrl = {};
 
 RaiseRequestCtrl.Postissue = async (req, res) => {
-  const { assetid, description } = req.body;
+  const { assetid, description, faultImg } = req.body;
 
   if (!assetid) return res.status(400).json({ err: "Please select an asset before submitting." });
   if (!description) return res.status(400).json({ err: "Description is required" });
@@ -43,6 +44,7 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
     const newRequest = new RaiseRequest({
       assetid,
       description,
+      faultImg,
       userid: req.userid,
       assignedto: null,
       status: "pending",
@@ -97,7 +99,13 @@ RaiseRequestCtrl.Getallrequest = async (req, res) => {
       .populate("assetid", "assetName assetImg")
       .populate("userid", "name phone")
       .populate("assignedto", "name address phone");
-    res.status(200).json(allraiserequest);
+
+    const requestsWithPayments = await Promise.all(allraiserequest.map(async (requestItem) => {
+      const payment = await Payment.findOne({ raiseRequestId: requestItem._id, status: "success" });
+      return { ...requestItem.toObject(), payment };
+    }));
+
+    res.status(200).json(requestsWithPayments);
   } catch (err) {
     res.status(400).json({ err: "Failed to fetch all requests" });
   }
@@ -123,7 +131,13 @@ RaiseRequestCtrl.getTechnicianrequests = async (req, res) => {
     const requests = await RaiseRequest.find({ assignedto: req.userid })
       .populate("assetid", "assetName assetImg")
       .populate("userid", "name address phone");
-    res.status(200).json(requests);
+
+    const requestsWithPayments = await Promise.all(requests.map(async (request) => {
+      const payment = await Payment.findOne({ raiseRequestId: request._id, status: "success" });
+      return { ...request.toObject(), payment };
+    }));
+
+    res.status(200).json(requestsWithPayments);
   } catch (err) {
     res.status(400).json({ err: "Failed to fetch technician requests" });
   }

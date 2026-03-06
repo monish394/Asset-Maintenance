@@ -3,6 +3,8 @@ import { memo, useState, useEffect } from "react";
 function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" }) {
   const [assetid, setAssetid] = useState("");
   const [description, setDescription] = useState(initialDescription);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -10,16 +12,26 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
     setDescription(initialDescription);
   }, [initialDescription]);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async () => {
     if (!assetid || !description.trim()) return;
     setIsSubmitting(true);
-    await onSubmit(assetid, description);
+    await onSubmit(assetid, description, imageFile);
     setIsSubmitting(false);
   };
 
   const handleCancel = () => {
     setAssetid("");
     setDescription("");
+    setImageFile(null);
+    setImagePreview("");
     onCancel();
   };
 
@@ -64,6 +76,24 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
             disabled={isSubmitting}
             className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none resize-none transition disabled:opacity-50"
           />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Upload Fault Image (Optional)
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            disabled={isSubmitting}
+            className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50 transition"
+          />
+          {imagePreview && (
+            <div className="mt-4">
+              <img src={imagePreview} alt="Fault preview" className="w-full h-32 object-contain rounded-lg border border-gray-200" />
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end gap-4">

@@ -41,6 +41,7 @@ export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     axios
@@ -49,7 +50,8 @@ export default function Users() {
         dispatch({ type: "SET_USERS", payload: res.data });
         setAllusers(res.data);
       })
-      .catch(() => { });
+      .catch(() => { })
+      .finally(() => { setIsLoading(false); });
   }, []);
 
   const handleDelete = async () => {
@@ -119,6 +121,17 @@ export default function Users() {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] font-sans">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
+          <p className="text-slate-500 font-medium">Loading technicians...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8 mt-4 font-sans selection:bg-indigo-100 selection:text-indigo-700" style={{ fontFamily: "'Outfit', sans-serif" }}>

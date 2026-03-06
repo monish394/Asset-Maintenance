@@ -1,12 +1,13 @@
 import GeneralRequest from "../models/GeneralRequest.js"
 import User from "../models/Registeruser.js";
 import Notification from "../models/NotificationUser.js";
+import Payment from "../models/Payment.js";
 
 const GeneralRequestCtrl = {};
 
 
 GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
-  const { issue } = req.body;
+  const { issue, faultImg } = req.body;
 
   if (!issue) return res.status(400).json({ err: "Issue is required" });
 
@@ -20,6 +21,7 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
 
     const newGeneralRequest = new GeneralRequest({
       issue,
+      faultImg,
       userId: req.userid,
       location: {
         type: "Point",
@@ -243,7 +245,13 @@ GeneralRequestCtrl.getAllGeneralRequest = async (req, res) => {
   try {
     if (req.role !== "admin") return res.status(401).json({ err: "Acces Denied!!!" });
     const requests = await GeneralRequest.find().populate("userId", "name phone address").populate("acceptedBy", "name");
-    res.status(200).json(requests);
+
+    const requestsWithPayments = await Promise.all(requests.map(async (requestItem) => {
+      const payment = await Payment.findOne({ raiseRequestId: requestItem._id, status: "success" });
+      return { ...requestItem.toObject(), payment };
+    }));
+
+    res.status(200).json(requestsWithPayments);
   } catch (err) {
     console.log(err);
     res.status(500).json({ err: "Failed to fetch general requests" });

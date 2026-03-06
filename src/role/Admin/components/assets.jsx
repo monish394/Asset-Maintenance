@@ -528,7 +528,12 @@ export default function Assets() {
           <div className="relative">
             <input
               value={txt}
-              onChange={(e) => setTxt(e.target.value)}
+              onChange={(e) => {
+                setTxt(e.target.value);
+                if (e.target.value.length === 0) {
+                  setBtnsearch("");
+                }
+              }}
               type="text"
               placeholder="Search assets"
               className="h-11 w-72 rounded-md border border-gray-300 bg-white pl-10 pr-4 text-sm text-gray-800 placeholder-gray-400 shadow-sm

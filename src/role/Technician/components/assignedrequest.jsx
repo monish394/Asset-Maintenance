@@ -316,6 +316,7 @@ export default function AssignedRequest() {
                 <tr>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Asset</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Fault Image</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Raised By</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Priority</th>
@@ -328,7 +329,19 @@ export default function AssignedRequest() {
                 {technicianassignedassert.map((ele, idx) => (
                   <tr key={ele._id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{ele.assetid?.assetName || "N/A"}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{ele.description || "N/A"}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 truncate max-w-xs">{ele.description || "N/A"}</td>
+                    <td className="px-6 py-4">
+                      {ele.faultImg ? (
+                        <img
+                          src={ele.faultImg}
+                          alt="Fault"
+                          className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
+                          onClick={() => window.open(ele.faultImg, '_blank')}
+                        />
+                      ) : (
+                        <span className="text-slate-400 text-xs italic">No Image</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{ele.userid?.name || "N/A"}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{ele.userid?.address || "N/A"}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -490,6 +503,7 @@ export default function AssignedRequest() {
                   <tr>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">User</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Fault Image</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Phone</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Status</th>
@@ -500,7 +514,19 @@ export default function AssignedRequest() {
                   {requests.map((req) => (
                     <tr key={req._id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{req.userId?.name}</td>
-                      <td className="px-6 py-4 text-sm text-slate-600">{req.issue}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 truncate max-w-xs">{req.issue}</td>
+                      <td className="px-6 py-4">
+                        {req.faultImg ? (
+                          <img
+                            src={req.faultImg}
+                            alt="Fault"
+                            className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
+                            onClick={() => window.open(req.faultImg, '_blank')}
+                          />
+                        ) : (
+                          <span className="text-slate-400 text-xs italic">No Image</span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{req.userId?.phone}</td>
                       <td className="px-6 py-4 text-sm text-slate-600">{req.userId?.address}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -545,6 +571,7 @@ export default function AssignedRequest() {
                   <tr>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">User</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Fault Image</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Phone</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Status</th>
@@ -555,7 +582,19 @@ export default function AssignedRequest() {
                   {acceptedtechniciangeneralreqeust.map((req) => (
                     <tr key={req._id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">{req.userId?.name}</td>
-                      <td className="px-6 py-4 text-sm text-slate-600">{req.issue}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600 truncate max-w-xs">{req.issue}</td>
+                      <td className="px-6 py-4">
+                        {req.faultImg ? (
+                          <img
+                            src={req.faultImg}
+                            alt="Fault"
+                            className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
+                            onClick={() => window.open(req.faultImg, '_blank')}
+                          />
+                        ) : (
+                          <span className="text-slate-400 text-xs italic">No Image</span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{req.userId?.phone}</td>
                       <td className="px-6 py-4 text-sm text-slate-600">{req.userId?.address}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -629,7 +668,7 @@ export default function AssignedRequest() {
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Category</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Priority</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Type</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Description</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue & Image</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Created</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Action</th>
                   </tr>
@@ -645,7 +684,19 @@ export default function AssignedRequest() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600 capitalize whitespace-nowrap">{ele.requesttype}</td>
-                      <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">{ele.description}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        <div className="flex flex-col gap-2">
+                          <span className="truncate max-w-[150px]">{ele.description}</span>
+                          {ele.faultImg && (
+                            <img
+                              src={ele.faultImg}
+                              alt="Fault"
+                              className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
+                              onClick={() => window.open(ele.faultImg, '_blank')}
+                            />
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{formatDate(ele.createdAt)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button

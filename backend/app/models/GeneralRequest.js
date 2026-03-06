@@ -10,6 +10,10 @@ const GeneralRequestSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  faultImg: {
+    type: String,
+    default: null
+  },
   location: {
     type: {
       type: String,

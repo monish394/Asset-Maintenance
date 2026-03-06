@@ -199,12 +199,20 @@ export default function RaiseRequest() {
   }, [searchRadius]);
 
   const handleRaiseSubmit = useCallback(
-    async (assetid, description) => {
+    async (assetid, description, imageFile) => {
       if (!assetid) return;
       try {
+        let faultImg = null;
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append("image", imageFile);
+          const uploadRes = await axios.post("/assets/upload-image", formData);
+          faultImg = uploadRes.data.imageUrl;
+        }
+
         const res = await axios.post(
           "/raiserequest",
-          { assetid, description },
+          { assetid, description, faultImg },
           { headers: { Authorization: localStorage.getItem("token") } }
         );
         const selectedAsset = myasset.find((a) => a._id === assetid);
@@ -228,15 +236,23 @@ export default function RaiseRequest() {
 
 
   const handleGeneralSubmit = useCallback(
-    async (issue) => {
+    async (issue, imageFile) => {
       if (!issue.trim()) {
         alert("Please enter an issue description");
         return;
       }
       try {
+        let faultImg = null;
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append("image", imageFile);
+          const uploadRes = await axios.post("/assets/upload-image", formData);
+          faultImg = uploadRes.data.imageUrl;
+        }
+
         const res = await axios.post(
           "/generalraiserequest",
-          { issue },
+          { issue, faultImg },
           { headers: { Authorization: localStorage.getItem("token") } }
         );
         setUsergeneralrequest((prev) => [res.data, ...prev]);
@@ -528,6 +544,16 @@ export default function RaiseRequest() {
                   </td>
                   <td className="px-5 py-3 text-gray-700">
                     <div className="mb-2">{ele.description}</div>
+                    {ele.faultImg && (
+                      <div className="mb-2">
+                        <img
+                          src={ele.faultImg}
+                          alt="Fault"
+                          className="w-24 h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:scale-110 transition-transform"
+                          onClick={() => window.open(ele.faultImg, '_blank')}
+                        />
+                      </div>
+                    )}
                     {ele.aiResponse && (
                       <div className="mt-2 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg shadow-sm text-gray-800 text-sm leading-relaxed">
                         <div className="flex items-center gap-2 mb-2">

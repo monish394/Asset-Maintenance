@@ -2,6 +2,9 @@ import { memo, useState, useEffect } from "react";
 
 function GeneralRequestForm({ show, onClose, onSubmit, initialIssue = "" }) {
   const [issue, setIssue] = useState(initialIssue);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   useEffect(() => {
@@ -10,9 +13,25 @@ function GeneralRequestForm({ show, onClose, onSubmit, initialIssue = "" }) {
 
   if (!show) return null;
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleClose = () => {
+    setImageFile(null);
+    setImagePreview("");
+    onClose();
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(issue);
+    setIsSubmitting(true);
+    await onSubmit(issue, imageFile);
+    setIsSubmitting(false);
   };
 
   return (
@@ -37,23 +56,47 @@ function GeneralRequestForm({ show, onClose, onSubmit, initialIssue = "" }) {
             onChange={(e) => setIssue(e.target.value)}
             placeholder="Describe the issue..."
             rows={5}
-            className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none resize-none transition"
+            disabled={isSubmitting}
+            className="w-full px-3 py-3 border border-gray-300 rounded-lg text-sm text-gray-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-50 outline-none resize-none transition disabled:opacity-50"
           />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Upload Fault Image (Optional)
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            disabled={isSubmitting}
+            className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50 transition"
+          />
+          {imagePreview && (
+            <div className="mt-4">
+              <img src={imagePreview} alt="Fault preview" className="w-full h-32 object-contain rounded-lg border border-gray-200" />
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={onClose}
-            className="px-5 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+            onClick={handleClose}
+            disabled={isSubmitting}
+            className="px-5 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+            disabled={isSubmitting || !issue.trim()}
+            className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Submit
+            {isSubmitting && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
+            )}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </form>
