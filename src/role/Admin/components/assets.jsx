@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "../../../config/api";
 import { motion } from "framer-motion";
-// console.log(motion)
 
 import { BsSearch } from "react-icons/bs";
 import { MdAddBox } from "react-icons/md";
@@ -46,11 +45,19 @@ export default function Assets() {
   const [editImageFile, setEditImageFile] = useState(null);
   const [editImagePreview, setEditImagePreview] = useState("");
   const [editImageUploading, setEditImageUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     axios.get("/assets")
-      .then(res => setAssets(res.data))
-      .catch(err => console.log(err));
+      .then(res => {
+        setAssets(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -583,52 +590,58 @@ export default function Assets() {
 
 
         <div className="flex flex-wrap gap-4 justify-start p-4 mt-6">
-          {filtereddata.length > 0 ? filtereddata.reverse().map((ele, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: -50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: 0.01 }}
-              className="bg-gray-50 border border-gray-200 shadow-sm rounded-lg overflow-hidden w-52 hover:shadow-lg transition-shadow duration-200 flex flex-col"
-            >
-              <div className="overflow-hidden">
-                <img
-                  src={ele.assetImg}
-                  alt={ele.assetName}
-                  className="w-full p-3 h-40 object-cover transition-transform duration-300 hover:scale-95 cursor-pointer"
-                />
-              </div>
-
-              <div className="p-3 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-sm font-semibold mb-1">{ele.assetName}</h3>
-                  <p className="text-gray-600 text-xs mb-0.5"><strong>Category:</strong> {ele.category}</p>
-                  <p className="text-gray-600 text-xs mb-0.5 line-clamp-3"><strong>Description:</strong> {ele.description}</p>
-                  <p className="text-gray-600 text-xs mb-0.5"><strong>Status:</strong> <span className={ele.status === "unassigned" ? "text-green-600 font-medium" : ele.status === "assigned" ? "text-blue-600 font-medium" : "text-red-600 font-medium"}>{ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}</span></p>
-                  <p className="text-gray-600 text-xs mb-0.5"><strong>Assigned To:</strong> {ele.assignedTo ? ele.assignedTo.name : "Not assigned"}</p>
-                  <p className="text-gray-500 text-[10px]"><strong>Created At:</strong> {new Date(ele.createdAt).toLocaleDateString()}</p>
-                </div>
-                <div className="flex gap-2 mt-2">
-                  {ele.status !== "undermaintenance" && ele.status !== "assigned" && (
-                    <button onClick={() => handleAssign(ele._id)} className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700">Assign</button>
-                  )}
-                  <button onClick={() => handleEdit(ele)} className="flex-1 text-xs bg-gray-600 text-white py-1.5 rounded hover:bg-gray-700">Edit</button>
-                  <button
-                    onClick={() => handleDeleteClick(ele)}
-                    className="flex-1 text-xs bg-red-500 text-white py-1.5 rounded hover:bg-red-600 transition"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )) : (
-            <div className="w-full text-center mt-16">
-              <p className="text-lg text-gray-500 font-medium">No assets found</p>
-              <p className="text-sm text-gray-400 mt-1">Try searching with a different name</p>
+          {loading ? (
+            <div className="w-full h-80 flex flex-col items-center justify-center">
+              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-800 rounded-full animate-spin"></div>
+              <p className="mt-4 text-slate-500 font-medium animate-pulse">Loading assets...</p>
             </div>
-          )}
+          ) : filtereddata.length > 0 ?
+            filtereddata.reverse().map((ele, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: -50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.01 }}
+                className="bg-gray-50 border border-gray-200 shadow-sm rounded-lg overflow-hidden w-52 hover:shadow-lg transition-shadow duration-200 flex flex-col"
+              >
+                <div className="overflow-hidden">
+                  <img
+                    src={ele.assetImg}
+                    alt={ele.assetName}
+                    className="w-full p-3 h-40 object-cover transition-transform duration-300 hover:scale-95 cursor-pointer"
+                  />
+                </div>
+
+                <div className="p-3 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold mb-1">{ele.assetName}</h3>
+                    <p className="text-gray-600 text-xs mb-0.5"><strong>Category:</strong> {ele.category}</p>
+                    <p className="text-gray-600 text-xs mb-0.5 line-clamp-3"><strong>Description:</strong> {ele.description}</p>
+                    <p className="text-gray-600 text-xs mb-0.5"><strong>Status:</strong> <span className={ele.status === "unassigned" ? "text-green-600 font-medium" : ele.status === "assigned" ? "text-blue-600 font-medium" : "text-red-600 font-medium"}>{ele.status.charAt(0).toUpperCase() + ele.status.slice(1)}</span></p>
+                    <p className="text-gray-600 text-xs mb-0.5"><strong>Assigned To:</strong> {ele.assignedTo ? ele.assignedTo.name : "Not assigned"}</p>
+                    <p className="text-gray-500 text-[10px]"><strong>Created At:</strong> {new Date(ele.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    {ele.status !== "undermaintenance" && ele.status !== "assigned" && (
+                      <button onClick={() => handleAssign(ele._id)} className="flex-1 text-xs bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700">Assign</button>
+                    )}
+                    <button onClick={() => handleEdit(ele)} className="flex-1 text-xs bg-gray-600 text-white py-1.5 rounded hover:bg-gray-700">Edit</button>
+                    <button
+                      onClick={() => handleDeleteClick(ele)}
+                      className="flex-1 text-xs bg-red-500 text-white py-1.5 rounded hover:bg-red-600 transition"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )) : (
+              <div className="w-full text-center mt-16">
+                <p className="text-lg text-gray-500 font-medium">No assets found</p>
+                <p className="text-sm text-gray-400 mt-1">Try searching with a different name</p>
+              </div>
+            )}
         </div>
 
         {showAddAsset && (

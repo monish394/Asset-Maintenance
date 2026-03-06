@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "../../../config/api";
 import { motion } from "framer-motion";
-console.log(motion)
 import { BsSearch } from "react-icons/bs";
 import { useUserAsset } from "../context/userassetprovider";
 
@@ -11,7 +10,7 @@ export default function PickAssets() {
   const [pickingId, setPickingId] = useState(null);
 
   const { setMyasset } = useUserAsset();
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const categories = [...new Set(assets.map((a) => a.category))];
 
   const [txt, setTxt] = useState("");
@@ -39,9 +38,15 @@ export default function PickAssets() {
 
   const filteredData = unassignedAssets.filter((ele) => {
     const matchesName = ele.assetName.toLowerCase().includes(btnsearch.toLowerCase());
-    const matchesCategory = categoryFilter ? ele.category === categoryFilter : true;
+    const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(ele.category) : true;
     return matchesName && matchesCategory;
   });
+
+  const toggleCategory = (cat) => {
+    setSelectedCategories(prev =>
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    );
+  };
 
 
   const handleSearch = () => setBtnsearch(txt);
@@ -109,44 +114,76 @@ export default function PickAssets() {
       )}
 
 
-      <div className="relative mt-10 flex flex-wrap items-center gap-4 ml-24 font-sans">
-        <div className="relative w-full sm:w-auto">
-          <input
-            value={txt}
-            onChange={(e) => setTxt(e.target.value)}
-            type="text"
-            placeholder="Search assets..."
-            className="w-full sm:w-72 h-11 pl-10 pr-4 rounded-lg border border-gray-300 bg-white text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
-          />
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
-            <BsSearch />
-          </span>
-        </div>
+      <div className="mt-10 ml-24 font-sans">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <input
+              value={txt}
+              onChange={(e) => {
+                setTxt(e.target.value);
+                if (e.target.value === "") {
+                  setBtnsearch("");
+                }
+              }}
+              type="text"
+              placeholder="Search assets..."
+              className="w-full sm:w-80 h-11 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all"
+            />
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
+              <BsSearch />
+            </span>
+          </div>
 
-        <button
-          onClick={handleSearch}
-          className="h-11 px-6 rounded-lg bg-blue-600 text-white text-sm font-medium shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200 transition"
-        >
-          Search
-        </button>
-        <div className="relative w-full sm:w-auto">
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="w-full sm:w-72 h-11 pl-3 pr-4 rounded-lg border border-gray-300 bg-white text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+          <button
+            onClick={handleSearch}
+            className="h-11 px-8 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-lg shadow-gray-200 hover:bg-blue-700 hover:-translate-y-0.5 transition-all active:translate-y-0"
           >
-            <option value="">All Categories</option>
-            {categories.map((cat, idx) => (
-              <option key={idx} value={cat}>{cat}</option>
-            ))}
-          </select>
+            Search
+          </button>
         </div>
 
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 mr-4 py-1 px-3 bg-gray-100 rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M3 4.5h18m-18 5h18m-18 5h18m-18 5h18" />
+            </svg>
+            Categories
+          </div>
+
+          <button
+            onClick={() => setSelectedCategories([])}
+            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 border ${selectedCategories.length === 0
+                ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-100"
+                : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300"
+              }`}
+          >
+            All
+          </button>
+
+          {categories.map((cat, idx) => {
+            const isActive = selectedCategories.includes(cat);
+            return (
+              <button
+                key={idx}
+                onClick={() => toggleCategory(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 border flex items-center gap-1.5 ${isActive
+                    ? "bg-blue-50 border-blue-400 text-blue-700 font-bold"
+                    : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300"
+                  }`}
+              >
+                {isActive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                )}
+                {cat.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
 
 
-      <div className="flex flex-wrap gap-4 justify-start p-4 ml-6 mt-20">
+      <div className="flex flex-wrap gap-4 justify-start p-4 ml-6 mt-16">
         {loading ? (
           <div className="w-full flex flex-col items-center justify-center py-20">
             <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4"></div>

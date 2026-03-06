@@ -19,37 +19,37 @@ const AdminDashboardPieChart = ({ stats }) => {
     ],
   };
 
- const options = {
-  responsive: true,
-  animation: {
-    animateRotate: true,
-    animateScale: true,
-    duration: 1300,
-    easing: "easeOutCubic",
-  },
-  plugins: {
-    legend: {
-      position: "bottom",
-      align: "start",
-      labels: {
-        boxWidth: 15,
-        padding: 12,
-        font: {
-          size: 15,
-          family: "Inter, calibri",
-        },
-        usePointStyle: true,
-      },
+  const options = {
+    responsive: true,
+    animation: {
+      animateRotate: true,
+      animateScale: true,
+      duration: 1300,
+      easing: "easeOutCubic",
     },
-    tooltip: {
-      callbacks: {
-        label: function (context) {
-          return `${context.label}: ${context.raw}`;
+    plugins: {
+      legend: {
+        position: "bottom",
+        align: "start",
+        labels: {
+          boxWidth: 15,
+          padding: 12,
+          font: {
+            size: 15,
+            family: "Inter, calibri",
+          },
+          usePointStyle: true,
         },
       },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            return `${context.label}: ${context.raw}`;
+          },
+        },
+      },
     },
-  },
-};
+  };
 
 
   return (

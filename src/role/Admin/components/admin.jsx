@@ -3,13 +3,10 @@ import { AdminData } from "../context/Admindatamaintenance";
 import axios from "../../../config/api";
 import AdminDashboardPieChart from "./Admindashboardpiechart";
 import AdminDashboardLineBarChart from "./Admindashboardlinechart";
+import AdminRequestTrendChart from "./AdminRequestTrendChart";
 
 
 export default function Admin() {
-  //changes made add gap
-
-
-  // const [userinfo,setUserinfo]=useState(null)
   const token = localStorage.getItem("token")
   // console.log(token)
 
@@ -139,8 +136,9 @@ export default function Admin() {
 
       <div className="mt-10 px-4">
         {admindashboardstats && admindashboardraiserequeststats && (
-          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
             <AdminDashboardPieChart stats={admindashboardstats} />
+            <AdminRequestTrendChart requests={allraiserequest} />
             <AdminDashboardLineBarChart stats={admindashboardraiserequeststats} />
           </div>
         )}
