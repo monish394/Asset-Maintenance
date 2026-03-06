@@ -33,8 +33,8 @@ export default function AcceptedRequestsChart({
                 label: "Accepted",
                 data: [raiseRequests.length, generalRequests.length],
                 backgroundColor: [
-                    "rgba(0, 49, 173, 1)", // indigo-500
-                    "rgba(123, 0, 180, 1)", // violet-500
+                    "rgba(0, 72, 255, 1)", // indigo-500
+                    "rgba(174, 0, 255, 1)", // violet-500
                 ],
                 borderRadius: 6,
             },
@@ -48,8 +48,8 @@ export default function AcceptedRequestsChart({
                 label: "Completed",
                 data: [completedRaise.length, completedGeneral.length],
                 backgroundColor: [
-                    "rgba(3, 0, 201, 0.8)", // custom blue
-                    "rgba(100, 0, 171, 0.8)", // custom purple
+                    "rgba(72, 230, 201, 0.69)", // custom blue
+                    "rgba(184, 199, 214, 1)", // custom purple
                 ],
                 borderWidth: 0,
             },
