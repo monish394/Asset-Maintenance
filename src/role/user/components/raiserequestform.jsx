@@ -90,8 +90,12 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
             className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50 transition"
           />
           {imagePreview && (
-            <div className="mt-4">
-              <img src={imagePreview} alt="Fault preview" className="w-full h-32 object-contain rounded-lg border border-gray-200" />
+            <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+              <img
+                src={imagePreview}
+                alt="Fault preview"
+                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-500"
+              />
             </div>
           )}
         </div>

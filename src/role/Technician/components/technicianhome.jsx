@@ -21,6 +21,9 @@ export default function TechnicianHome() {
   const [acceptedGeneralRequests, setAcceptedGeneralRequests] = useState([]);
   const { technicianassignedassert, techinfo } = TechData();
 
+  const completedAssetRequests = technicianassignedassert.filter(r => r.status === 'completed');
+  const completedGeneralRequests = acceptedGeneralRequests.filter(r => r.status === 'COMPLETED');
+
   useEffect(() => {
 
     if (techinfo?._id) {
@@ -215,6 +218,8 @@ export default function TechnicianHome() {
           <AcceptedRequestsChart
             raiseRequests={technicianassignedassert.filter(r => r.status !== 'pending')}
             generalRequests={acceptedGeneralRequests}
+            completedRaise={completedAssetRequests}
+            completedGeneral={completedGeneralRequests}
           />
         </div>
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-shadow">
@@ -310,6 +315,171 @@ export default function TechnicianHome() {
                       </td>
                     </tr>
                   ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Completed Asset Requests */}
+      <div>
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
+            Completed asset requests
+          </h2>
+          <p className="text-slate-400 text-sm mt-1">
+            History of your completed asset maintenance tasks
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-8">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-emerald-50/30 border-b border-slate-100">
+                <tr>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Asset
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Issue
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Completion Date
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Cost
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {completedAssetRequests.length > 0 ? (
+                  completedAssetRequests
+                    .slice()
+                    .reverse()
+                    .map((ele, i) => (
+                      <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            {ele.assetid?.assetImg ? (
+                              <img
+                                src={ele.assetid.assetImg}
+                                alt=""
+                                className="w-8 h-8 rounded object-cover"
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center">
+                                <FaTools className="text-slate-400" size={12} />
+                              </div>
+                            )}
+                            <span className="text-sm font-medium text-slate-700">
+                              {ele.assetid?.assetName}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">
+                          {ele.description}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600">
+                          {formatDate(ele.completedAt || ele.updatedAt)}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-bold text-slate-800">
+                          ₹{ele.costEstimate || 0}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100">
+                            Completed
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="5"
+                      className="px-6 py-8 text-center text-slate-400 text-sm"
+                    >
+                      No completed asset requests yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Completed General Requests */}
+      <div>
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
+            Completed general requests
+          </h2>
+          <p className="text-slate-400 text-sm mt-1">
+            General maintenance requests successfully resolved
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-emerald-50/30 border-b border-slate-100">
+                <tr>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    User
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Issue
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Phone
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Address
+                  </th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {completedGeneralRequests.length > 0 ? (
+                  completedGeneralRequests
+                    .slice()
+                    .reverse()
+                    .map((req, i) => (
+                      <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4 text-sm font-medium text-slate-700 whitespace-nowrap">
+                          {req.userId?.name}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">
+                          {req.issue}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
+                          {req.userId?.phone}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">
+                          {req.userId?.address}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100">
+                            Completed
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="5"
+                      className="px-6 py-8 text-center text-slate-400 text-sm"
+                    >
+                      No completed general requests yet.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

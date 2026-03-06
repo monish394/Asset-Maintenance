@@ -1,4 +1,4 @@
-import { Bar } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -7,6 +7,7 @@ import {
     Title,
     Tooltip,
     Legend,
+    ArcElement,
 } from "chart.js";
 
 ChartJS.register(
@@ -15,66 +16,101 @@ ChartJS.register(
     BarElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    ArcElement
 );
 
-export default function AcceptedRequestsChart({ raiseRequests = [], generalRequests = [] }) {
-    const data = {
-        labels: ["Asset Requests", "General Requests"],
+export default function AcceptedRequestsChart({
+    raiseRequests = [],
+    generalRequests = [],
+    completedRaise = [],
+    completedGeneral = []
+}) {
+    const acceptedData = {
+        labels: ["Asset", "General"],
         datasets: [
             {
-                label: "Accepted Requests",
+                label: "Accepted",
                 data: [raiseRequests.length, generalRequests.length],
                 backgroundColor: [
-                    "rgba(59, 246, 96, 0.6)", // blue-500
-                    "rgba(76, 0, 255, 0.6)", // purple-500
+                    "rgba(0, 49, 173, 1)", // indigo-500
+                    "rgba(123, 0, 180, 1)", // violet-500
                 ],
-                borderColor: [
-                    "rgba(60, 255, 0, 1)",
-                    "rgba(76, 0, 255, 1)",
-                ],
-                borderWidth: 1,
-                borderRadius: 8,
+                borderRadius: 6,
             },
         ],
     };
 
-    const options = {
+    const completedData = {
+        labels: ["Asset", "General"],
+        datasets: [
+            {
+                label: "Completed",
+                data: [completedRaise.length, completedGeneral.length],
+                backgroundColor: [
+                    "rgba(3, 0, 201, 0.8)", // custom blue
+                    "rgba(100, 0, 171, 0.8)", // custom purple
+                ],
+                borderWidth: 0,
+            },
+        ],
+    };
+
+    const barOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: {
-                display: false,
-            },
-            title: {
-                display: false,
-            },
+            legend: { display: false },
         },
         scales: {
             y: {
                 beginAtZero: true,
-                ticks: {
-                    stepSize: 1,
-                },
-                grid: {
-                    display: false,
-                },
+                ticks: { stepSize: 1, color: '#94a3b8', font: { size: 10 } },
+                grid: { color: '#f1f5f9' },
             },
             x: {
-                grid: {
-                    display: false,
-                },
+                ticks: { color: '#64748b', font: { size: 11, weight: '600' } },
+                grid: { display: false },
+            },
+        },
+    };
+
+    const pieOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 12,
+                    padding: 15,
+                    font: { size: 10, weight: '600' },
+                    color: '#64748b'
+                }
             },
         },
     };
 
     return (
         <div className="w-full h-full flex flex-col">
-            <h3 className="text-lg font-semibold text-slate-800 text-center mb-6">
-                Accepted Work Summary
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest text-center mb-6">
+                Work Summary Overview
             </h3>
-            <div className="flex-1 w-full min-h-[300px]">
-                <Bar data={data} options={options} />
+
+            <div className="flex-1 grid grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                    <p className="text-[10px] font-bold text-center text-slate-400 mb-2 uppercase tracking-tighter">Accepted Work</p>
+                    <div className="flex-1 min-h-[180px]">
+                        <Bar data={acceptedData} options={barOptions} />
+                    </div>
+                </div>
+
+                <div className="flex flex-col">
+                    <p className="text-[10px] font-bold text-center text-slate-400 mb-2 uppercase tracking-tighter">Completed Work</p>
+                    <div className="flex-1 min-h-[180px]">
+                        <Pie data={completedData} options={pieOptions} />
+                    </div>
+                </div>
             </div>
         </div>
     );

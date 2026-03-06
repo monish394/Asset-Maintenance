@@ -517,6 +517,9 @@ export default function RaiseRequest() {
                   Asset Name
                 </th>
                 <th className="px-5 py-3 text-left font-semibold text-gray-700 uppercase tracking-wide">
+                  Fault Image
+                </th>
+                <th className="px-5 py-3 text-left font-semibold text-gray-700 uppercase tracking-wide">
                   Issue Description
                 </th>
                 <th className="px-5 py-3 text-left font-semibold text-gray-700 uppercase tracking-wide">
@@ -542,18 +545,27 @@ export default function RaiseRequest() {
                       ? ele.assetid.assetName
                       : "Loading..."}
                   </td>
-                  <td className="px-5 py-3 text-gray-700">
-                    <div className="mb-2">{ele.description}</div>
-                    {ele.faultImg && (
-                      <div className="mb-2">
+                  <td className="px-5 py-3">
+                    {ele.faultImg ? (
+                      <div className="relative group w-16 h-16">
                         <img
                           src={ele.faultImg}
                           alt="Fault"
-                          className="w-24 h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:scale-110 transition-transform"
+                          className="w-full h-full object-cover rounded-xl shadow-sm border border-gray-200 cursor-pointer group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg"
                           onClick={() => window.open(ele.faultImg, '_blank')}
                         />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none flex items-center justify-center">
+                          <span className="text-white text-[10px] font-bold">VIEW</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-50 rounded-xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400">
+                        <span className="text-[10px] font-bold uppercase">No Img</span>
                       </div>
                     )}
+                  </td>
+                  <td className="px-5 py-3 text-gray-700">
+                    <div className="mb-2">{ele.description}</div>
                     {ele.aiResponse && (
                       <div className="mt-2 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg shadow-sm text-gray-800 text-sm leading-relaxed">
                         <div className="flex items-center gap-2 mb-2">
@@ -624,7 +636,7 @@ export default function RaiseRequest() {
               {myraiserequest.length === 0 && (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="6"
                     className="px-5 py-6 text-center text-gray-500 font-medium"
                   >
                     No service requests found
@@ -753,6 +765,9 @@ export default function RaiseRequest() {
                 <th className="w-16 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   S.No
                 </th>
+                <th className="w-24 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                  Fault Img
+                </th>
                 <th className="w-2/5 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Issue
                 </th>
@@ -782,6 +797,23 @@ export default function RaiseRequest() {
                     >
                       <td className="px-6 py-3 text-gray-700 font-medium">
                         {index + 1}
+                      </td>
+
+                      <td className="px-6 py-3">
+                        {ele.faultImg ? (
+                          <div className="relative group w-14 h-14">
+                            <img
+                              src={ele.faultImg}
+                              alt="Fault"
+                              className="w-full h-full object-cover rounded-xl shadow-sm border border-gray-200 cursor-pointer group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg"
+                              onClick={() => window.open(ele.faultImg, '_blank')}
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-14 h-14 bg-gray-50 rounded-xl border border-dashed border-gray-200 flex items-center justify-center text-gray-400">
+                            <span className="text-[9px] font-bold uppercase">N/A</span>
+                          </div>
+                        )}
                       </td>
 
                       <td className="px-6 py-3 align-top">
@@ -838,7 +870,7 @@ export default function RaiseRequest() {
               ) : (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="px-6 py-8 text-center text-gray-400 font-medium"
                   >
                     No General Requests Found

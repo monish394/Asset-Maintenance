@@ -75,14 +75,7 @@ export default function Maintenance() {
                     <p className="text-[11px] text-slate-500 leading-relaxed max-w-[250px] mb-2" title={req.description}>
                       {req.description || "No description provided"}
                     </p>
-                    {req.faultImg && (
-                      <img
-                        src={req.faultImg}
-                        alt="Fault"
-                        className="w-12 h-12 object-cover rounded-lg border border-slate-100 cursor-pointer hover:scale-105 transition-transform shadow-sm"
-                        onClick={() => window.open(req.faultImg, '_blank')}
-                      />
-                    )}
+                    
                   </td>
                   <td className="px-6 py-5 text-right">
                     <p className="text-sm font-black text-slate-800">₹{req.costEstimate || "0"}</p>
@@ -157,17 +150,10 @@ export default function Maintenance() {
                       <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px] mb-2" title={req.description}>
                         {req.description || "In progress..."}
                       </p>
-                      {req.faultImg && (
-                        <img
-                          src={req.faultImg}
-                          alt="Fault"
-                          className="w-10 h-10 object-cover rounded-lg border border-slate-100 cursor-pointer hover:scale-110 transition-transform shadow-sm"
-                          onClick={() => window.open(req.faultImg, '_blank')}
-                        />
-                      )}
+                      
                     </td>
                     <td className="px-6 py-5 text-right">
-                      <p className="text-sm font-black text-slate-800">₹{req.costEstimate || "0"}</p>
+                      <p className="text-sm font-black text-slate-800">₹{req.costEstimate || "N/A"}</p>
                     </td>
                   </tr>
                 ))
