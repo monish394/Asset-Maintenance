@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logopng from "../assets/logo.png"
 import axios from "../config/api";
 import { motion } from "framer-motion";
@@ -20,6 +20,26 @@ const PublicHome = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ firstName: "", email: "", message: "" });
+  const [stats, setStats] = useState({ totalAssets: 0, activeRequests: 0, compliance: 100 });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get("/dashboardstats");
+        const { totalAssets, undermaintance, pendingRequests, workingAssets } = res.data;
+        const complianceRate = totalAssets > 0 ? Math.round((workingAssets / totalAssets) * 100) : 100;
+
+        setStats({
+          totalAssets: totalAssets,
+          activeRequests: undermaintance + pendingRequests,
+          compliance: complianceRate
+        });
+      } catch (err) {
+        console.error("Failed to fetch home stats:", err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,7 +112,7 @@ const PublicHome = () => {
       `}</style>
 
       {/* Header */}
-      <motion.header 
+      <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -100,7 +120,7 @@ const PublicHome = () => {
       >
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex items-center justify-between py-3.5">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
@@ -113,9 +133,9 @@ const PublicHome = () => {
 
             <div className="hidden md:flex items-center gap-8 text-[12px] font-semibold text-slate-500 tracking-wider uppercase">
               {["Features", "Workflow", "Docs", "Contact"].map((link, i) => (
-                <motion.a 
-                  key={link} 
-                  href={`#${link.toLowerCase()}`} 
+                <motion.a
+                  key={link}
+                  href={`#${link.toLowerCase()}`}
                   className="hover:text-indigo-600 transition-colors"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -126,7 +146,7 @@ const PublicHome = () => {
               ))}
             </div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
@@ -145,34 +165,34 @@ const PublicHome = () => {
 
       {/* ── Hero Section ── */}
       <section className="relative pt-16 pb-24 border-b border-slate-100 bg-white">
-        <motion.div 
+        <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
           className="max-w-5xl mx-auto px-6 text-center"
         >
-          <motion.div 
+          <motion.div
             variants={staggerItem}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-bold uppercase tracking-wider mb-6"
           >
             Enterprise Asset Management
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             variants={staggerItem}
             className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6 max-w-3xl mx-auto leading-tight"
           >
             Streamline Your Organization's <span className="text-indigo-600">Assets & Maintenance</span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             variants={staggerItem}
             className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto mb-10 font-medium leading-relaxed"
           >
             A unified platform for lifecycle tracking, preventive scheduling, and data-driven visibility for modern enterprises.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             variants={staggerItem}
             className="flex flex-col sm:flex-row justify-center gap-3 mb-20"
           >
@@ -187,12 +207,12 @@ const PublicHome = () => {
           {/* ── Stats Cards ── */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
             {[
-              { label: "Total Assets", value: "50+", icon: HiOutlineCube },
-              { label: "Active Requests", value: "20", icon: HiOutlineClipboardList },
-              { label: "Compliance", value: "99%", icon: HiOutlineChartBar },
+              { label: "Total Assets", value: `${stats.totalAssets}+`, icon: HiOutlineCube },
+              { label: "Active Requests", value: stats.activeRequests.toString(), icon: HiOutlineClipboardList },
+              { label: "Compliance", value: `${stats.compliance}%`, icon: HiOutlineChartBar },
             ].map((stat, idx) => (
-              <motion.div 
-                key={idx} 
+              <motion.div
+                key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -215,7 +235,7 @@ const PublicHome = () => {
       {/* ── Feature Section ── */}
       <section id="features" className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -235,8 +255,8 @@ const PublicHome = () => {
               { title: "Decision Analytics", desc: "Visual reports on utilization trends and maintenance performance metrics.", icon: HiOutlineChartBar },
               { title: "Governance & Security", desc: "Industry-standard data protection and full organizational compliance.", icon: HiOutlineShieldCheck },
             ].map((f, i) => (
-              <motion.div 
-                key={i} 
+              <motion.div
+                key={i}
                 className="group"
                 initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -257,7 +277,7 @@ const PublicHome = () => {
       {/* ── Workflow ── */}
       <section id="workflow" className="py-24 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -275,8 +295,8 @@ const PublicHome = () => {
               { title: "Monitoring", step: "03", desc: "Real-time issue reporting." },
               { title: "Resolution", step: "04", desc: "Technician verification." },
             ].map((item, i) => (
-              <motion.div 
-                key={i} 
+              <motion.div
+                key={i}
                 className="bg-white p-6 rounded-xl border border-slate-200"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -295,7 +315,7 @@ const PublicHome = () => {
       {/* ── Docs ── */}
       <section id="docs" className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -402,7 +422,7 @@ const PublicHome = () => {
                 </button>
               </form>
             ) : (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
@@ -420,7 +440,7 @@ const PublicHome = () => {
       </section>
 
       {/* ── Footer ── */}
-      <motion.footer 
+      <motion.footer
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-20px" }}
@@ -428,7 +448,7 @@ const PublicHome = () => {
         className="bg-white py-12 border-t border-slate-200"
       >
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -438,12 +458,12 @@ const PublicHome = () => {
             <div className="w-7 h-7 bg-indigo-600 rounded flex items-center justify-center text-white font-bold text-[10px]">AM</div>
             <span className="text-sm font-bold text-slate-900 tracking-tight uppercase">AssetMaintenance</span>
           </motion.div>
-          
+
           <div className="flex gap-8 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
             {["Terms", "Privacy", "Security", "Support"].map((l, i) => (
-              <motion.a 
-                key={l} 
-                href="#" 
+              <motion.a
+                key={l}
+                href="#"
                 className="hover:text-indigo-600 transition-colors"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -454,8 +474,8 @@ const PublicHome = () => {
               </motion.a>
             ))}
           </div>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}

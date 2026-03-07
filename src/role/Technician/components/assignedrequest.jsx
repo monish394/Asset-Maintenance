@@ -16,6 +16,7 @@ export default function AssignedRequest() {
   const [statusedit, setStatusedit] = useState("");
   const [showeditform, setShoweditform] = useState(false);
   const [activeChat, setActiveChat] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const { technicianassignedassert, setTechnicianassignedassert, requests, setRequests, techinfo } = TechData();
   const [unreadChats, setUnreadChats] = useState({});
@@ -340,7 +341,7 @@ export default function AssignedRequest() {
                           src={ele.faultImg}
                           alt="Fault"
                           className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
-                          onClick={() => window.open(ele.faultImg, '_blank')}
+                          onClick={() => setSelectedImage(ele.faultImg)}
                         />
                       ) : (
                         <span className="text-slate-400 text-xs italic">No Image</span>
@@ -529,7 +530,7 @@ export default function AssignedRequest() {
                             src={req.faultImg}
                             alt="Fault"
                             className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
-                            onClick={() => window.open(req.faultImg, '_blank')}
+                            onClick={() => setSelectedImage(req.faultImg)}
                           />
                         ) : (
                           <span className="text-slate-400 text-xs italic">No Image</span>
@@ -601,7 +602,7 @@ export default function AssignedRequest() {
                             src={req.faultImg}
                             alt="Fault"
                             className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
-                            onClick={() => window.open(req.faultImg, '_blank')}
+                            onClick={() => setSelectedImage(req.faultImg)}
                           />
                         ) : (
                           <span className="text-slate-400 text-xs italic">No Image</span>
@@ -708,7 +709,7 @@ export default function AssignedRequest() {
                             src={ele.faultImg}
                             alt="Fault"
                             className="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-110 transition-transform"
-                            onClick={() => window.open(ele.faultImg, '_blank')}
+                            onClick={() => setSelectedImage(ele.faultImg)}
                           />
                         ) : (
                           <span className="text-slate-400 text-xs italic">No Image</span>
@@ -737,6 +738,38 @@ export default function AssignedRequest() {
           {...activeChat}
           onClose={() => setActiveChat(null)}
         />
+      )}
+
+      {selectedImage && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+          {/* Frosted Glass Overlay - Darker for better contrast */}
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300"
+            onClick={() => setSelectedImage(null)}
+          />
+
+          <div className="relative z-10 max-w-4xl w-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
+            {/* Image Container with Integrated Close Button */}
+            <div className="relative group bg-white p-2 rounded-2xl shadow-2xl">
+              {/* Close Button - Positioned exactly on the top-right corner of the image card */}
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute -top-3 -right-3 z-20 w-10 h-10 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 active:scale-95 border-2 border-white"
+                title="Close"
+              >
+                <FaTimes size={18} />
+              </button>
+
+              <div className="rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
+                <img
+                  src={selectedImage}
+                  alt="Fault Detail"
+                  className="max-h-[75vh] md:max-h-[80vh] w-auto object-contain block shadow-inner"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

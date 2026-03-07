@@ -87,7 +87,7 @@ AssetsCtrl.DashboardStats = async (req, res) => {
     }).countDocuments()
     const undermaintance = await Asset.find({ status: "undermaintenance" }).countDocuments()
 
-    const pendingRequests = await RaiseRequest.countDocuments({ status: "pending" }).countDocuments()
+    const pendingRequests = await RaiseRequest.countDocuments({ status: "pending" })
 
     res.json({
       totalAssets,
