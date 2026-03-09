@@ -417,11 +417,18 @@ UserCtrl.GoogleLogin = async (req, res) => {
 
     try {
       let transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for 587
+        requireTLS: true,
         auth: {
           user: process.env.ADMIN_EMAIL,
           pass: process.env.EMAIL_PASS,
         },
+        tls: {
+          rejectUnauthorized: false, // helps avoid certificate errors on cloud servers
+        },
+        connectionTimeout: 10000,
       });
 
       let mailOptions = {
