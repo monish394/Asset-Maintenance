@@ -3,6 +3,7 @@ import axios from "axios";
 import bcryptjs from "bcryptjs"
 import jsonwebtoken from "jsonwebtoken"
 import { OAuth2Client } from "google-auth-library";
+import nodemailer from "nodemailer";
 import User from "../models/Registeruser.js";
 import Asset from "../models/AssertSchema.js";
 import RaiseRequest from "../models/RaiseRequest.js";
@@ -59,9 +60,11 @@ UserCtrl.Registeruser = async (req, res) => {
       value.role = "admin"
     }
 
-    // Set isApproved to false if registering as technician or user
-    if (value.role === "technician" || value.role === "user") {
+    // Only technicians require admin approval; users get immediate access
+    if (value.role === "technician") {
       value.isApproved = false;
+    } else if (value.role === "user") {
+      value.isApproved = true;
     }
 
     const Newuser = new User(value)
@@ -110,9 +113,14 @@ UserCtrl.Loginuser = async (req, res) => {
       return res.status(400).json({ err: "Invalid Password!!" })
     }
 
+    // Auto-approve existing users stuck with isApproved: false
+    if (user.role === "user" && user.isApproved === false) {
+      user.isApproved = true;
+      await user.save();
+    }
+
     const tokendata = { userid: user._id, role: user.role };
     const token = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "10d" })
-
 
     res.status(200).json({ message: "Login successful", token: token, role: tokendata.role })
 
@@ -384,18 +392,22 @@ UserCtrl.GoogleLogin = async (req, res) => {
     const { name, email, picture } = ticket.getPayload();
 
     let user = await User.findOne({ email });
-    if (!user) {
-      user = new User({
-        name,
+
+    // Return isNewUser if not found OR if existing user has incomplete dummy profile
+    const hasIncompleteProfile =
+      !user ||
+      user.phone === "0000000000" ||
+      user.address === "Not Provided Yet" ||
+      !user.phone ||
+      !user.address;
+
+    if (hasIncompleteProfile) {
+      return res.status(200).json({
+        isNewUser: true,
+        name: user ? user.name : name,
         email,
-        password: await bcryptjs.hash(Math.random().toString(36).slice(-8), 10),
-        phone: "0000000000",
-        address: "Not Provided Yet",
-        profile: picture,
-        role: "user",
-        isApproved: false
+        picture,
       });
-      await user.save();
     }
 
     const tokendata = { userid: user._id, role: user.role };
@@ -403,6 +415,33 @@ UserCtrl.GoogleLogin = async (req, res) => {
       expiresIn: "10d",
     });
 
+    try {
+      let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.ADMIN_EMAIL,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      let mailOptions = {
+        from: process.env.ADMIN_EMAIL,
+        to: email,
+        subject: "Welcome to Asset Maintenance - Login Successful",
+        text: `Hello ${user.name || name},\n\nYou have successfully logged into the Asset Maintenance system via Google. We're happy to have you!\n\nBest regards,\nThe Asset Maintenance Team`,
+        html: `<p>Hello <b>${user.name || name}</b>,</p><p>You have successfully logged into the Asset Maintenance system via Google. We're happy to have you!</p><p>Best regards,<br><b>The Asset Maintenance Team</b></p>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending login email: ", error);
+        } else {
+          console.log("Login email sent: " + info.response);
+        }
+      });
+    } catch (mailErr) {
+      console.error("Nodemailer setup failed:", mailErr);
+    }
     res.status(200).json({
       message: "Login successful",
       token: token,

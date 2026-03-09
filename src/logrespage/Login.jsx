@@ -67,6 +67,19 @@ export default function Login() {
         credential: credentialResponse.credential,
       });
 
+      // New or incomplete profile → send to register with pre-filled data
+      if (res.data.isNewUser) {
+        toast.info("Please complete your registration to continue.");
+        navigate("/register", {
+          state: {
+            name: res.data.name,
+            email: res.data.email,
+            picture: res.data.picture,
+          },
+        });
+        return;
+      }
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
       sessionStorage.setItem("token", res.data.token);
