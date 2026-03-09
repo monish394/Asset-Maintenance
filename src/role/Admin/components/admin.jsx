@@ -7,6 +7,7 @@ import AdminRequestTrendChart from "./AdminRequestTrendChart";
 
 
 export default function Admin() {
+  //made changes
   const token = localStorage.getItem("token")
   // console.log(token)
 
