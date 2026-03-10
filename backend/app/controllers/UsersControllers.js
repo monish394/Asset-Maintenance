@@ -4,12 +4,6 @@ import bcryptjs from "bcryptjs"
 import jsonwebtoken from "jsonwebtoken"
 import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
-import dns from "dns"; // Added
-
-// Stronger DNS fix for IPv6 issues in production
-if (typeof dns.setDefaultResultOrder === 'function') {
-  dns.setDefaultResultOrder("ipv4first");
-}
 import path from "path";
 import { fileURLToPath } from "url";
 import User from "../models/Registeruser.js";
@@ -19,7 +13,6 @@ import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-let transporter; // Shared transporter instance
 
 
 async function geocodeAddress(address) {
@@ -402,6 +395,7 @@ UserCtrl.GoogleLogin = async (req, res) => {
 
     let user = await User.findOne({ email });
 
+    // Return isNewUser if not found OR if existing user has incomplete dummy profile
     const hasIncompleteProfile =
       !user ||
       user.phone === "0000000000" ||
@@ -424,37 +418,29 @@ UserCtrl.GoogleLogin = async (req, res) => {
     });
 
     try {
-      if (!transporter) {
-        transporter = nodemailer.createTransport({
-          host: "64.233.171.108", // Direct IPv4 for smtp.gmail.com
-          port: 587,
-          secure: false, // STARTTLS
-          auth: {
-            user: process.env.ADMIN_EMAIL,
-            pass: process.env.EMAIL_PASS,
-          },
-          tls: {
-            rejectUnauthorized: false,
-            servername: "smtp.gmail.com", // Required for SNI when using IP address
-            minVersion: 'TLSv1.2'
-          },
-          connectionTimeout: 40000,
-          socketTimeout: 40000,
-          logger: true,
-          debug: true,
-          family: 4, // Strictly force IPv4
-        });
-      }
+      const smtpUser = process.env.ADMIN_EMAIL?.trim();
+      const smtpPass = process.env.EMAIL_PASS?.trim();
 
-      console.log("Attempting to send login email to:", email);
-      console.log("Using Admin Email:", process.env.ADMIN_EMAIL);
+      console.log("Attempting SMTP Login with:", smtpUser);
+      console.log("SMTP Pass Length (Trimmed):", smtpPass ? smtpPass.length : 0);
+
+      let transporter = nodemailer.createTransport({
+        host: "smtp-relay.brevo.com",
+        port: 2525, // Port 2525 is open on Render
+        secure: false,
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+        family: 4,
+      });
 
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       const logoPath = path.resolve(__dirname, "../../../public/logo.png");
 
       let mailOptions = {
-        from: process.env.ADMIN_EMAIL,
+        from: "monish123ar@gmail.com", // This must be your verified sender in Brevo
         to: email,
         subject: "Secure Login Notification - Asset Maintenance",
         html: `
