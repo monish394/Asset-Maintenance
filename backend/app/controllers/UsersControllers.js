@@ -4,6 +4,7 @@ import bcryptjs from "bcryptjs"
 import jsonwebtoken from "jsonwebtoken"
 import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import User from "../models/Registeruser.js";
@@ -395,7 +396,6 @@ UserCtrl.GoogleLogin = async (req, res) => {
 
     let user = await User.findOne({ email });
 
-    // Return isNewUser if not found OR if existing user has incomplete dummy profile
     const hasIncompleteProfile =
       !user ||
       user.phone === "0000000000" ||
@@ -421,12 +421,9 @@ UserCtrl.GoogleLogin = async (req, res) => {
       const smtpUser = process.env.ADMIN_EMAIL?.trim();
       const smtpPass = process.env.EMAIL_PASS?.trim();
 
-      console.log("Attempting SMTP Login with:", smtpUser);
-      console.log("SMTP Pass Length (Trimmed):", smtpPass ? smtpPass.length : 0);
-
-      let transporter = nodemailer.createTransport({
+      const transporter = nodemailer.createTransport({
         host: "smtp-relay.brevo.com",
-        port: 2525, // Port 2525 is open on Render
+        port: 2525,
         secure: false,
         auth: {
           user: smtpUser,
@@ -439,8 +436,8 @@ UserCtrl.GoogleLogin = async (req, res) => {
       const __dirname = path.dirname(__filename);
       const logoPath = path.resolve(__dirname, "../../../public/logo.png");
 
-      let mailOptions = {
-        from: "monish123ar@gmail.com", // This must be your verified sender in Brevo
+      const mailOptions = {
+        from: `"Asset Maintenance Team" <monish123ar@gmail.com>`,
         to: email,
         subject: "Secure Login Notification - Asset Maintenance",
         html: `
@@ -509,23 +506,23 @@ UserCtrl.GoogleLogin = async (req, res) => {
               </div>
               <div class="content">
                 <p class="greeting">Hello ${user.name || name},</p>
-                <p>Welcome back! This is a confirmation that you have successfully logged into the <strong>Asset Maintenance</strong> portal via Google.</p>
+                <p>Confirming your secure access to the <strong>Asset Maintenance</strong> portal via Google Authentication.</p>
                 
                 <div class="info-box">
-                  <p style="margin: 5px 0;"><strong>Account Email:</strong> ${email}</p>
-                  <p style="margin: 5px 0;"><strong>Login Time:</strong> ${new Date().toLocaleString()}</p>
+                  <p style="margin: 5px 0; font-size: 14px;"><strong>Protected Account:</strong> ${email}</p>
+                  <p style="margin: 5px 0; font-size: 14px;"><strong>Authentication Date:</strong> ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} (IST)</p>
                 </div>
                 
-                <p>Ensuring the security of your assets is our top priority. If you did not initiate this login, please contact our support team immediately.</p>
+                <p style="font-size: 14px; color: #6b7280;">This login was verified using industry-standard protocols. If this wasn't you, please reset your password or contact our security desk immediately.</p>
                 
                 <p style="margin-top: 30px;">
-                  Best regards,<br>
-                  <span style="color: #2563eb; font-weight: 700;">The Asset Maintenance Team</span>
+                  Regards,<br>
+                  <span style="color: #2563eb; font-weight: 700;">Asset Maintenance Security</span>
                 </p>
               </div>
               <div class="footer">
-                <p style="margin: 0;">&copy; ${new Date().getFullYear()} Asset Maintenance. All rights reserved.</p>
-                <p style="margin: 5px 0 0;">This is an automated security notification.</p>
+                <p style="margin: 0;">&copy; ${new Date().getFullYear()} Asset Maintenance Portal. All rights reserved.</p>
+                <p style="margin: 5px 0 0;">Automated Security Infrastructure Notification.</p>
               </div>
             </div>
           </body>
@@ -542,11 +539,11 @@ UserCtrl.GoogleLogin = async (req, res) => {
         if (error) {
           console.error("Error sending login email: ", error);
         } else {
-          console.log("Login email sent: " + info.response);
+          console.log("Notification sent: " + info.response);
         }
       });
     } catch (mailErr) {
-      console.error("Nodemailer setup failed:", mailErr);
+      console.error("Email setup failed:", mailErr);
     }
     res.status(200).json({
       message: `Welcome back, ${user.name || name}! Login successful.`,
