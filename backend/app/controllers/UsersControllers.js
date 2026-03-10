@@ -4,6 +4,12 @@ import bcryptjs from "bcryptjs"
 import jsonwebtoken from "jsonwebtoken"
 import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
+import dns from "dns"; // Added
+
+// Stronger DNS fix for IPv6 issues in production
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder("ipv4first");
+}
 import path from "path";
 import { fileURLToPath } from "url";
 import User from "../models/Registeruser.js";
@@ -420,16 +426,26 @@ UserCtrl.GoogleLogin = async (req, res) => {
     try {
       if (!transporter) {
         transporter = nodemailer.createTransport({
-          service: "gmail",
+          host: "smtp.gmail.com",
+          port: 587,
+          secure: false, // Port 587 uses STARTTLS
           auth: {
             user: process.env.ADMIN_EMAIL,
             pass: process.env.EMAIL_PASS,
           },
-          logger: true, // Log internal activity to console
-          debug: true,  // Include SMTP traffic in logs
-          connectionTimeout: 30000,
-          socketTimeout: 30000,
-          family: 4,
+          tls: {
+            rejectUnauthorized: false, // Helps with cloud network handshakes
+            minVersion: 'TLSv1.2'
+          },
+          connectionTimeout: 60000, // Doubled to 60s for cloud establishment
+          greetingTimeout: 60000,
+          socketTimeout: 60000,
+          logger: true,
+          debug: true,
+          // Strict IPv4 override at the socket level
+          lookup: (hostname, options, callback) => {
+            dns.lookup(hostname, { family: 4 }, callback);
+          }
         });
       }
 
