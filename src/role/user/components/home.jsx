@@ -3,17 +3,46 @@ import Carousel from "./Carousel";
 import { useUserAsset } from "../context/userassetprovider";
 import React, { useEffect, useState } from "react";
 import axios from "../../../config/api";
-import { FaBoxOpen } from "react-icons/fa6";
+import { FaBoxOpen, FaTrashCan } from "react-icons/fa6";
 import { AiFillSetting } from "react-icons/ai";
 import { IoMdClock } from "react-icons/io";
 import { PiCurrencyInrLight } from "react-icons/pi";
 import { MdDone } from "react-icons/md";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Filler,
+} from 'chart.js';
+import { Line, Pie, Doughnut } from 'react-chartjs-2';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Filler
+);
 
 export default function UserHome() {
-  const [userdashboardstats, setUserdashboardstats] = useState([])
+  const [userdashboardstats, setUserdashboardstats] = useState(null)
   const [selectedRemoveAsset, setSelectedRemoveAsset] = useState(null);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiOpacity, setConfettiOpacity] = useState(1);
   const canvasRef = React.useRef(null);
   const rafRef = React.useRef(null);
 
@@ -62,11 +91,8 @@ export default function UserHome() {
       }, delay);
 
     addBurst(originX, originY, 0);
-    addBurst(window.innerWidth * 0.2, window.innerHeight * 0.3, 200);
-    addBurst(window.innerWidth * 0.8, window.innerHeight * 0.25, 350);
-    addBurst(window.innerWidth * 0.15, window.innerHeight * 0.6, 500);
-    addBurst(window.innerWidth * 0.85, window.innerHeight * 0.55, 650);
-    addBurst(window.innerWidth * 0.5, window.innerHeight * 0.2, 800);
+    addBurst(originX - 100, originY - 50, 150);
+    addBurst(originX + 100, originY - 50, 300);
 
     const draw = () => {
       ctx.fillStyle = "rgba(0,0,0,0.18)";
@@ -105,7 +131,6 @@ export default function UserHome() {
         rafRef.current = requestAnimationFrame(draw);
       } else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        setShowWelcome(false);
       }
     };
 
@@ -118,16 +143,31 @@ export default function UserHome() {
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     launchFireworks(cx, cy);
+
+    // Hide modal immediately
+    setShowWelcomeModal(false);
+
+    // Start fade out shortly before removing from DOM
+    setTimeout(() => setConfettiOpacity(0), 500);
+
+    // Keep celebration for 3 seconds total
+    setTimeout(() => {
+      setShowConfetti(false);
+    }, 3000);
   };
 
   const token = localStorage.getItem("token")
-  const { userinfo, myasset, myraiserequest, setMyasset } = useUserAsset();
+  const { userinfo, myasset, myraiserequest, setMyasset, usergeneralrequest } = useUserAsset();
 
   useEffect(() => {
     if (!userinfo?._id) return;
     const key = `welcome_seen_${userinfo._id}`;
     if (!localStorage.getItem(key)) {
-      setTimeout(() => setShowWelcome(true), 600);
+      setTimeout(() => {
+        setConfettiOpacity(1);
+        setShowWelcomeModal(true);
+        setShowConfetti(true);
+      }, 600);
       localStorage.setItem(key, "1");
     }
   }, [userinfo]);
@@ -168,11 +208,162 @@ export default function UserHome() {
   };
 
 
+  const assetCategories = myasset.reduce((acc, asset) => {
+    if (asset.category) {
+      acc[asset.category] = (acc[asset.category] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  const categoryChartData = {
+    labels: Object.keys(assetCategories),
+    datasets: [
+      {
+        label: 'Assets',
+        data: Object.values(assetCategories),
+        backgroundColor: (context) => {
+          const ctx = context.chart.ctx;
+          const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+          gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+          gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+          return gradient;
+        },
+        borderColor: '#6366f1',
+        borderWidth: 4,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#6366f1',
+        pointBorderWidth: 3,
+        pointRadius: 6,
+        pointHoverRadius: 10,
+        tension: 0.45,
+        fill: true,
+        shadowBlur: 10,
+        shadowColor: 'rgba(0,0,0,0.2)',
+        shadowOffsetX: 3,
+        shadowOffsetY: 5,
+      },
+    ],
+  };
+
+  const statusChartData = {
+    labels: ['Active WO', 'Pending', 'Completed'],
+    datasets: [
+      {
+        data: [
+          userdashboardstats?.activeworkorders || 0,
+          userdashboardstats?.pendingrequests || 0,
+          userdashboardstats?.completedrequests || 0,
+        ],
+        backgroundColor: ['#f43f5e', '#f59e0b', '#10b981'],
+        borderWidth: 3,
+        borderColor: '#ffffff',
+        hoverOffset: 10,
+      },
+    ],
+  };
+
+  const costByAsset = myraiserequest.reduce((acc, req) => {
+    if (req.assetid?.assetName && req.costEstimate) {
+      const name = req.assetid.assetName;
+      acc[name] = (acc[name] || 0) + Number(req.costEstimate);
+    }
+    return acc;
+  }, {});
+
+  const costChartData = {
+    labels: Object.keys(costByAsset),
+    datasets: [
+      {
+        data: Object.values(costByAsset),
+        backgroundColor: ['#8b5cf6', '#ec4899', '#3b82f6', '#10b981', '#f59e0b'],
+        borderWidth: 0,
+        hoverOffset: 20,
+        cutout: '80%',
+      },
+    ],
+  };
+
+  const generalStatusCounts = (usergeneralrequest || []).reduce((acc, req) => {
+    const status = (req.status || 'OPEN').toUpperCase();
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const generalPieData = {
+    labels: Object.keys(generalStatusCounts),
+    datasets: [
+      {
+        data: Object.values(generalStatusCounts),
+        backgroundColor: ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#f59e0b'],
+        borderWidth: 2,
+        borderColor: '#ffffff',
+        hoverOffset: 15,
+      },
+    ],
+  };
+
+
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 2000,
+      easing: 'easeOutQuart',
+      delay: 400
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1e293b',
+        padding: 12,
+        borderRadius: 12,
+        titleFont: { weight: 'bold' },
+        bodyFont: { weight: 'medium' }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: '#f8fafc', drawBorder: false },
+        ticks: { font: { weight: '600', size: 10 }, color: '#94a3b8' }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { font: { weight: '600', size: 10 }, color: '#94a3b8' }
+      }
+    }
+  };
+
+  const pieOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      animateRotate: true,
+      animateScale: true,
+      duration: 2000,
+      easing: 'easeOutQuart',
+      delay: 600
+    },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: { weight: '800', size: 10, family: 'Inter' },
+          color: '#64748b'
+        }
+      }
+    }
+  };
+
+
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
 
-      {showWelcome && (
-        <>
+      {showConfetti && (
+        <div style={{ opacity: confettiOpacity, transition: "opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1)", pointerEvents: "none" }}>
           <style>{`
             @keyframes paper-fall {
               0%   { transform: translateY(-120px) rotateX(0deg)   rotateZ(0deg)   skewX(0deg);  opacity: 1; }
@@ -228,45 +419,42 @@ export default function UserHome() {
               60%  { transform: translate(var(--dx), var(--dy)) rotate(calc(var(--a) + 180deg)) scale(0.9); opacity: 1; }
               100% { transform: translate(calc(var(--dx)*1.6), calc(var(--dy)*1.6)) rotate(calc(var(--a) + 360deg)) scale(0.3); opacity: 0; }
             }
+            @keyframes background-animate {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+            .background-animate {
+              background-size: 200% 200%;
+              animation: background-animate 3s linear infinite;
+            }
           `}</style>
 
-          {Array.from({ length: 70 }).map((_, i) => {
-            const colors = [
-              "#6366f1", "#818cf8", "#a78bfa", "#c084fc",
-              "#f472b6", "#fb7185", "#fbbf24", "#34d399",
-              "#38bdf8", "#f87171", "#4ade80", "#e879f9",
-            ];
-            const w = 8 + Math.random() * 14;
-            const h = 6 + Math.random() * 10;
-            const dur = 2.5 + Math.random() * 3.5;
-            const delay = Math.random() * 3;
+          {/* Falling Paper - Persists after modal closes for a 3s celebration */}
+          {Array.from({ length: 90 }).map((_, i) => {
+            const colors = ["#6366f1", "#4f46e5", "#8b5cf6", "#7c3aed", "#ec4899", "#f59e0b", "#10b981", "#0ea5e9"];
+            const w = 9 + Math.random() * 11;
+            const h = 6 + Math.random() * 8;
+            const dur = 2.8 + Math.random() * 2;
+            const delay = Math.random() * 4;
             const color = colors[i % colors.length];
-            const bg = i % 3 === 0
-              ? `linear-gradient(135deg, ${color}dd, ${color}88)`
-              : i % 3 === 1
-                ? color
-                : `linear-gradient(160deg, ${color}, white 200%)`;
+            const bg = i % 3 === 0 ? color : i % 3 === 1 ? `linear-gradient(135deg, ${color}, white)` : `linear-gradient(45deg, ${color}, #00000022)`;
 
             return (
               <div
                 key={i}
                 className="paper-piece"
                 style={{
-                  left: `${(i / 70) * 100 + Math.random() * 4 - 2}vw`,
+                  left: `${(i / 80) * 100 + Math.random() * 3 - 1.5}vw`,
                   width: `${w}px`,
                   height: `${h}px`,
                   animationDuration: `${dur}s, ${dur * 0.6}s`,
                   animationDelay: `${delay}s, ${delay}s`,
-                  borderRadius: i % 4 === 0 ? "2px" : i % 4 === 1 ? "50%" : "1px",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                  borderRadius: i % 4 === 0 ? "2px" : "50%",
                 }}
               >
-                <div
-                  className="paper-inner"
-                  style={{
-                    background: bg,
-                    borderRadius: "inherit",
-                  }}
-                />
+                <div className="paper-inner" style={{ background: bg, borderRadius: "inherit" }} />
               </div>
             );
           })}
@@ -279,149 +467,218 @@ export default function UserHome() {
               height: "100vh",
               zIndex: 10001,
               pointerEvents: "none",
-              display: showWelcome ? "block" : "none",
             }}
           />
 
-          <div
-            className="fixed inset-0 flex items-center justify-center px-4"
-            style={{ zIndex: 9998, background: "rgba(15,23,42,0.35)", backdropFilter: "blur(6px)" }}
-            onClick={() => setShowWelcome(false)}
-          >
+          {showWelcomeModal && (
             <div
-              className="paper-modal tear-edge relative bg-white rounded-3xl shadow-2xl max-w-md w-full text-center overflow-hidden"
-              style={{ padding: "2.5rem 2.5rem 2rem" }}
-              onClick={e => e.stopPropagation()}
+              className="fixed inset-0 flex items-center justify-center px-4"
+              style={{ zIndex: 9998, background: "rgba(15,23,42,0.25)", backdropFilter: "blur(6px)", pointerEvents: "auto" }}
+              onClick={() => {
+                setShowWelcomeModal(false);
+                setTimeout(() => setConfettiOpacity(0), 500);
+                setTimeout(() => setShowConfetti(false), 3000);
+              }}
             >
-              <div style={{ position: "absolute", top: "-48px", right: "-48px", width: "180px", height: "180px", background: "radial-gradient(circle,#e0e7ff,transparent 70%)", pointerEvents: "none" }} />
-              <div style={{ position: "absolute", bottom: "-48px", left: "-48px", width: "180px", height: "180px", background: "radial-gradient(circle,#ede9fe,transparent 70%)", pointerEvents: "none" }} />
+              <div
+                className="paper-modal relative bg-white/95 rounded-[1.75rem] shadow-2xl max-w-sm w-full text-center overflow-hidden border border-white/40 backdrop-blur-2xl"
+                style={{ padding: "2.5rem 1.5rem" }}
+                onClick={e => e.stopPropagation()}
+              >
+                {/* Decorative Elements */}
+                <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "160px", height: "160px", background: "radial-gradient(circle, rgba(99,102,241,0.1), transparent 70%)", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", bottom: "-50px", left: "-50px", width: "160px", height: "160px", background: "radial-gradient(circle, rgba(124,58,237,0.1), transparent 70%)", pointerEvents: "none" }} />
 
-              <div className="flex justify-center mb-5" style={{ position: "relative" }}>
-                <div style={{ position: "relative", width: "72px", height: "72px" }}>
-                  {[3, 2, 1, 0].map(n => (
-                    <div key={n} style={{
-                      position: "absolute", inset: 0,
-                      background: n === 0
-                        ? "linear-gradient(135deg,#6366f1,#7c3aed)"
-                        : ["#c7d2fe", "#ddd6fe", "#e9d5ff"][n - 1],
-                      borderRadius: "14px",
-                      transform: `rotate(${(n - 1.5) * 6}deg)`,
-                      boxShadow: "0 4px 12px rgba(99,102,241,0.25)",
-                    }}>
-                      {n === 0 && (
-                        <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" }}>🎉</span>
-                      )}
+                <div className="flex justify-center mb-5">
+                  <div className="relative w-20 h-20 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-indigo-50 rounded-[1.25rem] rotate-6 animate-pulse" />
+                    <div className="absolute inset-0 bg-violet-50 rounded-[1.25rem] -rotate-3" />
+                    <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 rounded-xl shadow-lg flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
+                      <span className="text-2xl">✨</span>
                     </div>
+                  </div>
+                </div>
+
+                <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#1e293b", marginBottom: "0.5rem", letterSpacing: "-0.03em", lineHeight: 1.2 }}>
+                  Welcome to <br /> Your Asset Hub
+                </h2>
+
+                <p style={{ color: "#475569", fontSize: "1rem", fontWeight: 600, marginBottom: "0.8rem" }}>
+                  Hello, <span className="text-indigo-600 font-bold">{userinfo?.name || "Premium User"}</span>!
+                </p>
+
+                <p style={{ color: "#64748b", fontSize: "0.85rem", lineHeight: 1.5, marginBottom: "1.75rem", maxWidth: "90%", marginInline: "auto" }}>
+                  Everything you need to monitor and manage your equipment is ready.
+                </p>
+
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px", marginBottom: "2rem" }}>
+                  {[
+                    { label: "📦 Inventory", color: "from-blue-50 to-indigo-50", text: "text-indigo-600" },
+                    { label: "🛠️ Quick Support", color: "from-purple-50 to-fuchsia-50", text: "text-purple-600" },
+                    { label: "📈 Live Status", color: "from-emerald-50 to-teal-50", text: "text-emerald-600" }
+                  ].map(badge => (
+                    <span key={badge.label} className={`px-3 py-1.5 rounded-xl bg-gradient-to-br ${badge.color} ${badge.text} text-[0.7rem] font-bold border border-white/60 shadow-sm`}>
+                      {badge.label}
+                    </span>
                   ))}
                 </div>
-              </div>
 
-              <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a", marginBottom: "6px", letterSpacing: "-0.02em" }}>
-                Welcome aboard!
-              </h2>
-              <p style={{ color: "#64748b", fontSize: "0.9rem", fontWeight: 500, marginBottom: "6px" }}>
-                Hey <span style={{ color: "#6366f1", fontWeight: 700 }}>{userinfo?.name || "there"}</span>, your account is all set!
-              </p>
-              <p style={{ color: "#94a3b8", fontSize: "0.75rem", lineHeight: 1.7, marginBottom: "1.75rem" }}>
-                You now have full access to your Asset Maintenance dashboard.
-                Track assets, raise service requests, and monitor work orders — all in one place.
-              </p>
-
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "8px", marginBottom: "1.75rem" }}>
-                {["📦 My Assets", "🔧 Service Requests", "📊 Dashboard Stats"].map(label => (
-                  <span key={label} style={{
-                    padding: "4px 14px", borderRadius: "999px",
-                    background: "#eef2ff", color: "#4338ca",
-                    fontSize: "0.7rem", fontWeight: 700,
-                    border: "1px solid #c7d2fe",
-                  }}>
-                    {label}
+                <button
+                  onClick={handleGetStarted}
+                  className="group relative w-full py-3.5 bg-gray-900 rounded-[1.25rem] overflow-hidden transition-all duration-300 hover:shadow-xl active:scale-[0.97]"
+                  style={{ border: "none", cursor: "pointer" }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 background-animate opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <span className="relative text-white font-bold text-base flex items-center justify-center gap-2">
+                    Let's Get Started
+                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
                   </span>
-                ))}
+                </button>
               </div>
-
-              <button
-                onClick={handleGetStarted}
-                style={{
-                  width: "100%", padding: "14px",
-                  borderRadius: "14px", border: "none", cursor: "pointer",
-                  background: "linear-gradient(135deg,#6366f1,#7c3aed)",
-                  color: "white", fontWeight: 700, fontSize: "0.85rem",
-                  boxShadow: "0 8px 24px rgba(99,102,241,0.35)",
-                  transition: "opacity 0.2s, transform 0.15s",
-                }}
-                onMouseEnter={e => { e.target.style.opacity = 0.88; e.target.style.transform = "scale(1.02)"; }}
-                onMouseLeave={e => { e.target.style.opacity = 1; e.target.style.transform = "scale(1)"; }}
-              >
-                Let's Get Started →
-              </button>
             </div>
-          </div>
-        </>
+          )}
+        </div>
       )}
 
       <Carousel />
 
 
-      {userdashboardstats && (
-        <div className="mt-20 px-4 md:px-0">
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 tracking-wide">
-            Quick Stats Overview
-          </h1>
+      <div className="mt-20 px-4 md:px-0">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 tracking-wide">
+          Quick Stats Overview
+        </h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-              <p className="text-lg font-medium text-gray-700">My Assets</p>
-              <div className="flex items-center justify-between">
-                <span className="text-3xl md:text-4xl font-bold text-gray-900">
-                  {userdashboardstats.userassets}
-                </span>
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <FaBoxOpen className="text-blue-600 text-2xl md:text-3xl" />
-                </div>
+          <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+            <p className="text-lg font-medium text-gray-700">My Assets</p>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                {userdashboardstats?.userassets || 0}
+              </span>
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-blue-100 rounded-xl flex items-center justify-center">
+                <FaBoxOpen className="text-blue-600 text-2xl md:text-3xl" />
               </div>
             </div>
-
-            <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-              <p className="text-lg font-medium text-gray-700">Active Work Orders</p>
-              <div className="flex items-center justify-between">
-                <span className="text-3xl md:text-4xl font-bold text-gray-900">
-                  {userdashboardstats.activeworkorders}
-                </span>
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-red-100 rounded-xl flex items-center justify-center">
-                  <AiFillSetting className="text-red-600 text-2xl md:text-3xl" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-              <p className="text-lg font-medium text-gray-700">Pending Requests</p>
-              <div className="flex items-center justify-between">
-                <span className="text-3xl md:text-4xl font-bold text-gray-900">
-                  {userdashboardstats.pendingrequests}
-                </span>
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-yellow-100 rounded-xl flex items-center justify-center">
-                  <IoMdClock className="text-yellow-600 text-2xl md:text-3xl" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-              <p className="text-lg font-medium text-gray-700">Completed Requests</p>
-              <div className="flex items-center justify-between">
-                <span className="text-3xl md:text-4xl font-bold text-gray-900">
-                  {userdashboardstats.completedrequests}
-                </span>
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-green-100 rounded-xl flex items-center justify-center">
-                  <MdDone className="text-green-600 text-2xl md:text-3xl" />
-                </div>
-              </div>
-            </div>
-
           </div>
+
+          <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+            <p className="text-lg font-medium text-gray-700">Active Work Orders</p>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                {userdashboardstats?.activeworkorders || 0}
+              </span>
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-red-100 rounded-xl flex items-center justify-center">
+                <AiFillSetting className="text-red-600 text-2xl md:text-3xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+            <p className="text-lg font-medium text-gray-700">Pending Requests</p>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                {userdashboardstats?.pendingrequests || 0}
+              </span>
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-yellow-100 rounded-xl flex items-center justify-center">
+                <IoMdClock className="text-yellow-600 text-2xl md:text-3xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 h-[180px] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+            <p className="text-lg font-medium text-gray-700">Completed Requests</p>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                {userdashboardstats?.completedrequests || 0}
+              </span>
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-green-100 rounded-xl flex items-center justify-center">
+                <MdDone className="text-green-600 text-2xl md:text-3xl" />
+              </div>
+            </div>
+          </div>
+
         </div>
-      )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-30">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{ y: -8, transition: { duration: 0.2 } }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
+            className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-gray-100 shadow-2xl overflow-hidden group hover:shadow-indigo-500/20 transition-all duration-500"
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Asset Portfolio</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Inventory Intelligence</p>
+              </div>
+              <div className="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:rotate-12 transition-transform duration-500 shadow-inner">
+                <FaBoxOpen className="text-lg" />
+              </div>
+            </div>
+            <div className="h-[250px] w-full">
+              {myasset.length > 0 ? (
+                <Line key={myasset.length} data={categoryChartData} options={chartOptions} />
+              ) : (
+                <div className="h-full flex items-center justify-center text-slate-300 italic font-medium">No inventory data available</div>
+              )}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{ y: -8, transition: { duration: 0.2 } }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+            className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-gray-100 shadow-2xl group hover:shadow-rose-500/20 transition-all duration-500"
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Service Pulse</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Asset Health Status</p>
+              </div>
+              <div className="w-10 h-10 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 group-hover:rotate-12 transition-transform duration-500 shadow-inner">
+                <AiFillSetting className="text-lg" />
+              </div>
+            </div>
+            <div className="h-[250px] w-full">
+              {myraiserequest.length > 0 ? (
+                <Pie key={myraiserequest.length} data={statusChartData} options={pieOptions} />
+              ) : (
+                <div className="h-full flex items-center justify-center text-slate-300 italic font-medium">No service history</div>
+              )}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{ y: -8, transition: { duration: 0.2 } }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
+            className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-gray-100 shadow-2xl overflow-hidden group hover:shadow-indigo-500/20 transition-all duration-500"
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Support Global</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ticket Distribution</p>
+              </div>
+              <div className="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:rotate-12 transition-transform duration-500 shadow-inner">
+                <IoMdClock className="text-lg" />
+              </div>
+            </div>
+            <div className="h-[250px] w-full flex items-center justify-center">
+              {usergeneralrequest?.length > 0 ? (
+                <Pie key={usergeneralrequest.length} data={generalPieData} options={pieOptions} />
+              ) : (
+                <div className="h-full flex items-center justify-center text-slate-300 italic font-medium">No service history</div>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      </div>
       {showRemoveConfirm && selectedRemoveAsset && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
@@ -461,24 +718,23 @@ export default function UserHome() {
 
         <div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 mt-6">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50/80 backdrop-blur-md sticky top-0 z-10">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-[10px] md:text-sm font-bold text-gray-500 uppercase tracking-widest">
                   Asset
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                  Name
+                <th className="px-5 py-4 text-left text-[10px] md:text-sm font-bold text-gray-500 uppercase tracking-widest">
+                  Details
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-[10px] md:text-sm font-bold text-gray-500 uppercase tracking-widest">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-[10px] md:text-sm font-bold text-gray-500 uppercase tracking-widest">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-5 py-4 text-right text-[10px] md:text-sm font-bold text-gray-500 uppercase tracking-widest">
                   Action
                 </th>
-
               </tr>
             </thead>
 
@@ -487,52 +743,50 @@ export default function UserHome() {
                 myasset.map((ele) => (
                   <tr
                     key={ele._id}
-                    className="hover:shadow-lg transition-shadow duration-200 cursor-pointer rounded-xl"
+                    className="hover:bg-slate-50 transition-colors duration-200 group"
                   >
-                    <td className="px-6 py-4">
-                      <img
-                        src={ele.assetImg}
-                        alt={ele.assetName}
-                        className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                      />
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
+                        <img
+                          src={ele.assetImg}
+                          alt={ele.assetName}
+                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                        />
+                      </div>
                     </td>
 
-                    <td className="px-6 py-4 text-gray-900 font-medium text-sm">
-                      {ele.assetName}
+                    <td className="px-5 py-4">
+                      <p className="text-gray-900 font-bold text-sm md:text-base leading-tight">{ele.assetName}</p>
+                      <p className="text-gray-400 text-[10px] mt-1 sm:hidden font-medium bg-gray-100 px-2 py-0.5 rounded-full inline-block">{ele.category}</p>
                     </td>
 
-                    <td className="px-6 py-4 text-gray-600 text-sm max-w-[300px] truncate">
+                    <td className="px-6 py-4 text-gray-500 text-sm max-w-[250px] truncate">
                       {ele.description}
                     </td>
 
                     <td className="px-6 py-4">
-                      <span
-                        className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-200 text-blue-600"
-                      >
+                      <span className="px-3 py-1 text-xs font-bold rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100">
                         {ele.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-4 text-right whitespace-nowrap">
                       <button
                         onClick={() => {
                           setSelectedRemoveAsset(ele);
                           setShowRemoveConfirm(true);
                         }}
-                        className="px-4 py-2 text-sm font-semibold text-white bg-red-500 rounded-lg shadow hover:bg-red-700 transition-colors duration-200 flex items-center gap-2"
+                        className="group relative inline-flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white hover:shadow-xl hover:shadow-rose-200 transition-all duration-300"
                       >
-                        Remove
+                        <FaTrashCan className="text-xs group-hover:scale-110 transition-transform duration-300" />
+                        <span className="hidden md:inline">Unassign</span>
+                        <span className="md:hidden">Remove</span>
                       </button>
-
-
-
                     </td>
-
-
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500 text-sm">
+                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500 text-sm">
                     No assets assigned
                   </td>
                 </tr>
@@ -550,78 +804,83 @@ export default function UserHome() {
 
         <div className="overflow-x-auto shadow-lg rounded-2xl border border-gray-200">
           <table className="min-w-full bg-white rounded-2xl">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50/80 backdrop-blur-md">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                  Asset
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                  Asset Info
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
                   Technician
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                  Service Cost
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                  Cost
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
                   Issue
                 </th>
-
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-100">
               {myraiserequest.length > 0 ? (
-                myraiserequest.slice(-5).map((req) => (
+                myraiserequest.slice(-5).reverse().map((req) => (
                   <tr
                     key={req._id}
-                    className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+                    className="hover:bg-slate-50 transition-colors duration-200 group"
                   >
-                    <td className="px-6 py-4 flex items-center gap-4">
-                      <img
-                        src={req.assetid.assetImg}
-                        alt={req.assetid.assetName}
-                        className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                      />
-                      <span className="text-gray-900 font-semibold text-base">
-                        {req.assetid.assetName}
-                      </span>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-11 h-11 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+                          <img
+                            src={req.assetid?.assetImg}
+                            alt={req.assetid?.assetName}
+                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-gray-900 font-bold text-sm">{req.assetid?.assetName}</span>
+                        </div>
+                      </div>
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${req.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm ${req.status === "pending"
+                          ? "bg-amber-50 text-amber-600 border-amber-100"
                           : req.status === "assigned"
-                            ? "bg-blue-100 text-blue-800"
+                            ? "bg-blue-50 text-blue-600 border-blue-100"
                             : req.status === "in-process"
-                              ? "bg-purple-100 text-purple-800"
+                              ? "bg-purple-50 text-purple-600 border-purple-100"
                               : req.status === "completed"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                : "bg-gray-50 text-gray-500 border-gray-100"
                           }`}
                       >
                         {req.status.replace("-", " ")}
                       </span>
                     </td>
 
-                    <td className="px-6 py-4 text-gray-700 font-medium">
+                    <td className="px-6 py-4 text-gray-600 text-sm font-semibold">
                       {req.assignedto?.name || "Not Assigned"}
                     </td>
 
-                    <td className="px-6 py-4 text-gray-700 font-medium flex items-center gap-1">
-                      {req.costEstimate ? (
-                        <>
-                          <PiCurrencyInrLight className="inline text-lg " />
-                          {req.costEstimate}
-                        </>
-                      ) : (
-                        "N/A"
-                      )}
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900 font-bold text-sm">
+                      <div className="flex items-center gap-0.5">
+                        {req.costEstimate ? (
+                          <>
+                            <PiCurrencyInrLight className="text-base" />
+                            {req.costEstimate}
+                          </>
+                        ) : (
+                          <span className="text-gray-300 font-normal">--</span>
+                        )}
+                      </div>
                     </td>
 
-                    <td className="px-6 py-4 text-gray-600 max-w-[400px] break-words">
+                    <td className="px-6 py-4 text-gray-500 text-sm max-w-[200px] truncate">
                       {req.description}
                     </td>
                   </tr>
@@ -638,8 +897,8 @@ export default function UserHome() {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
+        </div >
+      </div >
 
 
       <div className="mt-20 px-4 font-sans">
@@ -718,6 +977,6 @@ export default function UserHome() {
       </div>
 
 
-    </div>
+    </div >
   );
 }

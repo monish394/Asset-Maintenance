@@ -14,7 +14,7 @@ import img5 from "../assets/five.png"
 
 const FullWidthCarousel = () => {
   const autoplay = useRef(
-    Autoplay({ delay: 2500, stopOnInteraction: false })
+    Autoplay({ delay: 3500, stopOnInteraction: false })
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
@@ -38,29 +38,30 @@ const FullWidthCarousel = () => {
     if (!emblaApi) return;
     emblaApi.scrollTo(index);
   };
- const images = [
+  const images = [
     img1,
     img2,
     img4,
-   img5,
-   img3
+    img5,
+    img3
   ];
 
   return (
-    <div className="w-full flex flex-col items-center">
-      
-      <div className="embla w-full overflow-hidden">
+    <div className="w-full relative group">
+      <div className="embla w-full overflow-hidden rounded-xl md:rounded-3xl shadow-lg border border-gray-100 bg-[#121212]">
         <div
-          className="embla__viewport w-full h-64 sm:h-80 md:h-96"
+          className="embla__viewport w-full h-[300px] sm:h-[300px] md:h-[420px] lg:h-[420px]"
           ref={emblaRef}
         >
           <div className="embla__container flex h-full">
             {images.map((src, index) => (
-              <div key={index} className="embla__slide min-w-full h-full">
+              <div key={index} className="embla__slide min-w-full h-full flex items-center justify-center">
                 <img
                   src={src}
                   alt={`Slide ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full select-none ${index === 0 ? "object-cover object-left md:object-center" : "object-cover"
+                    }`}
+                  loading={index === 0 ? "eager" : "lazy"}
                 />
               </div>
             ))}
@@ -68,13 +69,12 @@ const FullWidthCarousel = () => {
         </div>
       </div>
 
-      <div className="flex justify-center mt-3 space-x-2">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex justify-center space-x-2">
         {scrollSnaps.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-              index === selectedIndex ? "bg-blue-600" : "bg-blue-200"
-            }`}
+            className={`transition-all duration-300 rounded-full ${index === selectedIndex ? "w-5 h-1.5 bg-white shadow-sm" : "w-1.5 h-1.5 bg-white/50"
+              }`}
             onClick={() => scrollTo(index)}
           />
         ))}

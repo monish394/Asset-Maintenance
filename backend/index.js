@@ -1,6 +1,12 @@
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";
+import dns from "dns";
+
+// Fix for ENETUNREACH in production (prefers IPv4 over IPv6)
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder("ipv4first");
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

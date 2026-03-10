@@ -93,6 +93,7 @@ export default function RaiseRequest() {
   const [unreadChats, setUnreadChats] = useState({});
   const [hoveredTech, setHoveredTech] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [showNoAssetModal, setShowNoAssetModal] = useState(false);
 
   const {
     myasset,
@@ -503,7 +504,13 @@ export default function RaiseRequest() {
             My Service Requests
           </h1>
           <button
-            onClick={() => setShowRaiseForm(true)}
+            onClick={() => {
+              if (myasset.length === 0) {
+                setShowNoAssetModal(true);
+              } else {
+                setShowRaiseForm(true);
+              }
+            }}
             className="flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 active:scale-95 transition-all shadow-md self-end sm:self-auto"
           >
             <FaPlus /> Raise Request
@@ -885,26 +892,22 @@ export default function RaiseRequest() {
 
       {(showRaiseForm || showGeneralForm) && (
         <AiTechBot
-          autoOpen={showGeneralForm}
+          autoOpen={false}
           onApplyDescription={(text) => {
             setDraftDescription(text);
           }}
         />
       )}
 
-      {/* Image Preview Modal */}
       {selectedImage && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-          {/* Frosted Glass Overlay */}
           <div
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300"
             onClick={() => setSelectedImage(null)}
           />
 
           <div className="relative z-10 max-w-4xl w-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
-            {/* Image Container with Integrated Close Button */}
             <div className="relative group bg-white p-2 rounded-2xl shadow-2xl">
-              {/* Close Button */}
               <button
                 onClick={() => setSelectedImage(null)}
                 className="absolute -top-3 -right-3 z-20 w-10 h-10 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 active:scale-95 border-2 border-white"
@@ -920,6 +923,33 @@ export default function RaiseRequest() {
                   className="max-h-[75vh] md:max-h-[80vh] w-auto object-contain block shadow-inner"
                 />
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showNoAssetModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[10000] p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden transform animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+            <div className="p-8 text-center">
+              <div className="w-20 h-20 bg-amber-50 rounded-3xl flex items-center justify-center mx-auto mb-6 relative">
+                <div className="absolute inset-0 bg-amber-200/20 rounded-3xl animate-ping opacity-20"></div>
+                <span className="text-4xl">⚠️</span>
+              </div>
+
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-3">
+                No Assets Found
+              </h3>
+
+              <p className="text-slate-500 text-sm font-semibold leading-relaxed mb-8 px-2">
+                It looks like you don't have any assigned assets yet. Please add an asset to your profile before raising a service request.
+              </p>
+
+              <button
+                onClick={() => setShowNoAssetModal(false)}
+                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/20 active:scale-95 transition-all duration-300"
+              >
+                Got it, Thanks!
+              </button>
             </div>
           </div>
         </div>

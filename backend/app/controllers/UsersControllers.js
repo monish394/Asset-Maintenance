@@ -4,6 +4,8 @@ import bcryptjs from "bcryptjs"
 import jsonwebtoken from "jsonwebtoken"
 import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
+import path from "path";
+import { fileURLToPath } from "url";
 import User from "../models/Registeruser.js";
 import Asset from "../models/AssertSchema.js";
 import RaiseRequest from "../models/RaiseRequest.js";
@@ -393,7 +395,6 @@ UserCtrl.GoogleLogin = async (req, res) => {
 
     let user = await User.findOne({ email });
 
-    // Return isNewUser if not found OR if existing user has incomplete dummy profile
     const hasIncompleteProfile =
       !user ||
       user.phone === "0000000000" ||
@@ -417,26 +418,114 @@ UserCtrl.GoogleLogin = async (req, res) => {
 
     try {
       let transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false, // true for 465, false for 587
-        requireTLS: true,
+        service: "gmail",
         auth: {
           user: process.env.ADMIN_EMAIL,
           pass: process.env.EMAIL_PASS,
         },
-        tls: {
-          rejectUnauthorized: false, // helps avoid certificate errors on cloud servers
-        },
-        connectionTimeout: 10000,
       });
+
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const logoPath = path.resolve(__dirname, "../../../public/logo.png");
 
       let mailOptions = {
         from: process.env.ADMIN_EMAIL,
         to: email,
-        subject: "Welcome to Asset Maintenance - Login Successful",
-        text: `Hello ${user.name || name},\n\nYou have successfully logged into the Asset Maintenance system via Google. We're happy to have you!\n\nBest regards,\nThe Asset Maintenance Team`,
-        html: `<p>Hello <b>${user.name || name}</b>,</p><p>You have successfully logged into the Asset Maintenance system via Google. We're happy to have you!</p><p>Best regards,<br><b>The Asset Maintenance Team</b></p>`,
+        subject: "Secure Login Notification - Asset Maintenance",
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              .container {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                border: 1px solid #eef2f7;
+              }
+              .header {
+                background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+                padding: 40px 20px;
+                text-align: center;
+                color: white;
+              }
+              .logo {
+                width: 70px;
+                height: 70px;
+                background: white;
+                border-radius: 50%;
+                padding: 10px;
+                margin-bottom: 20px;
+                display: inline-block;
+              }
+              .content {
+                padding: 40px;
+                color: #374151;
+                line-height: 1.6;
+              }
+              .greeting {
+                font-size: 24px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 20px;
+              }
+              .info-box {
+                background-color: #f3f4f6;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 25px 0;
+                border-left: 4px solid #2563eb;
+              }
+              .footer {
+                background-color: #f9fafb;
+                padding: 25px;
+                text-align: center;
+                font-size: 13px;
+                color: #6b7280;
+                border-top: 1px solid #f3f4f6;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <img src="cid:logo" alt="Asset Maintenance" class="logo">
+                <h1 style="margin:0; font-size: 28px; color: #ffffff;">Login Successful</h1>
+              </div>
+              <div class="content">
+                <p class="greeting">Hello ${user.name || name},</p>
+                <p>Welcome back! This is a confirmation that you have successfully logged into the <strong>Asset Maintenance</strong> portal via Google.</p>
+                
+                <div class="info-box">
+                  <p style="margin: 5px 0;"><strong>Account Email:</strong> ${email}</p>
+                  <p style="margin: 5px 0;"><strong>Login Time:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                
+                <p>Ensuring the security of your assets is our top priority. If you did not initiate this login, please contact our support team immediately.</p>
+                
+                <p style="margin-top: 30px;">
+                  Best regards,<br>
+                  <span style="color: #2563eb; font-weight: 700;">The Asset Maintenance Team</span>
+                </p>
+              </div>
+              <div class="footer">
+                <p style="margin: 0;">&copy; ${new Date().getFullYear()} Asset Maintenance. All rights reserved.</p>
+                <p style="margin: 5px 0 0;">This is an automated security notification.</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        attachments: [{
+          filename: 'logo.png',
+          path: logoPath,
+          cid: 'logo'
+        }]
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
@@ -450,7 +539,7 @@ UserCtrl.GoogleLogin = async (req, res) => {
       console.error("Nodemailer setup failed:", mailErr);
     }
     res.status(200).json({
-      message: "Login successful",
+      message: `Welcome back, ${user.name || name}! Login successful.`,
       token: token,
       role: user.role,
     });
