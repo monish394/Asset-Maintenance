@@ -420,24 +420,21 @@ UserCtrl.GoogleLogin = async (req, res) => {
     try {
       if (!transporter) {
         transporter = nodemailer.createTransport({
-          host: "smtp.googlemail.com", // Alternate host often works better on cloud IPs
-          port: 587,
-          secure: false, // Port 587 uses STARTTLS
-          requireTLS: true,
+          service: "gmail",
           auth: {
             user: process.env.ADMIN_EMAIL,
             pass: process.env.EMAIL_PASS,
           },
-          tls: {
-            rejectUnauthorized: false,
-            minVersion: 'TLSv1.2'
-          },
-          connectionTimeout: 40000, // Even longer timeout for cloud handshake
-          greetingTimeout: 30000,
-          socketTimeout: 40000,
-          family: 4, // Force IPv4
+          logger: true, // Log internal activity to console
+          debug: true,  // Include SMTP traffic in logs
+          connectionTimeout: 30000,
+          socketTimeout: 30000,
+          family: 4,
         });
       }
+
+      console.log("Attempting to send login email to:", email);
+      console.log("Using Admin Email:", process.env.ADMIN_EMAIL);
 
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
