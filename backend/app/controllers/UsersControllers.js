@@ -426,26 +426,23 @@ UserCtrl.GoogleLogin = async (req, res) => {
     try {
       if (!transporter) {
         transporter = nodemailer.createTransport({
-          host: "smtp.gmail.com",
+          host: "64.233.171.108", // Direct IPv4 for smtp.gmail.com
           port: 587,
-          secure: false, // Port 587 uses STARTTLS
+          secure: false, // STARTTLS
           auth: {
             user: process.env.ADMIN_EMAIL,
             pass: process.env.EMAIL_PASS,
           },
           tls: {
-            rejectUnauthorized: false, // Helps with cloud network handshakes
+            rejectUnauthorized: false,
+            servername: "smtp.gmail.com", // Required for SNI when using IP address
             minVersion: 'TLSv1.2'
           },
-          connectionTimeout: 60000, // Doubled to 60s for cloud establishment
-          greetingTimeout: 60000,
-          socketTimeout: 60000,
+          connectionTimeout: 40000,
+          socketTimeout: 40000,
           logger: true,
           debug: true,
-          // Strict IPv4 override at the socket level
-          lookup: (hostname, options, callback) => {
-            dns.lookup(hostname, { family: 4 }, callback);
-          }
+          family: 4, // Strictly force IPv4
         });
       }
 
