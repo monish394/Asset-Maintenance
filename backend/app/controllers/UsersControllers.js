@@ -13,24 +13,7 @@ import Registervalidation from "../validators/Registervalidation.js";
 import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  pool: true, // Reuses connections
-  auth: {
-    user: process.env.ADMIN_EMAIL,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false, // Prevents handshake timeouts in some environments
-  },
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-  family: 4, // Forces IPv4
-});
+let transporter; // Shared transporter instance
 
 
 async function geocodeAddress(address) {
@@ -435,6 +418,27 @@ UserCtrl.GoogleLogin = async (req, res) => {
     });
 
     try {
+      if (!transporter) {
+        transporter = nodemailer.createTransport({
+          host: "smtp.googlemail.com", // Alternate host often works better on cloud IPs
+          port: 587,
+          secure: false, // Port 587 uses STARTTLS
+          requireTLS: true,
+          auth: {
+            user: process.env.ADMIN_EMAIL,
+            pass: process.env.EMAIL_PASS,
+          },
+          tls: {
+            rejectUnauthorized: false,
+            minVersion: 'TLSv1.2'
+          },
+          connectionTimeout: 40000, // Even longer timeout for cloud handshake
+          greetingTimeout: 30000,
+          socketTimeout: 40000,
+          family: 4, // Force IPv4
+        });
+      }
+
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       const logoPath = path.resolve(__dirname, "../../../public/logo.png");
