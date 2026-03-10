@@ -14,6 +14,24 @@ import Loginvalidation from "../validators/Loginvalidation.js";
 const UserCtrl = {}
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  pool: true, // Reuses connections
+  auth: {
+    user: process.env.ADMIN_EMAIL,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // Prevents handshake timeouts in some environments
+  },
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
+  family: 4, // Forces IPv4
+});
+
 
 async function geocodeAddress(address) {
   try {
@@ -417,17 +435,6 @@ UserCtrl.GoogleLogin = async (req, res) => {
     });
 
     try {
-      let transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false, // use STARTTLS
-        auth: {
-          user: process.env.ADMIN_EMAIL,
-          pass: process.env.EMAIL_PASS,
-        },
-        family: 4, // Forces IPv4 to avoid ENETUNREACH
-      });
-
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
       const logoPath = path.resolve(__dirname, "../../../public/logo.png");
