@@ -419,13 +419,13 @@ UserCtrl.GoogleLogin = async (req, res) => {
     try {
       let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
+        port: 587,
+        secure: false, // use STARTTLS
         auth: {
           user: process.env.ADMIN_EMAIL,
           pass: process.env.EMAIL_PASS,
         },
-        family: 4, // Forces IPv4 to avoid ENETUNREACH IPv6 issues
+        family: 4, // Forces IPv4 to avoid ENETUNREACH
       });
 
       const __filename = fileURLToPath(import.meta.url);
