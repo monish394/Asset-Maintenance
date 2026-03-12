@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import logopng from "../assets/logo.png"
 import axios from "../config/api";
 import { motion } from "framer-motion";
+import { gsap } from "gsap";
 import {
   HiOutlineDocumentText,
   HiOutlineBookOpen,
@@ -15,6 +16,83 @@ import {
   HiOutlineCode,
   HiOutlineMail
 } from "react-icons/hi";
+
+const GsapHoverCard = ({ children, className, as: Component = motion.div, ...props }) => {
+  const cardRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // Calculate rotation with max 5 degrees angle for a subtle effect
+    const rotateX = ((y - centerY) / centerY) * -5;
+    const rotateY = ((x - centerX) / centerX) * 5;
+
+    gsap.to(cardRef.current, {
+      rotateX,
+      rotateY,
+      scale: 1.02,
+      transformPerspective: 1000,
+      transformStyle: "preserve-3d",
+      ease: "power2.out",
+      duration: 0.4,
+      boxShadow: "0 15px 30px -10px rgba(79, 70, 229, 0.15)",
+      zIndex: 50
+    });
+
+    // Subtly pop out inner elements
+    const innerElements = cardRef.current.querySelectorAll('.hover-inner');
+    if (innerElements.length) {
+      gsap.to(innerElements, {
+        z: 15,
+        y: -2,
+        x: ((x - centerX) / centerX) * -2,
+        duration: 0.4,
+        ease: "power2.out"
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    gsap.to(cardRef.current, {
+      rotateX: 0,
+      rotateY: 0,
+      scale: 1,
+      ease: "power3.out", // Changed to a smoother ease instead of elastic
+      duration: 0.8,
+      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+      zIndex: 10
+    });
+
+    const innerElements = cardRef.current.querySelectorAll('.hover-inner');
+    if (innerElements.length) {
+      gsap.to(innerElements, {
+        z: 0,
+        y: 0,
+        x: 0,
+        duration: 0.8,
+        ease: "power3.out"
+      });
+    }
+  };
+
+  return (
+    <Component
+      ref={cardRef}
+      className={className}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      {children}
+    </Component>
+  );
+};
 
 const PublicHome = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -56,7 +134,7 @@ const PublicHome = () => {
     }
   };
 
-  // Fixed Animation Variants - Smooth & No Stuck
+
   const fadeInLeft = {
     hidden: { opacity: 0, x: -50 },
     visible: {
@@ -102,7 +180,7 @@ const PublicHome = () => {
   };
 
   return (
-    <div id="top" className="min-h-screen bg-gray-50 text-slate-800 selection:bg-indigo-100" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div id="top" className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-200 via-white to-indigo-50/60 text-slate-800 selection:bg-indigo-100" style={{ fontFamily: "'Inter', sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -111,7 +189,7 @@ const PublicHome = () => {
         }
       `}</style>
 
-      {/* Header */}
+
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -163,8 +241,8 @@ const PublicHome = () => {
         </div>
       </motion.header>
 
-      {/* ── Hero Section ── */}
-      <section className="relative pt-16 pb-24 border-b border-slate-100 bg-white">
+
+      <section className="relative pt-16 pb-24 border-b border-blue-100/50 bg-transparent">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -204,36 +282,36 @@ const PublicHome = () => {
             </a>
           </motion.div>
 
-          {/* ── Stats Cards ── */}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
             {[
               { label: "Total Assets", value: `${stats.totalAssets}+`, icon: HiOutlineCube },
               { label: "Active Requests", value: stats.activeRequests.toString(), icon: HiOutlineClipboardList },
               { label: "Compliance", value: `${stats.compliance}%`, icon: HiOutlineChartBar },
             ].map((stat, idx) => (
-              <motion.div
+              <GsapHoverCard
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: idx * 0.15, ease: "easeOut" }}
-                className="bg-white border border-slate-200 p-6 rounded-xl transition-all hover:border-indigo-300 hover:shadow-md text-left flex items-center gap-5"
+                className="bg-white border border-slate-200 p-6 rounded-xl transition-colors text-left flex items-center gap-5 cursor-default relative z-10"
               >
-                <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 hover-inner shadow-sm bg-white">
                   <stat.icon size={20} />
                 </div>
-                <div>
+                <div className="hover-inner">
                   <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">{stat.label}</p>
-                  <p className="text-xl font-bold text-slate-900">{stat.value}</p>
+                  <p className="text-xl font-bold text-slate-900 tracking-tight">{stat.value}</p>
                 </div>
-              </motion.div>
+              </GsapHoverCard>
             ))}
           </div>
         </motion.div>
       </section>
 
-      {/* ── Feature Section ── */}
-      <section id="features" className="py-24 bg-white">
+
+      <section id="features" className="py-24 bg-transparent">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -255,27 +333,27 @@ const PublicHome = () => {
               { title: "Decision Analytics", desc: "Visual reports on utilization trends and maintenance performance metrics.", icon: HiOutlineChartBar },
               { title: "Governance & Security", desc: "Industry-standard data protection and full organizational compliance.", icon: HiOutlineShieldCheck },
             ].map((f, i) => (
-              <motion.div
+              <GsapHoverCard
                 key={i}
-                className="group"
+                className="group p-6 bg-white rounded-xl border border-transparent hover:border-slate-100 transition-colors cursor-default relative z-10"
                 initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
               >
-                <div className="w-9 h-9 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center mb-5 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <div className="w-9 h-9 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center mb-5 group-hover:bg-indigo-600 group-hover:text-white transition-all hover-inner shadow-sm">
                   <f.icon size={18} />
                 </div>
-                <h4 className="text-lg font-bold text-slate-900 mb-3 tracking-tight">{f.title}</h4>
-                <p className="text-slate-500 text-sm leading-relaxed">{f.desc}</p>
-              </motion.div>
+                <h4 className="text-lg font-bold text-slate-900 mb-3 tracking-tight hover-inner group-hover:text-indigo-600 transition-colors">{f.title}</h4>
+                <p className="text-slate-500 text-sm leading-relaxed hover-inner">{f.desc}</p>
+              </GsapHoverCard>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Workflow ── */}
-      <section id="workflow" className="py-24 bg-gray-50">
+
+      <section id="workflow" className="py-24 bg-blue-50/30">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -288,32 +366,31 @@ const PublicHome = () => {
             <h3 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Structured Asset Operations</h3>
           </motion.div>
 
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              { title: "Inventory", step: "01", desc: "Digitalize and tag physical items." },
-              { title: "Allocation", step: "02", desc: "Assign to departments or users." },
-              { title: "Monitoring", step: "03", desc: "Real-time issue reporting." },
-              { title: "Resolution", step: "04", desc: "Technician verification." },
+              { title: "Asset Registration", step: "01", desc: "Digitally onboard assets with QR/barcode tagging for immediate active tracking." },
+              { title: "Proactive Monitoring", step: "02", desc: "Track asset lifecycles and schedule preventive maintenance automatically." },
+              { title: "Service Resolution", step: "03", desc: "Assign technicians, verify completed work, and log auditable compliance history." },
             ].map((item, i) => (
-              <motion.div
+              <GsapHoverCard
                 key={i}
-                className="bg-white p-6 rounded-xl border border-slate-200"
+                className="bg-white p-6 rounded-xl border border-slate-200 cursor-default relative z-10 transition-colors"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
               >
-                <span className="text-[10px] font-bold text-indigo-600 mb-4 block">STEP {item.step}</span>
-                <h5 className="font-bold text-slate-900 mb-2 truncate">{item.title}</h5>
-                <p className="text-slate-500 text-xs leading-relaxed">{item.desc}</p>
-              </motion.div>
+                <span className="text-[10px] font-bold text-indigo-600 mb-4 block hover-inner">STEP {item.step}</span>
+                <h5 className="font-bold text-slate-900 mb-2 truncate hover-inner">{item.title}</h5>
+                <p className="text-slate-500 text-xs leading-relaxed hover-inner">{item.desc}</p>
+              </GsapHoverCard>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Docs ── */}
-      <section id="docs" className="py-24 bg-white">
+
+      <section id="docs" className="py-24 bg-transparent">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -332,31 +409,32 @@ const PublicHome = () => {
               { title: "API Reference", desc: "Complete REST API documentation for integrations.", icon: HiOutlineCode },
               { title: "Best Practices", desc: "Industry standards for optimal asset management.", icon: HiOutlineDocumentText },
             ].map((doc, i) => (
-              <motion.a
+              <GsapHoverCard
                 key={i}
+                as={motion.a}
                 href="#"
-                className="group bg-gray-50 p-6 rounded-xl border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all"
+                className="group bg-gray-50 p-6 rounded-xl border border-slate-200 transition-colors relative z-10 block h-full flex flex-col"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
               >
-                <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 text-slate-400 flex items-center justify-center mb-5 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all">
+                <div className="w-9 h-9 rounded-lg bg-white border border-slate-200 text-slate-400 flex items-center justify-center mb-5 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all hover-inner shadow-sm">
                   <doc.icon size={18} />
                 </div>
-                <h4 className="text-lg font-bold text-slate-900 mb-2 tracking-tight group-hover:text-indigo-600 transition-colors">{doc.title}</h4>
-                <p className="text-slate-500 text-sm leading-relaxed mb-4">{doc.desc}</p>
-                <span className="text-indigo-600 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                <h4 className="text-lg font-bold text-slate-900 mb-2 tracking-tight transition-colors hover-inner">{doc.title}</h4>
+                <p className="text-slate-500 text-sm leading-relaxed mb-4 hover-inner grow">{doc.desc}</p>
+                <span className="text-indigo-600 text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover-inner mt-auto">
                   Read More <HiOutlineArrowRight size={12} />
                 </span>
-              </motion.a>
+              </GsapHoverCard>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Contact ── */}
-      <section id="contact" className="py-24 bg-gray-50">
+
+      <section id="contact" className="py-24 bg-indigo-50/30 border-t border-blue-100/30">
         <div className="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -439,13 +517,13 @@ const PublicHome = () => {
         </div>
       </section>
 
-      {/* ── Footer ── */}
+
       <motion.footer
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-20px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="bg-white py-12 border-t border-slate-200"
+        className="bg-transparent py-12 border-t border-blue-100/50"
       >
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <motion.div

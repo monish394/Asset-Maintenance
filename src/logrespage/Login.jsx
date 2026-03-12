@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "../config/api";
 import { toast } from "sonner";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaArrowLeft, FaShieldAlt } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import logBg from "../assets/login_bg.png";
 
 export default function Login() {
@@ -117,29 +117,34 @@ export default function Login() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
-        className="flex-1 flex flex-col justify-center px-8 sm:px-16 md:px-24 bg-white relative overflow-hidden"
+        className="flex-1 flex flex-col px-8 sm:px-16 md:px-24 bg-white relative overflow-hidden max-h-screen"
       >
-        <Link to="/home" className="absolute top-12 left-12 flex items-center gap-2 text-slate-700 hover:text-indigo-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all group">
+        <Link to="/home" className="absolute z-10 top-12 left-12 flex items-center gap-2 text-slate-700 hover:text-indigo-600 text-[11px] font-bold uppercase tracking-[0.2em] transition-all group">
           <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
           Back to Home
         </Link>
 
-        <div className="max-w-md w-full mx-auto mt-15">
-          <div className="mb-12">
+        <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto py-12 mt-6">
+          <div className="mb-10">
             <h1 className="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">Sign In</h1>
             <p className="text-slate-500 text-sm font-medium">Access your enterprise asset management portal.</p>
           </div>
 
-          {clienterr && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-8 p-4 rounded-xl bg-red-50 border border-red-100 flex items-center gap-3 text-red-600 text-xs font-bold"
-            >
-              <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-              {clienterr}
-            </motion.div>
-          )}
+          <AnimatePresence mode="wait">
+            {clienterr && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 overflow-hidden"
+              >
+                <div className="p-3 rounded-xl bg-red-50 border border-red-100 flex items-center gap-3 text-red-600 text-[11px] font-bold">
+                  <div className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+                  <span className="leading-tight">{clienterr}</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
@@ -205,7 +210,7 @@ export default function Login() {
               </label>
             </div>
 
-            {/* Fixed: Changed py-4 to py-3, text-xs to text-sm for better proportion */}
+
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
@@ -248,14 +253,15 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="mt-16 text-center border-t border-slate-100 pt-10">
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
-              Authorized personnel only.{" "}
-              <Link to="/register" className="text-indigo-600 hover:text-indigo-700 hover:underline underline-offset-4 ml-1">
-                Register
-              </Link>
-            </p>
-          </div>
+        </div>
+
+        <div className="mt-auto pb-8 pt-6 border-t border-slate-100 text-center max-w-md w-full mx-auto shrink-0">
+          <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
+            Authorized personnel only.{" "}
+            <Link to="/register" className="text-indigo-600 hover:text-indigo-700 hover:underline underline-offset-4 ml-1">
+              Register
+            </Link>
+          </p>
         </div>
       </motion.div>
 

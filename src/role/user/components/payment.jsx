@@ -198,35 +198,42 @@ export default function Payment() {
                     >
                       <td
                         style={{
-                          padding: "10px",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 12,
+                          padding: "15px",
+                          width: "200px",
+                          borderBottom: "1px solid #eee",
+                          verticalAlign: "top"
                         }}
                       >
-                        {asset.assetImg && (
-                          <img
-                            src={asset.assetImg}
-                            alt={asset.assetName}
-                            style={{
-                              width: 60,
-                              height: 40,
-                              objectFit: "cover",
-                              borderRadius: 6,
-                            }}
-                          />
-                        )}
-                        <span style={{ fontWeight: 500 }}>{asset.assetName || "Asset Name"}</span>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                          {asset.assetImg && (
+                            <div style={{ width: "100%", height: 120, overflow: "hidden", borderRadius: 12, border: "1px solid #f0f0f0" }}>
+                              <img
+                                src={asset.assetImg}
+                                alt={asset.assetName}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                  display: "block"
+                                }}
+                              />
+                            </div>
+                          )}
+                          <div style={{ padding: "0 4px" }}>
+                            <div style={{ fontWeight: 700, color: "#111827", fontSize: 15, lineHeight: 1.3 }}>{asset.assetName || "Asset Name"}</div>
+                            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4, fontWeight: 500 }}>ID: #{request.assetid?._id?.slice(-6).toUpperCase() || "N/A"}</div>
+                          </div>
+                        </div>
                       </td>
 
-                      <td style={{ padding: "10px", maxWidth: 300, wordWrap: "break-word" }}>
+                      <td style={{ padding: "15px 12px", maxWidth: 320, wordWrap: "break-word", lineHeight: 1.6, color: "#4b5563" }}>
                         {request.description || "No description"}
                       </td>
 
-                      <td style={{ padding: "10px" }}>
+                      <td style={{ padding: "15px 12px" }}>
                         <span
                           style={{
-                            padding: "6px 12px",
+                            padding: "6px 14px",
                             borderRadius: 12,
                             backgroundColor:
                               request.status.toLowerCase() === "completed"

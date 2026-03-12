@@ -32,12 +32,14 @@ export default function PickAssets() {
         setLoading(false);
       });
   }, []);
-  // console.log(assets)
+
 
   const unassignedAssets = assets.filter((ele) => ele.status !== "undermaintenance");
 
   const filteredData = unassignedAssets.filter((ele) => {
-    const matchesName = ele.assetName.toLowerCase().includes(btnsearch.toLowerCase());
+    const searchTerm = btnsearch.toLowerCase().trim();
+    const assetName = (ele.assetName || "").toLowerCase().trim();
+    const matchesName = assetName.includes(searchTerm);
     const matchesCategory = selectedCategories.length > 0 ? selectedCategories.includes(ele.category) : true;
     return matchesName && matchesCategory;
   });
@@ -47,6 +49,8 @@ export default function PickAssets() {
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
     );
   };
+
+
 
 
   const handleSearch = () => setBtnsearch(txt);

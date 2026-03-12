@@ -144,13 +144,8 @@ export default function UserHome() {
     const cy = rect.top + rect.height / 2;
     launchFireworks(cx, cy);
 
-    // Hide modal immediately
     setShowWelcomeModal(false);
-
-    // Start fade out shortly before removing from DOM
     setTimeout(() => setConfettiOpacity(0), 500);
-
-    // Keep celebration for 3 seconds total
     setTimeout(() => {
       setShowConfetti(false);
     }, 3000);
@@ -171,8 +166,7 @@ export default function UserHome() {
       localStorage.setItem(key, "1");
     }
   }, [userinfo]);
-  // console.log(myraiserequest)
-  // console.log("User assets in Home:", myasset);
+
 
 
   useEffect(() => {
@@ -183,7 +177,7 @@ export default function UserHome() {
     })
       .then((res) => {
         setUserdashboardstats(res.data)
-        // console.log(res.data)
+
       })
       .catch((err) => {
         console.log(err.message)
@@ -430,7 +424,7 @@ export default function UserHome() {
             }
           `}</style>
 
-          {/* Falling Paper - Persists after modal closes for a 3s celebration */}
+
           {Array.from({ length: 90 }).map((_, i) => {
             const colors = ["#6366f1", "#4f46e5", "#8b5cf6", "#7c3aed", "#ec4899", "#f59e0b", "#10b981", "#0ea5e9"];
             const w = 9 + Math.random() * 11;
@@ -485,7 +479,6 @@ export default function UserHome() {
                 style={{ padding: "2.5rem 1.5rem" }}
                 onClick={e => e.stopPropagation()}
               >
-                {/* Decorative Elements */}
                 <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "160px", height: "160px", background: "radial-gradient(circle, rgba(99,102,241,0.1), transparent 70%)", pointerEvents: "none" }} />
                 <div style={{ position: "absolute", bottom: "-50px", left: "-50px", width: "160px", height: "160px", background: "radial-gradient(circle, rgba(124,58,237,0.1), transparent 70%)", pointerEvents: "none" }} />
 
@@ -778,7 +771,7 @@ export default function UserHome() {
                         className="group relative inline-flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white hover:shadow-xl hover:shadow-rose-200 transition-all duration-300"
                       >
                         <FaTrashCan className="text-xs group-hover:scale-110 transition-transform duration-300" />
-                        <span className="hidden md:inline">Unassign</span>
+                        <span className="hidden md:inline">Remove</span>
                         <span className="md:hidden">Remove</span>
                       </button>
                     </td>
@@ -875,7 +868,7 @@ export default function UserHome() {
                             {req.costEstimate}
                           </>
                         ) : (
-                          <span className="text-gray-300 font-normal">--</span>
+                          <span className="text-gray-300 font-normal">N/A</span>
                         )}
                       </div>
                     </td>

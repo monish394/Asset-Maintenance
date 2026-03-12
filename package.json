@@ -34,6 +34,7 @@
     "express": "^5.2.1",
     "framer-motion": "^12.34.0",
     "google-auth-library": "^10.6.1",
+    "gsap": "^3.14.2",
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "leaflet": "^1.9.4",
