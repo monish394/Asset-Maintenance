@@ -47,8 +47,7 @@ GeneralRequestCtrl.createGeneralrequest = async (req, res) => {
       await Notification.create({
         userid: tech._id,
         message: `New General Request from ${user.name}: "${issue.substring(0, 60)}"`,
-        type: "general_request",
-        referenceId: newGeneralRequest._id
+        requestid: newGeneralRequest._id
       });
     }
 
@@ -229,8 +228,7 @@ GeneralRequestCtrl.completeGeneralRequest = async (req, res) => {
     await Notification.create({
       userid: request.userId._id,
       message: `Your request "${request.issue}" has been completed by the technician.`,
-      type: "general_request_completed",
-      referenceId: request._id,
+      requestid: request._id,
     });
 
     res.status(200).json(request);
@@ -270,6 +268,11 @@ GeneralRequestCtrl.DeleteGeneralRequest = async (req, res) => {
 
     await Notification.deleteMany({ requestid: id });
     await GeneralRequest.findByIdAndDelete(id);
+
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("GENERAL_REQUEST_DELETED", { requestId: id });
+    }
 
     res.status(200).json({ success: true, message: "General request deleted successfully" });
   } catch (err) {

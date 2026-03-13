@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "../../../config/api";
+import { socket } from "../../../socket";
 
 const TechDataMaintain = createContext();
 
@@ -9,6 +10,31 @@ export const TechDataProvider = ({ children }) => {
   const [techniciansnotifications, setTechniciansnotifications] = useState([])
   const [techinfo, setTechinfo] = useState(null)
   const [acceptedGeneralRequests, setAcceptedGeneralRequests] = useState([]);
+
+  useEffect(() => {
+    if (techinfo?._id) {
+      socket.connect();
+      socket.emit("join", techinfo._id);
+
+      const handleAssetDeleted = ({ requestId }) => {
+        setTechnicianassignedassert(prev => prev.filter(r => r._id !== requestId));
+        setTechniciansnotifications(prev => prev.filter(n => n.requestid !== requestId));
+      };
+
+      const handleGeneralDeleted = ({ requestId }) => {
+        setRequests(prev => prev.filter(r => r._id !== requestId));
+        setTechniciansnotifications(prev => prev.filter(n => n.requestid !== requestId));
+      };
+
+      socket.on("ASSET_REQUEST_DELETED", handleAssetDeleted);
+      socket.on("GENERAL_REQUEST_DELETED", handleGeneralDeleted);
+
+      return () => {
+        socket.off("ASSET_REQUEST_DELETED", handleAssetDeleted);
+        socket.off("GENERAL_REQUEST_DELETED", handleGeneralDeleted);
+      };
+    }
+  }, [techinfo]);
 
   useEffect(() => {
     axios.get("/alltechnicianrequest")

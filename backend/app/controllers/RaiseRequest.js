@@ -228,6 +228,11 @@ RaiseRequestCtrl.DeleteRequest = async (req, res) => {
     await Notification.deleteMany({ requestid: request._id });
     await RaiseRequest.findByIdAndDelete(requestid);
 
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("ASSET_REQUEST_DELETED", { requestId: requestid });
+    }
+
     res.status(200).json({ success: true, message: "Request deleted successfully" });
   } catch (err) {
     res.status(500).json({ err: "Failed to delete request" });
