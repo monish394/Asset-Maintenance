@@ -6,7 +6,7 @@ import { GrHostMaintenance } from "react-icons/gr";
 import logo from "../assets/logo.png";
 import { useState, useRef, useEffect } from "react";
 import axios from "../../../config/api";
-import { FaCamera, FaTimes, FaEdit, FaSignOutAlt, FaLock, FaBars } from "react-icons/fa";
+import { FaCamera, FaTimes, FaEdit, FaSignOutAlt, FaLock, FaBars, FaUserShield } from "react-icons/fa";
 
 export default function Navbar() {
   const [userinfo, setUserinfo] = useState(null);
@@ -42,11 +42,14 @@ export default function Navbar() {
     }
   }, [userinfo]);
 
-  // Close sidebar when clicking outside on mobile
+  // Close sidebar and profile popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (sidebarOpen && !e.target.closest("#admin-sidebar") && !e.target.closest("#sidebar-toggle")) {
         setSidebarOpen(false);
+      }
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        setShowProfilePopup(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -150,7 +153,7 @@ export default function Navbar() {
               {userinfo?.profile ? (
                 <img src={userinfo.profile} alt="Avatar" className="h-9 w-9 md:h-10 md:w-10 rounded-full object-cover border-2 border-gray-200" />
               ) : (
-                <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
+                <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
                   {userinfo?.name?.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -158,25 +161,31 @@ export default function Navbar() {
 
             {showProfilePopup && userinfo && (
               <div className="absolute right-0 mt-3 w-72 bg-white shadow-2xl rounded-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 p-6 text-white text-center">
+                <div className="bg-gradient-to-r from-indigo-600 to-red-500 p-6 text-white text-center relative">
+                  <div className="absolute top-3 right-3 bg-white/20 rounded-full p-1">
+                    <FaUserShield size={12} className="text-white/80" />
+                  </div>
                   <div className="mx-auto h-20 w-20 rounded-full border-4 border-white/30 shadow-xl mb-3 overflow-hidden">
                     {userinfo.profile ? (
                       <img src={userinfo.profile} alt="Avatar" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="h-full w-full bg-blue-400 flex items-center justify-center text-2xl font-bold">
+                      <div className="h-full w-full bg-indigo-400 flex items-center justify-center text-2xl font-bold">
                         {userinfo.name.charAt(0).toUpperCase()}
                       </div>
                     )}
                   </div>
-                  <h3 className="font-bold text-lg">{userinfo.name}</h3>
-                  <p className="text-blue-100 text-sm">{userinfo.email}</p>
+                  <h3 className="font-bold text-lg leading-tight">{userinfo.name}</h3>
+                  <p className="text-indigo-100 text-sm">{userinfo.email}</p>
+                  <span className="mt-2 inline-block bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                    {userinfo.role}
+                  </span>
                 </div>
 
                 <div className="p-4 bg-gray-50 border-b border-gray-100">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
-                      <p className="text-[10px] text-gray-400 uppercase font-bold">Role</p>
-                      <p className="text-sm font-semibold text-gray-700 capitalize">{userinfo.role}</p>
+                      <p className="text-[10px] text-gray-400 uppercase font-bold">Phone</p>
+                      <p className="text-sm font-semibold text-gray-700">{userinfo.phone || "—"}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-400 uppercase font-bold">Joined</p>
@@ -191,9 +200,9 @@ export default function Navbar() {
                       setShowEditModal(true);
                       setShowProfilePopup(false);
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 rounded-xl transition group"
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-xl transition group"
                   >
-                    <FaEdit className="text-gray-400 group-hover:text-blue-600" />
+                    <FaEdit className="text-gray-400 group-hover:text-indigo-600" />
                     Edit Profile
                   </button>
                   <button
@@ -201,9 +210,9 @@ export default function Navbar() {
                       setShowPasswordModal(true);
                       setShowProfilePopup(false);
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 rounded-xl transition group"
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-xl transition group"
                   >
-                    <FaLock className="text-gray-400 group-hover:text-blue-600" />
+                    <FaLock className="text-gray-400 group-hover:text-indigo-600" />
                     Change Password
                   </button>
                   <button
@@ -226,96 +235,95 @@ export default function Navbar() {
         </div>
 
         {showEditModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
-              <div className="bg-slate-900 p-6 flex justify-between items-center text-white">
-                <h2 className="text-xl font-bold">Edit Profile</h2>
-                <button onClick={() => setShowEditModal(false)} className="hover:bg-white/10 p-2 rounded-full transition">
-                  <FaTimes size={20} />
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
+            <div className="bg-white w-full max-w-[380px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="px-5 py-4 border-b border-gray-50 flex justify-between items-center bg-white">
+                <h2 className="text-base font-bold text-slate-800 tracking-tight">Edit Profile</h2>
+                <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                  <FaTimes size={16} />
                 </button>
               </div>
 
-              <form onSubmit={handleEditSubmit} className="p-6 md:p-8 space-y-6">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="relative group cursor-pointer">
-                    <div className="h-32 w-32 rounded-full border-4 border-slate-100 shadow-lg overflow-hidden relative">
+              <form onSubmit={handleEditSubmit} className="p-5 space-y-4">
+                <div className="flex justify-center pb-2">
+                  <div className="relative group">
+                    <div className="h-20 w-20 rounded-full border-2 border-slate-50 shadow-sm overflow-hidden bg-slate-50">
                       {editForm.profile ? (
                         <img src={editForm.profile} className="h-full w-full object-cover" alt="Profile" />
                       ) : (
-                        <div className="h-full w-full bg-slate-200 flex items-center justify-center text-3xl font-bold text-slate-400">
+                        <div className="h-full w-full flex items-center justify-center text-xl font-bold text-slate-300">
                           {userinfo.name.charAt(0)}
                         </div>
                       )}
-
                       {uploading && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                          <div className="h-8 w-8 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
+                        <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                          <div className="h-4 w-4 border-2 border-indigo-600 border-t-transparent animate-spin rounded-full"></div>
                         </div>
                       )}
                     </div>
-
-                    <label className="absolute bottom-1 right-1 bg-blue-600 text-white p-2.5 rounded-full shadow-lg cursor-pointer hover:bg-blue-700 transition transform hover:scale-110">
-                      <FaCamera size={14} />
+                    <label className="absolute -bottom-0.5 -right-0.5 bg-indigo-600 text-white p-1.5 rounded-full shadow-lg cursor-pointer hover:bg-indigo-700 transition-all border-2 border-white">
+                      <FaCamera size={10} />
                       <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                     </label>
                   </div>
-                  <p className="text-xs text-gray-500 font-medium italic">Click the camera icon to update photo</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                <div className="space-y-3.5">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                     <input
                       type="text"
                       value={editForm.name}
                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
                       required
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                     <input
                       type="email"
                       value={editForm.email}
                       onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
                       required
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
-                    <input
-                      type="text"
-                      value={editForm.phone}
-                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Address</label>
-                    <input
-                      type="text"
-                      value={editForm.address}
-                      onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone</label>
+                      <input
+                        type="text"
+                        value={editForm.phone}
+                        onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Location</label>
+                      <input
+                        type="text"
+                        value={editForm.address}
+                        onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-4 flex gap-4">
+                <div className="pt-2 flex gap-2.5">
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="flex-1 px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition"
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-500 text-xs font-bold hover:bg-slate-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-[2] px-6 py-3.5 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-xl shadow-blue-200 transition transform active:scale-[0.98]"
+                    className="flex-[1.5] px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
                   >
                     Save Changes
                   </button>
@@ -326,66 +334,69 @@ export default function Navbar() {
         )}
 
         {showPasswordModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
-              <div className="bg-slate-900 p-6 flex justify-between items-center text-white">
-                <h2 className="text-xl font-bold">Change Password</h2>
-                <button onClick={() => setShowPasswordModal(false)} className="hover:bg-white/10 p-2 rounded-full transition">
-                  <FaTimes size={20} />
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
+            <div className="bg-white w-full max-w-[360px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="px-5 py-4 border-b border-gray-50 flex justify-between items-center bg-white">
+                <h2 className="text-base font-bold text-slate-800 tracking-tight">Security</h2>
+                <button onClick={() => setShowPasswordModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                  <FaTimes size={16} />
                 </button>
               </div>
 
-              <form onSubmit={handlePasswordSubmit} className="p-8 space-y-6">
+              <form onSubmit={handlePasswordSubmit} className="p-5 space-y-4">
                 {passwordError && (
-                  <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium border border-red-100">
+                  <div className="bg-red-50 text-red-600 px-3.5 py-2.5 rounded-xl text-[11px] font-bold border border-red-100">
                     {passwordError}
                   </div>
                 )}
 
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
+                <div className="space-y-3.5">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
                     <input
                       type="password"
                       value={passwordForm.oldPassword}
                       onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                      placeholder="••••••••"
                       required
                     />
                   </div>
-                  <div className="space-y-1.5 font-sans">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">New Password</label>
                     <input
                       type="password"
                       value={passwordForm.newPassword}
                       onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                      placeholder="••••••••"
                       required
                     />
                   </div>
-                  <div className="space-y-1.5 font-sans">
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Confirm New</label>
                     <input
                       type="password"
                       value={passwordForm.confirmPassword}
                       onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                      placeholder="••••••••"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="pt-4 flex gap-4">
+                <div className="pt-2 flex gap-2.5">
                   <button
                     type="button"
                     onClick={() => setShowPasswordModal(false)}
-                    className="flex-1 px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition"
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-500 text-xs font-bold hover:bg-slate-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-[2] px-6 py-3.5 rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-xl transition transform active:scale-[0.98]"
+                    className="flex-[1.5] px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
                   >
                     Update Password
                   </button>

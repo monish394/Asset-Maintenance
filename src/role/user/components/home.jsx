@@ -302,9 +302,8 @@ export default function UserHome() {
     responsive: true,
     maintainAspectRatio: false,
     animation: {
-      duration: 2000,
+      duration: 900,
       easing: 'easeOutQuart',
-      delay: 400
     },
     plugins: {
       legend: { display: false },
@@ -335,9 +334,8 @@ export default function UserHome() {
     animation: {
       animateRotate: true,
       animateScale: true,
-      duration: 2000,
+      duration: 900,
       easing: 'easeOutQuart',
-      delay: 600
     },
     plugins: {
       legend: {
@@ -495,8 +493,8 @@ export default function UserHome() {
                       { label: "🛠️ Quick Support" },
                       { label: "📈 Live Status" }
                     ].map((badge) => (
-                      <motion.span 
-                        key={badge.label} 
+                      <motion.span
+                        key={badge.label}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="px-3 py-1.5 rounded-xl bg-slate-50 text-slate-600 text-[10px] font-bold border border-slate-100 uppercase tracking-wider cursor-default hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all duration-150 shadow-sm hover:shadow-md"
@@ -581,16 +579,13 @@ export default function UserHome() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-30">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
             whileHover={{ y: -8, transition: { duration: 0.2 } }}
-            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
             className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-gray-100 shadow-2xl overflow-hidden group hover:shadow-indigo-500/20 transition-all duration-500"
           >
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-lg font-black text-slate-900 tracking-tight">Asset Portfolio</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Inventory Intelligence</p>
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Asset Categories</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">My Assets by Category</p>
               </div>
               <div className="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:rotate-12 transition-transform duration-500 shadow-inner">
                 <FaBoxOpen className="text-lg" />
@@ -606,16 +601,13 @@ export default function UserHome() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
             whileHover={{ y: -8, transition: { duration: 0.2 } }}
-            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
             className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-gray-100 shadow-2xl group hover:shadow-rose-500/20 transition-all duration-500"
           >
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-lg font-black text-slate-900 tracking-tight">Service Pulse</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Asset Health Status</p>
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Asset Status</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Work Order Breakdown</p>
               </div>
               <div className="w-10 h-10 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 group-hover:rotate-12 transition-transform duration-500 shadow-inner">
                 <AiFillSetting className="text-lg" />
@@ -631,16 +623,13 @@ export default function UserHome() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
             whileHover={{ y: -8, transition: { duration: 0.2 } }}
-            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.3 }}
             className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-gray-100 shadow-2xl overflow-hidden group hover:shadow-indigo-500/20 transition-all duration-500"
           >
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-lg font-black text-slate-900 tracking-tight">Support Global</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ticket Distribution</p>
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">General Requests</h3>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">General Stats by Status</p>
               </div>
               <div className="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:rotate-12 transition-transform duration-500 shadow-inner">
                 <IoMdClock className="text-lg" />
