@@ -258,4 +258,23 @@ GeneralRequestCtrl.getAllGeneralRequest = async (req, res) => {
   }
 };
 
+GeneralRequestCtrl.DeleteGeneralRequest = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const request = await GeneralRequest.findById(id);
+    if (!request) return res.status(404).json({ err: "Request not found" });
+
+    if (request.status !== "OPEN") {
+      return res.status(400).json({ err: "Only open requests can be deleted" });
+    }
+
+    await Notification.deleteMany({ requestid: id });
+    await GeneralRequest.findByIdAndDelete(id);
+
+    res.status(200).json({ success: true, message: "General request deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ err: "Failed to delete general request" });
+  }
+};
+
 export default GeneralRequestCtrl;

@@ -5,15 +5,20 @@ const TechDataMaintain = createContext();
 
 export const TechDataProvider = ({ children }) => {
   const [requests, setRequests] = useState([])
-  // console.log(requests)
   const [technicianassignedassert, setTechnicianassignedassert] = useState([])
   const [techniciansnotifications, setTechniciansnotifications] = useState([])
   const [techinfo, setTechinfo] = useState(null)
-  // console.log(techinfo)
-  // console.log(localStorage.getItem("token"))
+  const [acceptedGeneralRequests, setAcceptedGeneralRequests] = useState([]);
+
   useEffect(() => {
     axios.get("/alltechnicianrequest")
       .then((res) => setTechnicianassignedassert(res.data))
+      .catch((err) => console.log(err.message));
+  }, []);
+
+  useEffect(() => {
+    axios.get("/gettechnicianaccepetedgeneralrequest")
+      .then((res) => setAcceptedGeneralRequests(res.data))
       .catch((err) => console.log(err.message));
   }, []);
 
@@ -61,6 +66,7 @@ export const TechDataProvider = ({ children }) => {
       techniciansnotifications, setTechniciansnotifications,
       techinfo, setTechinfo,
       requests, setRequests,
+      acceptedGeneralRequests, setAcceptedGeneralRequests,
       markTechNotificationsAsRead,
       markSingleTechNotificationAsRead
     }}>

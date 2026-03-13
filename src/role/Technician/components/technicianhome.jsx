@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { TechData } from "../context/Techniciandatamaintenance";
 import axios from "../../../config/api";
+import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import {
   FaUserTie,
   FaEnvelope,
@@ -19,7 +21,61 @@ import AcceptedRequestsChart from "./AcceptedRequestsChart";
 export default function TechnicianHome() {
   const [technicianstats, setTechnicianstats] = useState(null);
   const [acceptedGeneralRequests, setAcceptedGeneralRequests] = useState([]);
+  const [selectedRemoveAsset, setSelectedRemoveAsset] = useState(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiOpacity, setConfettiOpacity] = useState(1);
+
   const { technicianassignedassert, techinfo } = TechData();
+
+  const handleGetStarted = (e) => {
+    const duration = 3500;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10001 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function () {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }
+      });
+    }, 250);
+
+    var count = 200;
+    function fire(particleRatio, opts) {
+      confetti(Object.assign({}, { zIndex: 10001 }, opts, {
+        particleCount: Math.floor(count * particleRatio)
+      }));
+    }
+
+    const shootConfetti = (x, y) => {
+      fire(0.25, { spread: 26, startVelocity: 55, origin: { x, y } });
+      fire(0.2, { spread: 60, origin: { x, y } });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, origin: { x, y } });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2, origin: { x, y } });
+      fire(0.1, { spread: 120, startVelocity: 45, origin: { x, y } });
+    };
+
+    shootConfetti(0.2, 0.6);
+    shootConfetti(0.5, 0.6);
+    shootConfetti(0.8, 0.6);
+
+    setShowWelcomeModal(false);
+    setTimeout(() => setConfettiOpacity(0), 500);
+    setTimeout(() => {
+      setShowConfetti(false);
+    }, 6000);
+  };
 
   const completedAssetRequests = technicianassignedassert.filter(r => r.status === 'completed');
   const completedGeneralRequests = acceptedGeneralRequests.filter(r => r.status === 'COMPLETED');
@@ -61,6 +117,19 @@ export default function TechnicianHome() {
     return () => {
       socket.disconnect();
     };
+  }, [techinfo]);
+
+  useEffect(() => {
+    if (!techinfo?._id || !techinfo.isApproved) return;
+    const key = `tech_welcome_seen_${techinfo._id}`;
+    if (!localStorage.getItem(key)) {
+      setTimeout(() => {
+        setConfettiOpacity(1);
+        setShowWelcomeModal(true);
+        setShowConfetti(true);
+      }, 600);
+      localStorage.setItem(key, "1");
+    }
   }, [techinfo]);
 
   const getStatusStyle = (status) => {
@@ -125,6 +194,54 @@ export default function TechnicianHome() {
       className="min-h-screen p-6 space-y-8"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}
     >
+      {showConfetti && (
+        <div style={{ opacity: confettiOpacity, transition: "opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1)", pointerEvents: "none" }}>
+          {showWelcomeModal && (
+            <div
+              className="fixed inset-0 flex items-center justify-center px-4"
+              style={{ zIndex: 9999, background: "rgba(15,23,42,0.25)", backdropFilter: "blur(6px)", pointerEvents: "auto" }}
+            >
+              <style>{`
+                @keyframes modal-pop {
+                  0%   { opacity:0; transform: scale(0.7) translateY(60px); }
+                  65%  { transform: scale(1.04) translateY(-6px); }
+                  100% { opacity:1; transform: scale(1) translateY(0); }
+                }
+                .paper-modal { animation: modal-pop 0.5s cubic-bezier(.22,1,.36,1) forwards; }
+              `}</style>
+              <div
+                className="paper-modal relative bg-white/95 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center overflow-hidden border border-white/40 backdrop-blur-2xl px-10 py-12"
+                style={{ fontFamily: 'Calibri, sans-serif' }}
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="relative z-10">
+                  <div className="flex justify-center mb-8">
+                    <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center text-emerald-600 shadow-inner">
+                      <span className="text-4xl">✅</span>
+                    </div>
+                  </div>
+
+                  <h2 className="text-3xl font-semibold text-slate-900 tracking-tight leading-tight mb-3">
+                    Request Approved!
+                  </h2>
+
+                  <p className="text-slate-500 text-sm font-normal leading-relaxed mb-10">
+                    Great news, <span className="text-emerald-600 font-semibold">{techinfo?.name}</span>! <br />
+                    Your approved pending request is approved. You can now start accepting maintenance tasks.
+                  </p>
+
+                  <button
+                    onClick={handleGetStarted}
+                    className="w-full py-4 bg-slate-900 text-white rounded-2xl font-semibold text-sm hover:bg-emerald-600 shadow-xl shadow-emerald-200 transition-all active:scale-[0.98] tracking-widest uppercase text-[11px]"
+                  >
+                    Let's Get Started
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       {/* Header Section */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

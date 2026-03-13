@@ -9,6 +9,7 @@ import { IoMdClock } from "react-icons/io";
 import { PiCurrencyInrLight } from "react-icons/pi";
 import { MdDone } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -43,112 +44,53 @@ export default function UserHome() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [confettiOpacity, setConfettiOpacity] = useState(1);
-  const canvasRef = React.useRef(null);
-  const rafRef = React.useRef(null);
-
-  const launchFireworks = React.useCallback((originX, originY) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const COLORS = [
-      "#6366f1", "#a78bfa", "#ec4899", "#fbbf24",
-      "#34d399", "#38bdf8", "#f87171", "#e879f9",
-      "#fb923c", "#4ade80", "#c084fc", "#fff",
-    ];
-
-    const makeBurst = (x, y, count = 90) => {
-      const particles = [];
-      for (let i = 0; i < count; i++) {
-        const angle = (Math.PI * 2 * i) / count + Math.random() * 0.25;
-        const speed = 3 + Math.random() * 8;
-        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-        const size = 3 + Math.random() * 5;
-        particles.push({
-          x, y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          color, size,
-          alpha: 1,
-          decay: 0.012 + Math.random() * 0.012,
-          gravity: 0.12,
-          drag: 0.96,
-          trail: [],
-          shape: Math.random() > 0.5 ? "circle" : "rect",
-          rotation: Math.random() * Math.PI * 2,
-          rotSpeed: (Math.random() - 0.5) * 0.3,
-        });
-      }
-      return particles;
-    };
-
-    let allParticles = [];
-    const addBurst = (x, y, delay) =>
-      setTimeout(() => {
-        allParticles.push(...makeBurst(x, y, 90));
-      }, delay);
-
-    addBurst(originX, originY, 0);
-    addBurst(originX - 100, originY - 50, 150);
-    addBurst(originX + 100, originY - 50, 300);
-
-    const draw = () => {
-      ctx.fillStyle = "rgba(0,0,0,0.18)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      allParticles = allParticles.filter(p => p.alpha > 0.01);
-
-      for (const p of allParticles) {
-        p.vx *= p.drag;
-        p.vy *= p.drag;
-        p.vy += p.gravity;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha -= p.decay;
-        p.rotation += p.rotSpeed;
-
-        ctx.save();
-        ctx.globalAlpha = Math.max(p.alpha, 0);
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rotation);
-        ctx.fillStyle = p.color;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = p.color;
-
-        if (p.shape === "circle") {
-          ctx.beginPath();
-          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.55);
-        }
-        ctx.restore();
-      }
-
-      if (allParticles.length > 0) {
-        rafRef.current = requestAnimationFrame(draw);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    };
-
-    rafRef.current = requestAnimationFrame(draw);
-  }, []);
-
   const handleGetStarted = (e) => {
-    const btn = e.currentTarget;
-    const rect = btn.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    launchFireworks(cx, cy);
+    const duration = 3500;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10001 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }
+      });
+    }, 250);
+
+    var count = 200;
+    function fire(particleRatio, opts) {
+      confetti(Object.assign({}, { zIndex: 10001 }, opts, {
+        particleCount: Math.floor(count * particleRatio)
+      }));
+    }
+
+    const shootConfetti = (x, y) => {
+      fire(0.25, { spread: 26, startVelocity: 55, origin: { x, y } });
+      fire(0.2, { spread: 60, origin: { x, y } });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, origin: { x, y } });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2, origin: { x, y } });
+      fire(0.1, { spread: 120, startVelocity: 45, origin: { x, y } });
+    };
+
+    shootConfetti(0.2, 0.6);
+    shootConfetti(0.5, 0.6);
+    shootConfetti(0.8, 0.6);
 
     setShowWelcomeModal(false);
     setTimeout(() => setConfettiOpacity(0), 500);
     setTimeout(() => {
       setShowConfetti(false);
-    }, 3000);
+    }, 6000);
   };
 
   const token = localStorage.getItem("token")
@@ -451,16 +393,7 @@ export default function UserHome() {
             );
           })}
 
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: "fixed", inset: 0,
-              width: "100vw",
-              height: "100vh",
-              zIndex: 10001,
-              pointerEvents: "none",
-            }}
-          />
+
 
           {showWelcomeModal && (
             <div

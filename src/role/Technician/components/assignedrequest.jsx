@@ -413,81 +413,90 @@ export default function AssignedRequest() {
           <p className="text-slate-400 text-sm font-medium mt-1">Track assigned requests and contact details</p>
         </div>
 
-        {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).map((item) => (
-              <div
-                key={item._id}
-                className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow p-5"
-              >
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                    {item.userid?.name?.charAt(0) || "U"}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-slate-900 font-bold text-sm truncate">{item.userid?.name || "Unknown User"}</h4>
-                    <p className="text-xs text-slate-400 font-medium mt-0.5">{item.assetid?.assetName}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-2 mb-4 text-xs">
-                  {item.userid?.phone && (
-                    <div className="flex items-center gap-2">
-                      <FaPhone className="text-slate-400" size={10} />
-                      <a href={`tel:${item.userid?.phone}`} className="text-indigo-600 hover:underline font-medium">
-                        {item.userid?.phone}
-                      </a>
-                    </div>
-                  )}
-                  {item.userid?.address && (
-                    <div className="flex items-start gap-2">
-                      <FaMapMarkerAlt className="text-slate-400 mt-0.5" size={10} />
-                      <p className="text-slate-600 line-clamp-2">{item.userid?.address}</p>
-                    </div>
-                  )}
-                  {item.description && (
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Issue</p>
-                      <p className="text-slate-600 line-clamp-2">{item.description}</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleTrack(item.userid?.address)}
-                    className="flex-1 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition flex items-center justify-center gap-2"
-                  >
-                    <FaMapMarkerAlt size={12} />
-                    Track
-                  </button>
-                  {["assigned", "in-process"].includes(item.status) && (
-                    <button
-                      onClick={() => openChat({
-                        requestId: item._id,
-                        requestModel: 'RaiseRequest',
-                        senderId: techinfo._id,
-                        receiverId: item.userid?._id,
-                        receiverName: item.userid?.name
-                      })}
-                      className="relative p-2.5 bg-indigo-100 text-indigo-600 rounded-xl hover:bg-indigo-200 transition-colors"
-                      title="Chat with User"
-                    >
-                      <FaComments />
-                      {unreadChats[item._id] && (
-                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
-            <p className="text-slate-400 text-sm">No assigned requests available.</p>
-          </div>
-        )}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">User</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Asset</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Contact</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).map((item) => (
+                    <tr key={item._id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs flex-shrink-0">
+                            {item.userid?.name?.charAt(0) || "U"}
+                          </div>
+                          <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">{item.userid?.name || "Unknown User"}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{item.assetid?.assetName || "N/A"}</td>
+                      <td className="px-6 py-4">
+                        {item.userid?.phone ? (
+                          <a href={`tel:${item.userid?.phone}`} className="text-indigo-600 hover:underline text-xs font-medium whitespace-nowrap flex items-center gap-1.5">
+                            <FaPhone size={10} />
+                            {item.userid?.phone}
+                          </a>
+                        ) : (
+                          <span className="text-slate-400 text-xs">N/A</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="max-w-[150px] text-xs text-slate-600 truncate" title={item.userid?.address}>
+                          {item.userid?.address || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="max-w-[200px] text-xs text-slate-600 line-clamp-1" title={item.description}>
+                          {item.description || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleTrack(item.userid?.address)}
+                            className="p-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm"
+                            title="Track Location"
+                          >
+                            <FaMapMarkerAlt size={12} />
+                          </button>
+                          <button
+                            onClick={() => openChat({
+                              requestId: item._id,
+                              requestModel: 'RaiseRequest',
+                              senderId: techinfo._id,
+                              receiverId: item.userid?._id,
+                              receiverName: item.userid?.name
+                            })}
+                            className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
+                            title="Chat with User"
+                          >
+                            <FaComments size={12} />
+                            {unreadChats[item._id] && (
+                              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="p-12 text-center">
+              <p className="text-slate-400 text-sm">No assigned requests available.</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mb-20">
@@ -749,9 +758,7 @@ export default function AssignedRequest() {
           />
 
           <div className="relative z-10 max-w-4xl w-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
-            {/* Image Container with Integrated Close Button */}
             <div className="relative group bg-white p-2 rounded-2xl shadow-2xl">
-              {/* Close Button - Positioned exactly on the top-right corner of the image card */}
               <button
                 onClick={() => setSelectedImage(null)}
                 className="absolute -top-3 -right-3 z-20 w-10 h-10 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 active:scale-95 border-2 border-white"

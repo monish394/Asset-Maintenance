@@ -215,4 +215,23 @@ RaiseRequestCtrl.getNearbyAssetRequests = async (req, res) => {
   }
 };
 
+RaiseRequestCtrl.DeleteRequest = async (req, res) => {
+  const { requestid } = req.params;
+  try {
+    const request = await RaiseRequest.findById(requestid);
+    if (!request) return res.status(404).json({ err: "Request not found" });
+
+    if (request.status !== "pending") {
+      return res.status(400).json({ err: "Only pending requests can be deleted" });
+    }
+
+    await Notification.deleteMany({ requestid: request._id });
+    await RaiseRequest.findByIdAndDelete(requestid);
+
+    res.status(200).json({ success: true, message: "Request deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ err: "Failed to delete request" });
+  }
+};
+
 export default RaiseRequestCtrl;

@@ -201,6 +201,7 @@ app.put("/api/assigntechnician/:requestid", RaiseRequestCtrl.AssignTechnician)
 app.get("/api/alltechnicianrequest", AuthenticateUser, RaiseRequestCtrl.getTechnicianrequests)
 app.put("/api/raiserequest/accept/:requestid", AuthenticateUser, RaiseRequestCtrl.TechnicianAccept)
 app.put("/api/technicianstatusupdate/:requestid", RaiseRequestCtrl.TechnicianStatusUpdate)
+app.delete("/api/raiserequest/:requestid", AuthenticateUser, RaiseRequestCtrl.DeleteRequest)
 
 
 
@@ -235,6 +236,7 @@ app.get("/api/getusersrequest", AuthenticateUser, RequestCtrl.GetUsersRequest)
 
 app.post("/api/generalraiserequest", AuthenticateUser, GeneralRequestCtrl.createGeneralrequest)
 app.get("/api/usergeneralrequest", AuthenticateUser, GeneralRequestCtrl.Getusergeneralrequest)
+app.delete("/api/generalraiserequest/:id", AuthenticateUser, GeneralRequestCtrl.DeleteGeneralRequest)
 
 app.post("/api/getnearbytechnician", AuthenticateUser, UserCtrl.getNearbyTechnicians)
 app.post("/api/admin/update-tech-coordinates", AuthenticateUser, UserCtrl.updateTechCoordinates)

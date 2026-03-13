@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useUserAsset } from "../context/userassetprovider";
 import { FcIdea } from "react-icons/fc";
-import { FaPlus, FaComments, FaTimes } from "react-icons/fa";
+import { FaPlus, FaComments, FaTimes, FaTrash, FaCheckCircle } from "react-icons/fa";
 import axios from "../../../config/api";
 import { socket } from "../../../socket";
 import { toast } from "sonner";
@@ -95,6 +95,7 @@ export default function RaiseRequest() {
   const [hoveredTech, setHoveredTech] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showNoAssetModal, setShowNoAssetModal] = useState(false);
+  const [requestToDelete, setRequestToDelete] = useState(null);
 
   const {
     myasset,
@@ -281,6 +282,29 @@ export default function RaiseRequest() {
     },
     [userinfo]
   );
+  
+  const handleDeleteRequest = async () => {
+    if (!requestToDelete) return;
+    const { id, type } = requestToDelete;
+    try {
+      if (type === 'asset') {
+        await axios.delete(`/raiserequest/${id}`, {
+          headers: { Authorization: localStorage.getItem("token") }
+        });
+        setMyraiserequest(prev => prev.filter(r => r._id !== id));
+      } else {
+        await axios.delete(`/generalraiserequest/${id}`, {
+          headers: { Authorization: localStorage.getItem("token") }
+        });
+        setUsergeneralrequest(prev => prev.filter(r => r._id !== id));
+      }
+      toast.success("Request deleted successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.err || "Failed to delete request");
+    } finally {
+      setRequestToDelete(null);
+    }
+  };
 
   return (
     <div>
@@ -623,24 +647,41 @@ export default function RaiseRequest() {
                     {ele.assignedto ? ele.assignedto.name : "Unassigned"}
                   </td>
                   <td className="px-5 py-3">
-                    {["assigned", "in-process"].includes(ele.status) && (
-                      <button
-                        onClick={() => openChat({
-                          requestId: ele._id,
-                          requestModel: 'RaiseRequest',
-                          senderId: userinfo._id,
-                          receiverId: ele.assignedto?._id,
-                          receiverName: ele.assignedto?.name
-                        })}
-                        className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
-                        title="Chat with Technician"
-                      >
-                        <FaComments />
-                        {unreadChats[ele._id] && (
-                          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
-                        )}
-                      </button>
-                    )}
+                    <div className="flex gap-2">
+                      {["assigned", "in-process"].includes(ele.status) && (
+                        <button
+                          onClick={() => openChat({
+                            requestId: ele._id,
+                            requestModel: 'RaiseRequest',
+                            senderId: userinfo._id,
+                            receiverId: ele.assignedto?._id,
+                            receiverName: ele.assignedto?.name
+                          })}
+                          className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
+                          title="Chat with Technician"
+                        >
+                          <FaComments />
+                          {unreadChats[ele._id] && (
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                          )}
+                        </button>
+                      )}
+                      {ele.status === "pending" && (
+                        <button
+                          onClick={() => setRequestToDelete({ id: ele._id, type: 'asset' })}
+                          className="p-2 bg-rose-100 text-rose-600 rounded-lg hover:bg-rose-200 transition-colors"
+                          title="Delete Request"
+                        >
+                          <FaTrash size={12} />
+                        </button>
+                      )}
+                      {ele.status === "completed" && (
+                         <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/50 shadow-sm shadow-emerald-100/20 group">
+                            <FaCheckCircle className="text-emerald-500 scale-110 group-hover:scale-125 transition-transform" size={14} />
+                            {/* <span className="text-[10px] font-bold uppercase tracking-[0.15em] font-[Calibri]">Resolved</span> */}
+                         </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -857,24 +898,41 @@ export default function RaiseRequest() {
                       </td>
 
                       <td className="px-6 py-3">
-                        {["ACCEPTED", "APPROVED"].includes(ele.status) && (
-                          <button
-                            onClick={() => openChat({
-                              requestId: ele._id,
-                              requestModel: 'GeneralRequest',
-                              senderId: userinfo._id,
-                              receiverId: ele.acceptedBy?._id,
-                              receiverName: ele.acceptedBy?.name
-                            })}
-                            className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
-                            title="Chat with Technician"
-                          >
-                            <FaComments />
-                            {unreadChats[ele._id] && (
-                              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
-                            )}
-                          </button>
-                        )}
+                        <div className="flex gap-2">
+                          {["ACCEPTED", "APPROVED"].includes(ele.status) && (
+                            <button
+                              onClick={() => openChat({
+                                requestId: ele._id,
+                                requestModel: 'GeneralRequest',
+                                senderId: userinfo._id,
+                                receiverId: ele.acceptedBy?._id,
+                                receiverName: ele.acceptedBy?.name
+                              })}
+                              className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
+                              title="Chat with Technician"
+                            >
+                              <FaComments />
+                              {unreadChats[ele._id] && (
+                                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                              )}
+                            </button>
+                          )}
+                          {ele.status === "OPEN" && (
+                            <button
+                              onClick={() => setRequestToDelete({ id: ele._id, type: 'general' })}
+                              className="p-2 bg-rose-100 text-rose-600 rounded-lg hover:bg-rose-200 transition-colors"
+                              title="Delete General Request"
+                            >
+                              <FaTrash size={12} />
+                            </button>
+                          )}
+                          {ele.status === "COMPLETED" && (
+                             <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/50 shadow-sm shadow-emerald-100/20 group">
+                                <FaCheckCircle className="text-emerald-500 scale-110 group-hover:scale-125 transition-transform" size={14} />
+                                {/* <span className="text-[10px] font-bold uppercase tracking-[0.15em] font-[Calibri]">Finished</span> */}
+                             </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -956,6 +1014,51 @@ export default function RaiseRequest() {
           </div>
         </div>
       )}
+
+      <AnimatePresence>
+        {requestToDelete && (
+          <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setRequestToDelete(null)}
+              className="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px]"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="relative bg-white w-full max-w-[300px] rounded-3xl shadow-2xl border border-slate-50 p-8 text-center"
+              style={{ fontFamily: 'Calibri, sans-serif' }}
+            >
+              <div className="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FaTrash className="text-rose-500" size={18} />
+              </div>
+              
+              <h3 className="text-lg font-bold text-slate-900 mb-1">Delete Request?</h3>
+              <p className="text-black-400 text-xs font-medium mb-8">
+                Are you sure? This action cannot be reversed.
+              </p>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setRequestToDelete(null)}
+                  className="flex-1 py-3 px-2 text-black-400 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 rounded-xl transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteRequest}
+                  className="flex-1 py-3 px-2 bg-rose-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-rose-100 hover:bg-rose-600 active:scale-95 transition-all"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

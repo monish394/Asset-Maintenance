@@ -45,7 +45,7 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
         onClick={handleCancel}
         className="absolute inset-0 bg-black/40"
       />
-      
+
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
