@@ -468,67 +468,51 @@ export default function UserHome() {
             <div
               className="fixed inset-0 flex items-center justify-center px-4"
               style={{ zIndex: 9998, background: "rgba(15,23,42,0.25)", backdropFilter: "blur(6px)", pointerEvents: "auto" }}
-              onClick={() => {
-                setShowWelcomeModal(false);
-                setTimeout(() => setConfettiOpacity(0), 500);
-                setTimeout(() => setShowConfetti(false), 3000);
-              }}
             >
               <div
                 className="paper-modal relative bg-white/95 rounded-[1.75rem] shadow-2xl max-w-sm w-full text-center overflow-hidden border border-white/40 backdrop-blur-2xl"
                 style={{ padding: "2.5rem 1.5rem" }}
                 onClick={e => e.stopPropagation()}
               >
-                <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "160px", height: "160px", background: "radial-gradient(circle, rgba(99,102,241,0.1), transparent 70%)", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", bottom: "-50px", left: "-50px", width: "160px", height: "160px", background: "radial-gradient(circle, rgba(124,58,237,0.1), transparent 70%)", pointerEvents: "none" }} />
-
-                <div className="flex justify-center mb-5">
-                  <div className="relative w-20 h-20 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-indigo-50 rounded-[1.25rem] rotate-6 animate-pulse" />
-                    <div className="absolute inset-0 bg-violet-50 rounded-[1.25rem] -rotate-3" />
-                    <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 w-14 h-14 rounded-xl shadow-lg flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                      <span className="text-2xl">✨</span>
+                <div className="relative z-10">
+                  <div className="flex justify-center mb-6">
+                    <div className="h-16 w-16 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl shadow-[0_10px_25px_rgba(79,70,229,0.3)] flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
+                      <span className="text-3xl">✨</span>
                     </div>
                   </div>
-                </div>
 
-                <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#1e293b", marginBottom: "0.5rem", letterSpacing: "-0.03em", lineHeight: 1.2 }}>
-                  Welcome to <br /> Your Asset Hub
-                </h2>
+                  <h2 className="text-2xl font-black text-slate-800 tracking-tight leading-tight mb-2">
+                    Welcome to <br /> Your Asset Hub
+                  </h2>
 
-                <p style={{ color: "#475569", fontSize: "1rem", fontWeight: 600, marginBottom: "0.8rem" }}>
-                  Hello, <span className="text-indigo-600 font-bold">{userinfo?.name || "Premium User"}</span>!
-                </p>
+                  <p className="text-slate-500 text-sm font-medium mb-6">
+                    Hello, <span className="text-indigo-600 font-bold">{userinfo?.name || "Premium User"}</span>! Everything you need to monitor and manage your equipment is ready.
+                  </p>
 
-                <p style={{ color: "#64748b", fontSize: "0.85rem", lineHeight: 1.5, marginBottom: "1.75rem", maxWidth: "90%", marginInline: "auto" }}>
-                  Everything you need to monitor and manage your equipment is ready.
-                </p>
+                  <div className="flex flex-wrap justify-center gap-2 mb-8">
+                    {[
+                      { label: "📦 Inventory" },
+                      { label: "🛠️ Quick Support" },
+                      { label: "📈 Live Status" }
+                    ].map((badge) => (
+                      <motion.span 
+                        key={badge.label} 
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-3 py-1.5 rounded-xl bg-slate-50 text-slate-600 text-[10px] font-bold border border-slate-100 uppercase tracking-wider cursor-default hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all duration-150 shadow-sm hover:shadow-md"
+                      >
+                        {badge.label}
+                      </motion.span>
+                    ))}
+                  </div>
 
-                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px", marginBottom: "2rem" }}>
-                  {[
-                    { label: "📦 Inventory", color: "from-blue-50 to-indigo-50", text: "text-indigo-600" },
-                    { label: "🛠️ Quick Support", color: "from-purple-50 to-fuchsia-50", text: "text-purple-600" },
-                    { label: "📈 Live Status", color: "from-emerald-50 to-teal-50", text: "text-emerald-600" }
-                  ].map(badge => (
-                    <span key={badge.label} className={`px-3 py-1.5 rounded-xl bg-gradient-to-br ${badge.color} ${badge.text} text-[0.7rem] font-bold border border-white/60 shadow-sm`}>
-                      {badge.label}
-                    </span>
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleGetStarted}
-                  className="group relative w-full py-3.5 bg-gray-900 rounded-[1.25rem] overflow-hidden transition-all duration-300 hover:shadow-xl active:scale-[0.97]"
-                  style={{ border: "none", cursor: "pointer" }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 background-animate opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <span className="relative text-white font-bold text-base flex items-center justify-center gap-2">
+                  <button
+                    onClick={handleGetStarted}
+                    className="w-full py-3.5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-indigo-600 shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-indigo-500/30 transition-all active:scale-[0.98]"
+                  >
                     Let's Get Started
-                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </span>
-                </button>
+                  </button>
+                </div>
               </div>
             </div>
           )}

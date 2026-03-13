@@ -1,4 +1,5 @@
-import { memo, useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" }) {
   const [assetid, setAssetid] = useState("");
@@ -36,8 +37,21 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white w-[440px] md:w-[500px] rounded-2xl shadow-xl p-6 md:p-8 font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={handleCancel}
+        className="absolute inset-0 bg-black/40"
+      />
+      
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="relative bg-white w-[440px] md:w-[500px] rounded-2xl shadow-xl p-6 md:p-8 font-sans"
+      >
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Raise New Request
         </h1>
@@ -119,7 +133,7 @@ function RaiseRequestForm({ assets, onSubmit, onCancel, initialDescription = "" 
             {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

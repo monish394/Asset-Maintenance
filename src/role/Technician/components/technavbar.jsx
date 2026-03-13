@@ -384,96 +384,95 @@ export default function TechnicianNavbar() {
 
           {/* ── Edit Profile Modal ── */}
           {showEditModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
-              <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
-                <div className="bg-slate-900 p-6 flex justify-between items-center text-white">
-                  <h2 className="text-xl font-bold">Edit Profile</h2>
-                  <button onClick={() => setShowEditModal(false)} className="hover:bg-white/10 p-2 rounded-full transition">
-                    <FaTimes size={20} />
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
+              <div className="bg-white w-full max-w-[380px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="px-5 py-4 border-b border-gray-50 flex justify-between items-center bg-white">
+                  <h2 className="text-base font-bold text-slate-800 tracking-tight">Edit Profile</h2>
+                  <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                    <FaTimes size={16} />
                   </button>
                 </div>
 
-                <form onSubmit={handleEditSubmit} className="p-8 space-y-6">
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="relative group cursor-pointer">
-                      <div className="h-32 w-32 rounded-full border-4 border-slate-100 shadow-lg overflow-hidden relative">
+                <form onSubmit={handleEditSubmit} className="p-5 space-y-4">
+                  <div className="flex justify-center pb-2">
+                    <div className="relative group">
+                      <div className="h-20 w-20 rounded-full border-2 border-slate-50 shadow-sm overflow-hidden bg-slate-50">
                         {editForm.profile ? (
                           <img src={editForm.profile} className="h-full w-full object-cover" alt="Profile" />
                         ) : (
-                          <div className="h-full w-full bg-slate-200 flex items-center justify-center text-3xl font-bold text-slate-400">
+                          <div className="h-full w-full flex items-center justify-center text-xl font-bold text-slate-300">
                             {techinfo.name.charAt(0)}
                           </div>
                         )}
-
                         {uploading && (
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <div className="h-8 w-8 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
+                          <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                            <div className="h-4 w-4 border-2 border-indigo-600 border-t-transparent animate-spin rounded-full"></div>
                           </div>
                         )}
                       </div>
-
-                      <label className="absolute bottom-1 right-1 bg-blue-600 text-white p-2.5 rounded-full shadow-lg cursor-pointer hover:bg-blue-700 transition transform hover:scale-110 text-center">
-                        <FaCamera size={14} className="mx-auto mt-1" />
+                      <label className="absolute -bottom-0.5 -right-0.5 bg-indigo-600 text-white p-1.5 rounded-full shadow-lg cursor-pointer hover:bg-indigo-700 transition-all border-2 border-white">
+                        <FaCamera size={10} />
                         <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                       </label>
                     </div>
-                    <p className="text-xs text-gray-500 font-medium italic">Click the camera icon to update photo</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-5">
-                    <div className="space-y-1.5 font-sans">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                  <div className="space-y-3.5">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                       <input
                         type="text"
                         value={editForm.name}
                         onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
                         required
                       />
                     </div>
-                    <div className="space-y-1.5 font-sans">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                       <input
                         type="email"
                         value={editForm.email}
                         onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
                         required
                       />
                     </div>
-                    <div className="space-y-1.5 font-sans">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
-                      <input
-                        type="text"
-                        value={editForm.phone}
-                        onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-1.5 font-sans">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Address</label>
-                      <input
-                        type="text"
-                        value={editForm.address}
-                        onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
-                        required
-                      />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone</label>
+                        <input
+                          type="text"
+                          value={editForm.phone}
+                          onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                          className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Location</label>
+                        <input
+                          type="text"
+                          value={editForm.address}
+                          onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                          className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="pt-4 flex gap-4 font-sans">
+                  <div className="pt-2 flex gap-2.5">
                     <button
                       type="button"
                       onClick={() => setShowEditModal(false)}
-                      className="flex-1 px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-500 text-xs font-bold hover:bg-slate-200 transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="flex-[2] px-6 py-3.5 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-xl shadow-blue-200 transition transform active:scale-[0.98]"
+                      className="flex-[1.5] px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
                     >
                       Save Changes
                     </button>
@@ -484,66 +483,69 @@ export default function TechnicianNavbar() {
           )}
 
           {showPasswordModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
-              <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
-                <div className="bg-slate-900 p-6 flex justify-between items-center text-white font-sans">
-                  <h2 className="text-xl font-bold">Change Password</h2>
-                  <button onClick={() => setShowPasswordModal(false)} className="hover:bg-white/10 p-2 rounded-full transition">
-                    <FaTimes size={20} />
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
+              <div className="bg-white w-full max-w-[360px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="px-5 py-4 border-b border-gray-50 flex justify-between items-center bg-white">
+                  <h2 className="text-base font-bold text-slate-800 tracking-tight">Security</h2>
+                  <button onClick={() => setShowPasswordModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
+                    <FaTimes size={16} />
                   </button>
                 </div>
 
-                <form onSubmit={handlePasswordSubmit} className="p-8 space-y-6">
+                <form onSubmit={handlePasswordSubmit} className="p-5 space-y-4">
                   {passwordError && (
-                    <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium border border-red-100 font-sans">
+                    <div className="bg-red-50 text-red-600 px-3.5 py-2.5 rounded-xl text-[11px] font-bold border border-red-100">
                       {passwordError}
                     </div>
                   )}
 
-                  <div className="space-y-4">
-                    <div className="space-y-1.5 font-sans">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
+                  <div className="space-y-3.5">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
                       <input
                         type="password"
                         value={passwordForm.oldPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                        placeholder="••••••••"
                         required
                       />
                     </div>
-                    <div className="space-y-1.5 font-sans">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">New Password</label>
                       <input
                         type="password"
                         value={passwordForm.newPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                        placeholder="••••••••"
                         required
                       />
                     </div>
-                    <div className="space-y-1.5 font-sans">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Confirm New</label>
                       <input
                         type="password"
                         value={passwordForm.confirmPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-sm font-medium"
+                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
+                        placeholder="••••••••"
                         required
                       />
                     </div>
                   </div>
 
-                  <div className="pt-4 flex gap-4 text-center font-sans">
+                  <div className="pt-2 flex gap-2.5">
                     <button
                       type="button"
                       onClick={() => setShowPasswordModal(false)}
-                      className="flex-1 px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-500 text-xs font-bold hover:bg-slate-200 transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="flex-[2] px-6 py-3.5 rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-xl transition transform active:scale-[0.98]"
+                      className="flex-[1.5] px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
                     >
                       Update Password
                     </button>

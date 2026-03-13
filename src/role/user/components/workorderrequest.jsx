@@ -96,8 +96,8 @@ export default function WorkOrderRequest() {
     Working Requests
   </h2>
 
-  {myraiserequest.length === 0 ? (
-    <p className="text-center text-gray-500 py-6">No completed requests.</p>
+  {activeRequests.length === 0 ? (
+    <p className="text-center text-gray-500 py-6">No active working requests found.</p>
   ) : (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">

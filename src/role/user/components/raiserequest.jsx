@@ -5,6 +5,7 @@ import { FaPlus, FaComments, FaTimes } from "react-icons/fa";
 import axios from "../../../config/api";
 import { socket } from "../../../socket";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapContainer,
   TileLayer,
@@ -486,17 +487,19 @@ export default function RaiseRequest() {
         </div>
       )}
 
-      {showRaiseForm && (
-        <RaiseRequestForm
-          assets={myasset}
-          initialDescription={draftDescription}
-          onSubmit={handleRaiseSubmit}
-          onCancel={() => {
-            setShowRaiseForm(false);
-            setDraftDescription("");
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {showRaiseForm && (
+          <RaiseRequestForm
+            assets={myasset}
+            initialDescription={draftDescription}
+            onSubmit={handleRaiseSubmit}
+            onCancel={() => {
+              setShowRaiseForm(false);
+              setDraftDescription("");
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="bg-white shadow-xl rounded-2xl p-6 w-full">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -928,25 +931,24 @@ export default function RaiseRequest() {
         </div>
       )}
       {showNoAssetModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[10000] p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden transform animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+          <div className="bg-white/95 backdrop-blur-xl w-full max-w-[340px] rounded-[2rem] shadow-2xl border border-white/40 overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-8 text-center">
-              <div className="w-20 h-20 bg-amber-50 rounded-3xl flex items-center justify-center mx-auto mb-6 relative">
-                <div className="absolute inset-0 bg-amber-200/20 rounded-3xl animate-ping opacity-20"></div>
-                <span className="text-4xl">⚠️</span>
+              <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span className="text-3xl">📦</span>
               </div>
 
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-3">
+              <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">
                 No Assets Found
               </h3>
 
-              <p className="text-slate-500 text-sm font-semibold leading-relaxed mb-8 px-2">
+              <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8 px-2">
                 It looks like you don't have any assigned assets yet. Please add an asset to your profile before raising a service request.
               </p>
 
               <button
                 onClick={() => setShowNoAssetModal(false)}
-                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-500/20 active:scale-95 transition-all duration-300"
+                className="w-full py-3.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-indigo-600 transition-all active:scale-[0.98]"
               >
                 Got it, Thanks!
               </button>

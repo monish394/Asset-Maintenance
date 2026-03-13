@@ -199,14 +199,14 @@ export default function Payment() {
                       <td
                         style={{
                           padding: "15px",
-                          width: "200px",
+                          width: "140px",
                           borderBottom: "1px solid #eee",
                           verticalAlign: "top"
                         }}
                       >
                         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                           {asset.assetImg && (
-                            <div style={{ width: "100%", height: 120, overflow: "hidden", borderRadius: 12, border: "1px solid #f0f0f0" }}>
+                            <div style={{ width: "100%", height: 80, overflow: "hidden", borderRadius: 12, border: "1px solid #f0f0f0" }}>
                               <img
                                 src={asset.assetImg}
                                 alt={asset.assetName}

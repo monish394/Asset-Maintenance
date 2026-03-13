@@ -63,7 +63,6 @@ UserCtrl.Registeruser = async (req, res) => {
       value.role = "admin"
     }
 
-    // Only technicians require admin approval; users get immediate access
     if (value.role === "technician") {
       value.isApproved = false;
     } else if (value.role === "user") {
@@ -72,7 +71,6 @@ UserCtrl.Registeruser = async (req, res) => {
 
     const Newuser = new User(value)
 
-    // Automatically fill coordinates based on address
     if (Newuser.address) {
       const coords = await geocodeAddress(Newuser.address);
       if (coords) {
@@ -116,7 +114,6 @@ UserCtrl.Loginuser = async (req, res) => {
       return res.status(400).json({ err: "Invalid Password!!" })
     }
 
-    // Auto-approve existing users stuck with isApproved: false
     if (user.role === "user" && user.isApproved === false) {
       user.isApproved = true;
       await user.save();
