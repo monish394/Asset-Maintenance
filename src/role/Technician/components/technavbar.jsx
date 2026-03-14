@@ -322,7 +322,7 @@ export default function TechnicianNavbar() {
 
             {showTechMenu && techinfo && (
               <div className="absolute right-0 mt-3 w-72 bg-white shadow-2xl rounded-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 p-6 text-white text-center">
+                <div className="bg-gradient-to-r from-purple-600 to-green-500 p-6 text-white text-center">
                   <div className="mx-auto h-20 w-20 rounded-full border-4 border-white/30 shadow-xl mb-3 overflow-hidden">
                     {techinfo.profile ? (
                       <img src={techinfo.profile} alt="Avatar" className="h-full w-full object-cover" />
@@ -382,7 +382,6 @@ export default function TechnicianNavbar() {
             )}
           </div>
 
-          {/* ── Edit Profile Modal ── */}
           {showEditModal && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 text-left">
               <div className="bg-white w-full max-w-[380px] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
@@ -507,7 +506,7 @@ export default function TechnicianNavbar() {
                         value={passwordForm.oldPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
                         className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
-                        placeholder="••••••••"
+                        placeholder="Enter Current Password"
                         required
                       />
                     </div>
@@ -518,7 +517,7 @@ export default function TechnicianNavbar() {
                         value={passwordForm.newPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                         className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
-                        placeholder="••••••••"
+                        placeholder="Enter New Password"
                         required
                       />
                     </div>
@@ -529,7 +528,7 @@ export default function TechnicianNavbar() {
                         value={passwordForm.confirmPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                         className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none text-sm font-medium"
-                        placeholder="••••••••"
+                        placeholder="Enter Confirm Password"
                         required
                       />
                     </div>

@@ -33,8 +33,8 @@ export default function AcceptedRequestsChart({
                 label: "Accepted",
                 data: [raiseRequests.length, generalRequests.length],
                 backgroundColor: [
-                    "rgba(0, 72, 255, 1)", // indigo-500
-                    "rgba(174, 0, 255, 1)", // violet-500
+                    "rgba(0, 72, 255, 1)",
+                    "rgba(174, 0, 255, 1)",
                 ],
                 borderRadius: 6,
             },
@@ -48,8 +48,8 @@ export default function AcceptedRequestsChart({
                 label: "Completed",
                 data: [completedRaise.length, completedGeneral.length],
                 backgroundColor: [
-                    "rgba(72, 230, 201, 0.69)", // custom blue
-                    "rgba(184, 199, 214, 1)", // custom purple
+                    "rgba(72, 230, 201, 0.69)", 
+                    "rgba(184, 199, 214, 1)", 
                 ],
                 borderWidth: 0,
             },
@@ -93,7 +93,7 @@ export default function AcceptedRequestsChart({
 
     return (
         <div className="w-full h-full flex flex-col">
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest text-center mb-6">
+            <h3 className="text-sm font-bold text-balck uppercase tracking-widest text-center mb-6">
                 Work Summary Overview
             </h3>
 

@@ -24,18 +24,7 @@ export default function RequestDetails() {
     });
   };
 
-  const getStatusStyle = (status) => {
-    switch (status?.toLowerCase()) {
-      case "completed": return "bg-emerald-50 text-emerald-600 border border-emerald-100";
-      case "in-process": return "bg-indigo-50 text-indigo-600 border border-indigo-100";
-      case "assigned":
-      case "accepted":
-      case "approved": return "bg-blue-50 text-blue-600 border border-blue-100";
-      case "pending":
-      case "open": return "bg-amber-50 text-amber-600 border border-amber-100";
-      default: return "bg-slate-50 text-slate-600 border border-slate-100";
-    }
-  };
+
 
   const RequestTable = ({ data, isGeneral = false }) => (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden overflow-x-auto">
@@ -74,12 +63,21 @@ export default function RequestDetails() {
               </td>
               <td className="px-6 py-4">
                 <div className="flex flex-col gap-1.5">
-                  <span className={`inline-flex px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider w-fit ${getStatusStyle(req.status)}`}>
+                  <span className={`inline-flex px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider w-fit border ${
+                    req.status?.toLowerCase() === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                    req.status?.toLowerCase() === 'in-process' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                    ['pending', 'open'].includes(req.status?.toLowerCase()) ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                    ['assigned', 'accepted', 'approved'].includes(req.status?.toLowerCase()) ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                    'bg-slate-50 text-slate-600 border-slate-100'
+                  }`}>
                     {req.status}
                   </span>
                   {!isGeneral && req.aiPriority && (
-                    <span className={`inline-flex px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider w-fit ${
-                      req.aiPriority === "high" ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-50 text-slate-500 border border-slate-100"
+                    <span className={`inline-flex px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider w-fit border ${
+                      req.aiPriority?.toLowerCase() === "high" ? "bg-rose-50 text-rose-600 border-rose-100" :
+                      req.aiPriority?.toLowerCase() === "medium" ? "bg-amber-50 text-amber-600 border-amber-100" :
+                      req.aiPriority?.toLowerCase() === "low" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                      "bg-slate-50 text-slate-500 border-slate-100"
                     }`}>
                       {req.aiPriority}
                     </span>

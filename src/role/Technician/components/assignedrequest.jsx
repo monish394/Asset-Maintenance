@@ -238,9 +238,7 @@ export default function AssignedRequest() {
     });
   };
 
-  // const filteredRequests = nearbyAssetRequests.filter(
-  //   (req) => req.aiPriority && ["low", "medium","high"].includes(req.aiPriority.toLowerCase())
-  // );
+
 
   return (
     <div className="p-6" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
@@ -413,90 +411,75 @@ export default function AssignedRequest() {
           <p className="text-slate-400 text-sm font-medium mt-1">Track assigned requests and contact details</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead className="bg-slate-50/50 border-b border-slate-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">User</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Asset</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Contact</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).map((item) => (
-                    <tr key={item._id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs flex-shrink-0">
-                            {item.userid?.name?.charAt(0) || "U"}
-                          </div>
-                          <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">{item.userid?.name || "Unknown User"}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{item.assetid?.assetName || "N/A"}</td>
-                      <td className="px-6 py-4">
-                        {item.userid?.phone ? (
-                          <a href={`tel:${item.userid?.phone}`} className="text-indigo-600 hover:underline text-xs font-medium whitespace-nowrap flex items-center gap-1.5">
-                            <FaPhone size={10} />
-                            {item.userid?.phone}
-                          </a>
-                        ) : (
-                          <span className="text-slate-400 text-xs">N/A</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="max-w-[150px] text-xs text-slate-600 truncate" title={item.userid?.address}>
-                          {item.userid?.address || "N/A"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="max-w-[200px] text-xs text-slate-600 line-clamp-1" title={item.description}>
-                          {item.description || "N/A"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleTrack(item.userid?.address)}
-                            className="p-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm"
-                            title="Track Location"
-                          >
-                            <FaMapMarkerAlt size={12} />
-                          </button>
-                          <button
-                            onClick={() => openChat({
-                              requestId: item._id,
-                              requestModel: 'RaiseRequest',
-                              senderId: techinfo._id,
-                              receiverId: item.userid?._id,
-                              receiverName: item.userid?.name
-                            })}
-                            className="relative p-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
-                            title="Chat with User"
-                          >
-                            <FaComments size={12} />
-                            {unreadChats[item._id] && (
-                              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="p-12 text-center">
-              <p className="text-slate-400 text-sm">No assigned requests available.</p>
-            </div>
-          )}
-        </div>
+        {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {technicianassignedassert.filter((ele) => ["assigned", "in-process"].includes(ele.status)).map((item) => (
+              <div key={item._id} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full bg-gradient-to-b from-white to-slate-50/50 relative overflow-hidden">
+                <div className="flex items-start justify-between mb-3 relative z-10">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-base shadow-sm">
+                      {item.userid?.name?.charAt(0) || "U"}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 leading-tight">{item.userid?.name || "Unknown User"}</h3>
+                      <span className={`inline-block mt-0.5 px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-widest ${getStatusStyle(item.status)}`}>
+                        {item.status.replace('-', ' ')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="flex-1 space-y-2 mb-4 relative z-10">
+                  <div className="bg-white rounded-[10px] py-1.5 px-3 border border-slate-100 shadow-sm flex items-center justify-between gap-2">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest w-12 shrink-0">Asset</p>
+                    <p className="text-xs font-semibold text-slate-800 truncate text-right">{item.assetid?.assetName || "N/A"}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-[10px] py-2 px-3 border border-slate-100 shadow-sm">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Issue Desc</p>
+                    <p className="text-[11px] text-slate-600 leading-relaxed font-medium line-clamp-2" title={item.description}>{item.description || "N/A"}</p>
+                  </div>
+
+                  <div className="bg-white rounded-[10px] py-2 px-3 border border-slate-100 shadow-sm">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Address</p>
+                    <p className="text-[11px] text-slate-600 leading-relaxed font-medium line-clamp-2" title={item.userid?.address}>{item.userid?.address || "N/A"}</p>
+                  </div>
+                </div>
+
+                <div className="mt-auto grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 relative z-10">
+                  <button
+                    onClick={() => handleTrack(item.userid?.address)}
+                    className="flex items-center justify-center gap-1.5 py-2 rounded-[10px] bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition shadow-md shadow-indigo-600/20 active:scale-[0.98]"
+                  >
+                    <FaMapMarkerAlt size={12} />
+                    <span className="text-[11px]">Track Route</span>
+                  </button>
+                  <button
+                    onClick={() => openChat({
+                      requestId: item._id,
+                      requestModel: 'RaiseRequest',
+                      senderId: techinfo._id,
+                      receiverId: item.userid?._id,
+                      receiverName: item.userid?.name
+                    })}
+                    className="relative flex items-center justify-center gap-1.5 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-[10px] hover:bg-indigo-100 transition border border-indigo-100 active:scale-[0.98]"
+                  >
+                    <FaComments size={12} />
+                    <span className="text-[11px]">Message</span>
+                    {unreadChats[item._id] && (
+                      <span className="absolute top-0 right-0 -mt-1 -mr-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-pulse" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-12 text-center bg-white rounded-2xl border border-slate-100">
+            <p className="text-slate-400 text-sm font-medium">No active assigned requests available right now.</p>
+          </div>
+        )}
       </div>
 
       <div className="mb-20">
@@ -751,7 +734,7 @@ export default function AssignedRequest() {
 
       {selectedImage && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-          {/* Frosted Glass Overlay - Darker for better contrast */}
+
           <div
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300"
             onClick={() => setSelectedImage(null)}

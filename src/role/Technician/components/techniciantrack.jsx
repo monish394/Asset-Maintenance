@@ -1,8 +1,25 @@
 import React, { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Polyline, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMap } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
+
+function FitBounds({ techCoords, userCoords }) {
+  const map = useMap();
+  const [hasFit, setHasFit] = useState(false);
+
+  useEffect(() => {
+    if (techCoords && userCoords && !hasFit) {
+      const bounds = L.latLngBounds([
+        [techCoords.lat, techCoords.lng],
+        [userCoords.lat, userCoords.lng],
+      ]);
+      map.fitBounds(bounds, { padding: [100, 100], maxZoom: 15 });
+      setHasFit(true);
+    }
+  }, [map, techCoords, userCoords, hasFit]);
+  return null;
+}
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -50,16 +67,6 @@ const OSMTrackMap = ({ userAddress, onClose }) => {
     };
     fetchCoords();
   }, [userAddress]);
-
-  useEffect(() => {
-    if (mapRef.current && techCoords && userCoords) {
-      const bounds = L.latLngBounds([
-        [techCoords.lat, techCoords.lng],
-        [userCoords.lat, userCoords.lng],
-      ]);
-      mapRef.current.fitBounds(bounds, { padding: [100, 100] });
-    }
-  }, [techCoords, userCoords]);
 
   const getDistance = (lat1, lng1, lat2, lng2) => {
     const toRad = (v) => (v * Math.PI) / 180;
@@ -110,7 +117,7 @@ const OSMTrackMap = ({ userAddress, onClose }) => {
                 direction="top"
                 offset={[0, -10]}
                 permanent
-                className="bg-blue-600 text-white rounded px-2 py-1 text-sm"
+                className="bg-blue-600 text-white rounded px-2 py-1 text-sm font-bold border-none"
               >
                 Your Location
               </Tooltip>
@@ -121,18 +128,18 @@ const OSMTrackMap = ({ userAddress, onClose }) => {
                 direction="top"
                 offset={[0, -10]}
                 permanent
-                className="bg-green-600 text-white rounded px-2 py-1 text-sm"
+                className="bg-green-600 text-white rounded px-2 py-1 text-sm font-bold border-none"
               >
                 User
               </Tooltip>
             </Marker>
 
-            <Polyline positions={[techCoords, userCoords]} color="red">
+            <Polyline positions={[techCoords, userCoords]} color="indigo">
               <Tooltip
                 direction="center"
                 offset={[0, 0]}
                 permanent
-                className="bg-black text-white rounded px-2 py-1 text-sm"
+                className="bg-black text-white rounded px-2 py-1 text-sm font-bold border-none shadow-lg"
               >
                 {getDistance(
                   techCoords.lat,
@@ -143,6 +150,8 @@ const OSMTrackMap = ({ userAddress, onClose }) => {
                 km
               </Tooltip>
             </Polyline>
+            
+            <FitBounds techCoords={techCoords} userCoords={userCoords} />
           </MapContainer>
         )}
       </div>

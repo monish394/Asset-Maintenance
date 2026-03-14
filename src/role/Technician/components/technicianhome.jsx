@@ -242,7 +242,6 @@ export default function TechnicianHome() {
           )}
         </div>
       )}
-      {/* Header Section */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex-1">
@@ -286,7 +285,6 @@ export default function TechnicianHome() {
         </div>
       </div>
 
-      {/* Stats Cards */}
       {technicianstats && (
         <div>
           <div className="mb-4">
@@ -326,7 +324,6 @@ export default function TechnicianHome() {
         </div>
       )}
 
-      {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-shadow">
           <TechnicianStatusPieChart stats={technicianstats} />
@@ -346,7 +343,6 @@ export default function TechnicianHome() {
         </div>
       </div>
 
-      {/* Recent Requests Table */}
       <div>
         <div className="mb-4">
           <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
@@ -438,7 +434,6 @@ export default function TechnicianHome() {
         </div>
       </div>
 
-      {/* Completed Asset Requests */}
       <div>
         <div className="mb-4">
           <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
@@ -528,7 +523,6 @@ export default function TechnicianHome() {
         </div>
       </div>
 
-      {/* Completed General Requests */}
       <div>
         <div className="mb-4">
           <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
