@@ -40,22 +40,20 @@ function FitBounds({ origin, destination }) {
 
 function FitAllBounds({ userCoords, techs }) {
   const map = useMap();
-  const [hasFit, setHasFit] = useState(false);
 
   useEffect(() => {
-    if (userCoords && !hasFit) {
+    if (userCoords && techs) {
       const bounds = [[userCoords.lat, userCoords.lng]];
-      if (techs && techs.length > 0) {
+      if (techs.length > 0) {
         techs.forEach(tech => {
           if (tech.location?.coordinates) {
             bounds.push([tech.location.coordinates[1], tech.location.coordinates[0]]);
           }
         });
       }
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-      setHasFit(true);
+      map.fitBounds(bounds, { padding: [70, 70], maxZoom: 15 });
     }
-  }, [map, userCoords, techs, hasFit]);
+  }, [map, userCoords, techs]);
   return null;
 }
 
