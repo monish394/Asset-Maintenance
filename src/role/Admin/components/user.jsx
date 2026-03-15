@@ -156,91 +156,91 @@ export default function Users() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[2rem] w-full max-w-lg shadow-2xl relative z-[101] overflow-hidden"
+              className="bg-white rounded-2xl w-full max-w-md shadow-2xl relative z-[101] overflow-hidden"
             >
-              <div className="p-10">
-                <div className="flex justify-between items-start mb-10">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-5">
                   <div>
-                    <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Modify User</h2>
-                    <p className="text-slate-500 text-sm font-medium mt-1">Adjust user credentials and contact data</p>
+                    <h2 className="text-xl font-bold text-slate-900 tracking-tight">Edit User</h2>
+                    <p className="text-slate-500 text-[11px] font-medium mt-0.5">Update user profile information</p>
                   </div>
                   <button
                     onClick={() => dispatch({ type: "START_EDIT", payload: null })}
-                    className="p-3 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-900"
+                    className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-900"
                   >
-                    <FaTimes size={18} />
+                    <FaTimes size={14} />
                   </button>
                 </div>
 
-                <form onSubmit={handleEditSubmit} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Member Name</label>
-                      <div className="relative group">
-                        <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={14} />
+                <form onSubmit={handleEditSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                      <div className="relative">
+                        <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={10} />
                         <input
                           value={editUser.name}
                           onChange={(e) => dispatch({ type: "START_EDIT", payload: { ...editUser, name: e.target.value } })}
-                          className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-semibold"
+                          className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-50 outline-none transition-all text-xs font-medium"
                           required
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Contact Line</label>
-                      <div className="relative group">
-                        <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={14} />
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                      <div className="relative">
+                        <FaPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={10} />
                         <input
                           value={editUser.phone}
                           onChange={(e) => dispatch({ type: "START_EDIT", payload: { ...editUser, phone: e.target.value } })}
-                          className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-semibold"
+                          className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-50 outline-none transition-all text-xs font-medium"
                           required
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Registered Email</label>
-                    <div className="relative group">
-                      <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={14} />
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                    <div className="relative">
+                      <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={10} />
                       <input
                         type="email"
                         value={editUser.email}
                         onChange={(e) => dispatch({ type: "START_EDIT", payload: { ...editUser, email: e.target.value } })}
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-semibold"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-50 outline-none transition-all text-xs font-medium"
                         required
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Static Address</label>
-                    <div className="relative group">
-                      <FaMapMarkerAlt className="absolute left-4 top-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={14} />
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Address</label>
+                    <div className="relative">
+                      <FaMapMarkerAlt className="absolute left-3 top-3.5 text-slate-400" size={10} />
                       <textarea
                         value={editUser.address}
                         onChange={(e) => dispatch({ type: "START_EDIT", payload: { ...editUser, address: e.target.value } })}
                         rows={2}
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-sm font-semibold resize-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-50 outline-none transition-all text-xs font-medium resize-none"
                         required
                       />
                     </div>
                   </div>
 
-                  <div className="flex gap-4 pt-6">
+                  <div className="flex gap-2.5 pt-3">
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "START_EDIT", payload: null })}
-                      className="flex-1 py-4 px-6 rounded-2xl bg-slate-100 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                      className="flex-1 py-2 rounded-lg bg-slate-100 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-200 transition-all"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="flex-2 py-4 px-10 rounded-2xl bg-indigo-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
+                      className="flex-[1.5] py-2 rounded-lg bg-indigo-600 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-indigo-700 shadow-sm transition-all"
                     >
-                      Update Records
+                      Save Changes
                     </button>
                   </div>
                 </form>
@@ -262,27 +262,27 @@ export default function Users() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl relative z-[111] text-center"
+              className="bg-white rounded-2xl p-6 w-full max-w-[320px] shadow-2xl relative z-[111] text-center"
             >
-              <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-red-100">
-                <FaExclamationTriangle className="text-red-500" size={32} />
+              <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
+                <FaExclamationTriangle className="text-red-500" size={20} />
               </div>
-              <h2 className="text-2xl font-extrabold text-slate-900 mb-2">Delete Account?</h2>
-              <p className="text-slate-500 text-sm font-medium mb-10 leading-relaxed">
-                You are about to remove <span className="font-bold text-slate-900">{deleteUser.name}</span> from the management database. This cannot be undone.
+              <h2 className="text-lg font-bold text-slate-900 mb-1">Delete User?</h2>
+              <p className="text-slate-500 text-xs font-medium mb-5 leading-relaxed">
+                Confirm deletion of <span className="text-slate-900 font-bold">{deleteUser.name}</span>.
               </p>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <button
                   onClick={handleDelete}
-                  className="w-full py-4 bg-red-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+                  className="w-full py-2 bg-red-600 text-white rounded-lg font-bold text-[10px] uppercase tracking-wider hover:bg-red-700 transition-all shadow-sm"
                 >
-                  Confirm Removal
+                  Confirm Delete
                 </button>
                 <button
                   onClick={() => dispatch({ type: "SET_DELETE_USER", payload: null })}
-                  className="w-full py-4 text-slate-500 font-bold text-xs uppercase tracking-widest hover:text-slate-900 transition-all"
+                  className="w-full py-2 text-slate-500 font-bold text-[10px] uppercase tracking-wider hover:text-slate-900 transition-all"
                 >
-                  Keep Account
+                  Cancel
                 </button>
               </div>
             </motion.div>
