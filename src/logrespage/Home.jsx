@@ -28,7 +28,6 @@ const GsapHoverCard = ({ children, className, as: Component = motion.div, ...pro
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    // Calculate rotation with max 5 degrees angle for a subtle effect
     const rotateX = ((y - centerY) / centerY) * -5;
     const rotateY = ((x - centerX) / centerX) * 5;
 
@@ -44,7 +43,6 @@ const GsapHoverCard = ({ children, className, as: Component = motion.div, ...pro
       zIndex: 50
     });
 
-    // Subtly pop out inner elements
     const innerElements = cardRef.current.querySelectorAll('.hover-inner');
     if (innerElements.length) {
       gsap.to(innerElements, {
@@ -205,7 +203,7 @@ const PublicHome = () => {
               className="flex items-center gap-2"
             >
               <a href="#top" className="hover:opacity-90 transition-opacity">
-                <img src={logopng} alt="Logo" className="h-8 w-auto" />
+                <img src={logopng} alt="Logo" className="h-8 w-auto mix-blend-multiply" />
               </a>
             </motion.div>
 
@@ -214,12 +212,13 @@ const PublicHome = () => {
                 <motion.a
                   key={link}
                   href={`#${link.toLowerCase()}`}
-                  className="hover:text-indigo-600 transition-colors"
+                  className="relative group hover:text-indigo-600 transition-colors py-1"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 + i * 0.1, ease: "easeOut" }}
                 >
                   {link}
+                  <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                 </motion.a>
               ))}
             </div>
@@ -542,13 +541,14 @@ const PublicHome = () => {
               <motion.a
                 key={l}
                 href="#"
-                className="hover:text-indigo-600 transition-colors"
+                className="relative group hover:text-indigo-600 transition-colors py-1"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.2 + i * 0.05, ease: "easeOut" }}
               >
                 {l}
+                <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
               </motion.a>
             ))}
           </div>

@@ -138,14 +138,12 @@ GeneralRequestCtrl.acceptGeneralRequest = async (req, res) => {
         .json({ err: "Request already accepted by another technician" });
     }
 
-    // Store notification in DB for the user
     await Notification.create({
       userid: request.userId._id,
       message: `Your general request "${request.issue}" has been accepted by a technician.`,
       requestid: request._id
     });
 
-    // Real-time notification via Socket.IO
     const io = req.app.get("io");
     if (io) {
       io.to(request.userId.toString()).emit("notification", {
