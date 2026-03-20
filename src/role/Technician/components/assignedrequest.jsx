@@ -18,6 +18,11 @@ export default function AssignedRequest() {
   const [activeChat, setActiveChat] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const [showGeneralEditForm, setShowGeneralEditForm] = useState(false);
+  const [generalRequestIdToEdit, setGeneralRequestIdToEdit] = useState("");
+  const [generalCostEstimate, setGeneralCostEstimate] = useState("");
+  const [generalStatusEdit, setGeneralStatusEdit] = useState("ACCEPTED");
+
   const { technicianassignedassert, setTechnicianassignedassert, requests, setRequests, techinfo } = TechData();
   const [unreadChats, setUnreadChats] = useState({});
 
@@ -171,18 +176,34 @@ export default function AssignedRequest() {
     }
   };
 
-  const handleComplete = async (requestId) => {
+  const handleGeneralEditClick = (request) => {
+    setGeneralRequestIdToEdit(request._id);
+    setGeneralStatusEdit(request.status || "ACCEPTED");
+    setGeneralCostEstimate(request.costEstimate || "");
+    setShowGeneralEditForm(true);
+  };
+
+  const submitGeneralUpdate = async () => {
     try {
+      const payload = {};
+      if (generalStatusEdit) payload.status = generalStatusEdit;
+      if (generalCostEstimate !== "" && Number(generalCostEstimate) >= 0) {
+        payload.costEstimate = Number(generalCostEstimate);
+      }
+
       const res = await axios.patch(
-        `/technician/general-request/${requestId}/complete`,
-        {},
+        `/technician/general-request/${generalRequestIdToEdit}/complete`,
+        payload,
         { headers: { Authorization: localStorage.getItem("token") } }
       );
       setAcceptedtechniciangeneralreqeust((prev) =>
-        prev.map((req) => (req._id === requestId ? res.data : req))
+        prev.map((req) => (req._id === generalRequestIdToEdit ? res.data : req))
       );
+      setShowGeneralEditForm(false);
+      setGeneralRequestIdToEdit("");
+      setGeneralCostEstimate("");
     } catch (err) {
-      console.log("Error completing request:", err.response?.data || err.message);
+      console.log("Error updating general request:", err.response?.data || err.message);
     }
   };
 
@@ -288,6 +309,60 @@ export default function AssignedRequest() {
                 </button>
                 <button
                   onClick={handleUpdate}
+                  className="flex-1 px-4 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showGeneralEditForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowGeneralEditForm(false)} />
+          <div className="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-900">Update General Request</h3>
+              <button onClick={() => setShowGeneralEditForm(false)} className="text-slate-400 hover:text-slate-600">
+                <FaTimes size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Status</label>
+                <select
+                  value={generalStatusEdit}
+                  onChange={(e) => setGeneralStatusEdit(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                >
+                  <option value="ACCEPTED">Accepted / In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Cost Estimate (₹)</label>
+                <input
+                  type="number"
+                  placeholder="Enter cost for user payment"
+                  value={generalCostEstimate}
+                  onChange={(e) => setGeneralCostEstimate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => { setGeneralCostEstimate(""); setShowGeneralEditForm(false); }}
+                  className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitGeneralUpdate}
                   className="flex-1 px-4 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
                 >
                   Update
@@ -576,6 +651,7 @@ export default function AssignedRequest() {
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Phone</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Address</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Status</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Cost</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Action</th>
                   </tr>
                 </thead>
@@ -607,6 +683,9 @@ export default function AssignedRequest() {
                           {req.status}
                         </span>
                       </td>
+                      <td className="px-6 py-4 text-sm font-bold text-slate-800 whitespace-nowrap">
+                        {req.costEstimate ? `₹${req.costEstimate}` : "—"}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex gap-2">
                           <button
@@ -633,13 +712,13 @@ export default function AssignedRequest() {
                               )}
                             </button>
                           )}
-                          {req.status !== "COMPLETED" && (
+                          {["ACCEPTED", "APPROVED", "COMPLETED"].includes(req.status) && (
                             <button
-                              onClick={() => handleComplete(req._id)}
-                              className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition flex items-center gap-1 whitespace-nowrap"
+                              onClick={() => handleGeneralEditClick(req)}
+                              className="px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-medium hover:bg-amber-600 transition flex items-center gap-1 whitespace-nowrap"
                             >
-                              <FaCheckCircle size={10} />
-                              Complete
+                              <FaEdit size={10} />
+                              Edit
                             </button>
                           )}
                         </div>

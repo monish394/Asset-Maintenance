@@ -7,10 +7,22 @@ const paymentSchema = new mongoose.Schema({
     required: true 
   }, 
 
-  raiseRequestId: {  // <-- add this field
+  raiseRequestId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "RaiseRequest",
-    required: true
+    default: null
+  },
+
+  generalRequestId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "GeneralRequest",
+    default: null
+  },
+
+  requestType: {
+    type: String,
+    enum: ["asset", "general"],
+    default: "asset"
   },
 
   orderId: { 

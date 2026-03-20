@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Tooltip, useMap } from "react-leaflet";
+import RoutePolyline from "../../../components/RoutePolyline";
 import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
@@ -90,6 +91,20 @@ const OSMTrackMap = ({ userAddress, onClose }) => {
           Close
         </button>
 
+        {/* Distance badge */}
+        {techCoords && userCoords && (
+          <div className="absolute top-3 left-3 z-[10001] bg-white px-3 py-1 rounded-lg shadow-md font-semibold text-gray-800 text-sm">
+            📍 Distance:{" "}
+            {getDistance(
+              techCoords.lat,
+              techCoords.lng,
+              userCoords.lat,
+              userCoords.lng
+            )}{" "}
+            km
+          </div>
+        )}
+
         {loading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70">
             <p className="text-gray-700 text-lg">Loading map...</p>
@@ -134,22 +149,11 @@ const OSMTrackMap = ({ userAddress, onClose }) => {
               </Tooltip>
             </Marker>
 
-            <Polyline positions={[techCoords, userCoords]} color="indigo">
-              <Tooltip
-                direction="center"
-                offset={[0, 0]}
-                permanent
-                className="bg-black text-white rounded px-2 py-1 text-sm font-bold border-none shadow-lg"
-              >
-                {getDistance(
-                  techCoords.lat,
-                  techCoords.lng,
-                  userCoords.lat,
-                  userCoords.lng
-                )}{" "}
-                km
-              </Tooltip>
-            </Polyline>
+            <RoutePolyline
+              origin={techCoords}
+              destination={userCoords}
+              color="#4f46e5"
+            />
             
             <FitBounds techCoords={techCoords} userCoords={userCoords} />
           </MapContainer>

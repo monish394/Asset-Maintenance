@@ -48,6 +48,10 @@ const GeneralRequestSchema = new mongoose.Schema({
     enum: ["low", "medium", "high"],
     default: "medium"
   },
+  costEstimate: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -10,10 +10,10 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Polyline,
   Tooltip,
   useMap,
 } from "react-leaflet";
+import RoutePolyline from "../../../components/RoutePolyline";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import GeneralRequestForm from "./generalrequstform";
@@ -370,12 +370,10 @@ export default function RaiseRequest() {
                   Technician
                 </Tooltip>
               </Marker>
-              <Polyline
-                positions={[
-                  [trackingCoords.origin.lat, trackingCoords.origin.lng],
-                  [trackingCoords.destination.lat, trackingCoords.destination.lng],
-                ]}
-                color="blue"
+              <RoutePolyline
+                origin={trackingCoords.origin}
+                destination={trackingCoords.destination}
+                color="#2563eb"
               />
               <FitBounds
                 origin={trackingCoords.origin}

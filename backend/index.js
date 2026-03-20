@@ -21,7 +21,6 @@ import RequestCtrl from "./app/controllers/RequestAssetCtrl.js";
 import GeneralRequestCtrl from "./app/controllers/GeneralRequestCtrl.js";
 import EnquiryCtrl from "./app/controllers/EnquiryControllers.js";
 import AiCtrl from "./app/controllers/AiController.js";
-import Payment from "./app/models/Payment.js";
 import ChatMessage from "./app/models/ChatMessage.js";
 import { upload } from "./app/middlewares/cloudinaryUpload.js";
 
@@ -217,15 +216,7 @@ app.put("/api/notifications/mark-all-read", AuthenticateUser, NotificationCtrl.M
 //payment route
 app.post("/api/create-order", AuthenticateUser, PaymentCtrl.createOrder)
 app.post("/api/verify-payment", AuthenticateUser, PaymentCtrl.verifyPayment)
-app.get("/api/payment/user", AuthenticateUser, async (req, res) => {
-  try {
-    const payments = await Payment.find({ userId: req.userid });
-    res.status(200).json({ payments });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Failed to fetch payments" });
-  }
-});
+app.get("/api/payment/user", AuthenticateUser, PaymentCtrl.getUserPayments)
 
 //request for asset
 

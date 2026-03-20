@@ -1,8 +1,28 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import notFoundImg from "../assets/notfound.png"; 
+import notFoundImg from "../assets/notfound.png";
+
+function getHomePathForRole() {
+  const role = localStorage.getItem("role");
+  if (role === "admin") return "/admin/dashboard";
+  if (role === "technician") return "/technician/home";
+  if (role === "user") return "/user/home";
+  return "/home"; 
+}
 
 export default function NotFound() {
+  const role = localStorage.getItem("role");
+  const homePath = getHomePathForRole();
+
+  const buttonLabel =
+    role === "admin"
+      ? "GO TO ADMIN DASHBOARD"
+      : role === "technician"
+      ? "GO TO TECHNICIAN HOME"
+      : role === "user"
+      ? "GO TO USER HOME"
+      : "GO TO HOMEPAGE";
+
   useEffect(() => {
     document.title = "404 - Page Not Found";
   }, []);
@@ -17,16 +37,16 @@ export default function NotFound() {
         />
 
         <h2 style={styles.heading}>
-          Sorry, we couldn’t find that page.
+          Sorry, we couldn't find that page.
         </h2>
 
         <p style={styles.text}>
-          Try searching or go to the homepage.
+          Try searching or go back to your home page.
         </p>
 
-        <Link onClick={()=>{localStorage.removeItem("token"); localStorage.removeItem("role")}} to="/home" style={styles.button}>
-          GO TO HOMEPAGE
-                  </Link>
+        <Link to={homePath} style={styles.button}>
+          {buttonLabel}
+        </Link>
       </div>
     </div>
   );
@@ -48,7 +68,7 @@ const styles = {
   },
   image: {
     display: "block",
-    margin: "0 auto 30px auto", // forces perfect center
+    margin: "0 auto 30px auto",
     maxWidth: "400px",
     width: "100%",
     height: "auto",

@@ -207,14 +207,18 @@ GeneralRequestCtrl.completeGeneralRequest = async (req, res) => {
   try {
     const requestId = req.params.id;
     const techId = req.userid;
+    const { status, costEstimate } = req.body;
+
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (costEstimate !== undefined) updateData.costEstimate = costEstimate;
 
     const request = await GeneralRequest.findOneAndUpdate(
       {
         _id: requestId,
         acceptedBy: techId,
-        status: "ACCEPTED",
       },
-      { status: "COMPLETED" },
+      updateData,
       { new: true }
     ).populate("userId", "name phone");
 
@@ -225,11 +229,14 @@ GeneralRequestCtrl.completeGeneralRequest = async (req, res) => {
     }
 
 
-    await Notification.create({
-      userid: request.userId._id,
-      message: `Your request "${request.issue}" has been completed by the technician.`,
-      requestid: request._id,
-    });
+    if (status) {
+      const statusMessage = status === "COMPLETED" ? "completed" : "updated to " + status;
+      await Notification.create({
+        userid: request.userId._id,
+        message: `Your request "${request.issue}" has been ${statusMessage} by the technician.`,
+        requestid: request._id,
+      });
+    }
 
     res.status(200).json(request);
   } catch (err) {
