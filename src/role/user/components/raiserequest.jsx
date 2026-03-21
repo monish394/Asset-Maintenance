@@ -581,6 +581,9 @@ export default function RaiseRequest() {
                   Technician
                 </th>
                 <th className="px-5 py-3 text-left font-semibold text-gray-700 uppercase tracking-wide">
+                  Cost
+                </th>
+                <th className="px-5 py-3 text-left font-semibold text-gray-700 uppercase tracking-wide">
                   Action
                 </th>
               </tr>
@@ -663,6 +666,9 @@ export default function RaiseRequest() {
                   <td className="px-5 py-3 text-gray-700 font-medium">
                     {ele.assignedto ? ele.assignedto.name : "Unassigned"}
                   </td>
+                  <td className="px-5 py-3 text-gray-700 font-semibold">
+                    {ele.costEstimate ? `₹${ele.costEstimate}` : "N/A"}
+                  </td>
                   <td className="px-5 py-3">
                     <div className="flex gap-2">
                       {["assigned", "in-process"].includes(ele.status) && (
@@ -705,7 +711,7 @@ export default function RaiseRequest() {
               {myraiserequest.length === 0 && (
                 <tr>
                   <td
-                    colSpan="6"
+                    colSpan="7"
                     className="px-5 py-6 text-center text-gray-500 font-medium"
                   >
                     No service requests found
@@ -848,6 +854,9 @@ export default function RaiseRequest() {
                 <th className="w-40 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Accepted By
                 </th>
+                <th className="w-32 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
+                  Cost
+                </th>
                 <th className="w-48 px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Requested At
                 </th>
@@ -912,6 +921,10 @@ export default function RaiseRequest() {
                         {ele.acceptedBy?.name || "N/A"}
                       </td>
 
+                      <td className="px-6 py-3 text-gray-700 font-semibold">
+                        {ele.costEstimate ? `₹${ele.costEstimate}` : "N/A"}
+                      </td>
+
                       <td className="px-6 py-3 text-gray-500 text-sm whitespace-nowrap">
                         {new Date(ele.createdAt).toLocaleString()}
                       </td>
@@ -958,7 +971,7 @@ export default function RaiseRequest() {
               ) : (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="px-6 py-8 text-center text-gray-400 font-medium"
                   >
                     No General Requests Found

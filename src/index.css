@@ -8,7 +8,6 @@ html {
 }
 
 
-/* gradient effect text */
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
@@ -31,7 +30,6 @@ html {
 
 
 
-/* bg animation */
 @keyframes spinSlow {
   from {
     transform: translate(-50%, -50%) rotate(0deg);
