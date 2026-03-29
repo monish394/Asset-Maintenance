@@ -23,18 +23,18 @@ export default function AiTechBot({ onApplyDescription, autoOpen = false }) {
         }
     }, [messages]);
 
-    const handleSend = async () => {
-        if (!input.trim()) return;
+    const handleSend = async (textOverride) => {
+        const messageText = textOverride || input;
+        if (!messageText.trim()) return;
 
-        const userMessage = { role: "user", text: input };
+        const userMessage = { role: "user", text: messageText };
         setMessages(prev => [...prev, userMessage]);
-        setInput("");
+        if (!textOverride) setInput("");
         setIsLoading(true);
 
         try {
             const res = await axios.post("/generate-description",
-                { problem: input },
-                { headers: { Authorization: localStorage.getItem("token") } }
+                { problem: messageText }
             );
 
             const botMessage = {
@@ -44,7 +44,15 @@ export default function AiTechBot({ onApplyDescription, autoOpen = false }) {
             };
             setMessages(prev => [...prev, botMessage]);
         } catch (err) {
-            toast.error("AI service is busy. Please try again.");
+            const errMsg = err.response?.data?.err
+                || (err.code === "ECONNABORTED" ? "Request timed out. Please try again." : null)
+                || "AI service is temporarily unavailable. Please try again in a moment.";
+            toast.error(errMsg);
+            setMessages(prev => [...prev, {
+                role: "bot",
+                text: `⚠️ ${errMsg}`,
+                isError: true
+            }]);
         } finally {
             setIsLoading(false);
         }
@@ -128,6 +136,16 @@ export default function AiTechBot({ onApplyDescription, autoOpen = false }) {
                                                 </button>
                                             </div>
                                         )}
+                                        {msg.isError && (
+                                            <div className="mt-3 pt-3 border-t border-red-100">
+                                                <button
+                                                    onClick={() => handleSend(messages[messages.length - 2]?.text)}
+                                                    className="w-full py-2 bg-red-50 text-red-500 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-red-100 transition-all"
+                                                >
+                                                    🔄 Retry
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -150,7 +168,7 @@ export default function AiTechBot({ onApplyDescription, autoOpen = false }) {
                                 <input
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                    onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                                     placeholder="Tell me about the problem..."
                                     className="w-full pl-5 pr-14 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all"
                                 />

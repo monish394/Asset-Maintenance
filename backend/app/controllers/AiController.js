@@ -1,72 +1,87 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import dotenv from "dotenv";
-import axios from "axios";
-dotenv.config();
+import Bytez from "bytez.js";
 
-const apiKeyRaw = process.env.GEMINI_API_KEY || "";
-const apiKey = apiKeyRaw.trim().replace(/^"|"$/g, '');
+// NOTE: All env vars are read inside the handler (not at module level)
+// because ES Module imports are hoisted before dotenv.config() runs in index.js.
 
-const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+const PROMPT_TEMPLATE = (problem) =>
+    `You are a maintenance service desk assistant writing a formal fault ticket.
+Summarize this issue in EXACTLY ONE sentence of around 20 words.
+State the fault clearly and end with the action required (inspect / repair / replace).
+No greetings. No explanation. No markdown. Plain text only.
+Issue: "${problem}"`;
 
-const MODELS = ["gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-pro-latest"];
+
+// Keyword-based local fallback — always works with zero dependencies
+const localFallback = (problem) => {
+    const p = problem.toLowerCase();
+    if (p.includes("leak") || p.includes("water"))
+        return `Water leak reported: "${problem}". Immediate inspection of plumbing/fixtures required to prevent water damage.`;
+    if (p.includes("broken") || p.includes("crack") || p.includes("damage"))
+        return `Component failure reported: "${problem}". Requires assessment and repair or replacement of the affected parts.`;
+    if (p.includes("noise") || p.includes("sound") || p.includes("vibrat"))
+        return `Unusual noise/vibration reported: "${problem}". Mechanical inspection and potential lubrication or part adjustment needed.`;
+    if (p.includes("wire") || p.includes("power") || p.includes("electric") || p.includes("light") || p.includes("switch"))
+        return `Electrical issue reported: "${problem}". Requires a qualified electrician to inspect wiring and power supply.`;
+    if (p.includes("heat") || p.includes("cold") || p.includes("ac") || p.includes("air") || p.includes("hvac"))
+        return `HVAC issue reported: "${problem}". System requires inspection of heating/cooling elements and airflow.`;
+    return `Service request logged for: "${problem}". Please assign a technician to evaluate and resolve the issue promptly.`;
+};
 
 const GenerateDescription = async (req, res) => {
     const { problem } = req.body;
 
-    if (!problem) {
+    if (!problem || !problem.trim()) {
         return res.status(400).json({ err: "Problem statement is required" });
     }
 
-    // Try Gemini First if API Key is available
-    if (genAI) {
-        for (const modelName of MODELS) {
-            try {
-                console.log(`AI Attempting with model: ${modelName}`);
-                const model = genAI.getGenerativeModel({ model: modelName });
+    // Read keys at request time so dotenv.config() has already executed
+    const bytezKey = (process.env.BYTEZ_API_KEY || "").trim().replace(/^"|"$/g, "");
 
-                const prompt = `You are a professional maintenance assistant. 
-          The user says: "${problem}".
-          Provide a clean, technical, and professional description for a service request.
-          No greetings, just the description. Max 100 words.`;
+    // ── 1. Try Bytez (GPT-4o) ──────────────────────────────────────────────
+    if (bytezKey) {
+        try {
+            console.log("🤖 Attempting Bytez GPT-4o...");
+            const sdk = new Bytez(bytezKey);
+            const model = sdk.model("openai/gpt-4o");
 
-                const result = await model.generateContent(prompt);
-                const response = await result.response;
-                const text = response.text().trim();
+            const { error, output } = await model.run([
+                {
+                    role: "system",
+                    content: "You are a maintenance service desk assistant. Write formal fault tickets. Always respond with ONE sentence of exactly ~20 words stating the fault and action required. No greetings. No markdown. Plain text only."
+                },
+                {
+                    role: "user",
+                    content: PROMPT_TEMPLATE(problem)
+                }
+            ]);
 
-                console.log(`✅ Success with ${modelName}`);
-                return res.status(200).json({ description: text });
-            } catch (err) {
-                console.error(`❌ Failed with ${modelName}:`, err.message);
+            if (!error && output) {
+                // output may be a string or an object with a text/content field
+                const text = (typeof output === "string"
+                    ? output
+                    : output?.choices?.[0]?.message?.content
+                    || output?.content
+                    || output?.text
+                    || JSON.stringify(output)
+                ).trim();
+
+                if (text) {
+                    console.log("✅ Bytez GPT-4o success");
+                    return res.status(200).json({ description: text });
+                }
+            } else if (error) {
+                console.error("❌ Bytez GPT-4o error:", error);
             }
+        } catch (err) {
+            console.error("❌ Bytez GPT-4o exception:", err.message);
         }
+    } else {
+        console.warn("⚠️  BYTEZ_API_KEY not set — skipping Bytez");
     }
 
-    // Fallback to Pollinations AI (Free, No API Key needed)
-    try {
-        console.log("AI Attempting with Pollinations AI Fallback...");
-
-        // Construct a more reliable prompt for Pollinations
-        // Sometimes the params in GET cause 404 if not exactly right, let's use a clear prompt in path
-        const promptForAI = `You are a professional maintenance assistant. The user has this problem: "${problem}". Provide a professional, technical service request description. No greetings. Max 50 words.`;
-
-        // Simpler GET request to Pollinations
-        const pollinationsUrl = `https://text.pollinations.ai/${encodeURIComponent(promptForAI)}`;
-
-        const response = await axios.get(pollinationsUrl);
-
-        if (response.data) {
-            const text = response.data.trim();
-            console.log("✅ Success with Pollinations AI");
-            return res.status(200).json({ description: text });
-        }
-    } catch (fallbackErr) {
-        console.error("❌ Fallback AI Failed:", fallbackErr.message);
-    }
-
-    res.status(500).json({
-        err: "AI Service failure. All available models failed.",
-        hint: "Please try again later or check your internet connection."
-    });
+    // ── 2. Local keyword-based fallback (always works) ─────────────────────
+    console.log("🤖 Using local keyword fallback...");
+    return res.status(200).json({ description: localFallback(problem) });
 };
 
 export default { GenerateDescription };

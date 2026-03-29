@@ -21,6 +21,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
+    "bytez.js": "^3.0.0",
     "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",
