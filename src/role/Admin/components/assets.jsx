@@ -292,7 +292,9 @@ export default function Assets() {
 
                 {editForm.assetImg && (
                   <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                    <img src={editForm.assetImg} alt="Asset" className="h-14 w-14 object-cover rounded-lg border border-slate-200 shadow-sm" />
+                    <div className="h-14 w-14 bg-white rounded-lg border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden">
+                      <img src={editForm.assetImg} alt="Asset" className="max-h-full max-w-full object-contain" />
+                    </div>
                     <div>
                       <p className="text-xs font-semibold text-slate-700">Current Image</p>
                       <p className="text-[10px] text-slate-400 truncate max-w-[300px]">{editForm.assetImg}</p>
@@ -706,11 +708,16 @@ export default function Assets() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Asset Image</label>
                 <label
                   htmlFor="asset-img-upload"
-                  className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-emerald-400
+                  className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-emerald-400
                      rounded-xl cursor-pointer bg-emerald-50 hover:bg-emerald-100 transition overflow-hidden"
                 >
                   {addImagePreview ? (
-                    <img src={addImagePreview} alt="preview" className="h-full w-full object-cover" />
+                    <img
+                      src={addImagePreview}
+                      alt="preview"
+                      className="max-h-full max-w-full object-contain p-1"
+                      style={{ maxHeight: '156px' }}
+                    />
                   ) : (
                     <div className="flex flex-col items-center text-emerald-600">
                       <span className="text-3xl">🖼️</span>

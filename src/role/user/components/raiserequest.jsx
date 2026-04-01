@@ -602,11 +602,11 @@ export default function RaiseRequest() {
                   </td>
                   <td className="px-5 py-3">
                     {ele.faultImg ? (
-                      <div className="relative group w-16 h-16">
+                      <div className="relative group w-16 h-16 bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
                         <img
                           src={ele.faultImg}
                           alt="Fault"
-                          className="w-full h-full object-cover rounded-xl shadow-sm border border-gray-200 cursor-pointer group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg"
+                          className="max-h-full max-w-full object-contain cursor-pointer group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg"
                           onClick={() => setSelectedImage(ele.faultImg)}
                         />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none flex items-center justify-center">
@@ -881,11 +881,11 @@ export default function RaiseRequest() {
 
                       <td className="px-6 py-3">
                         {ele.faultImg ? (
-                          <div className="relative group w-14 h-14">
+                          <div className="relative group w-14 h-14 bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
                             <img
                               src={ele.faultImg}
                               alt="Fault"
-                              className="w-full h-full object-cover rounded-xl shadow-sm border border-gray-200 cursor-pointer group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg"
+                              className="max-h-full max-w-full object-contain cursor-pointer group-hover:scale-105 transition-all duration-300 group-hover:shadow-lg"
                               onClick={() => setSelectedImage(ele.faultImg)}
                             />
                           </div>
