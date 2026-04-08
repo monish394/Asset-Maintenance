@@ -157,7 +157,7 @@ export default function Users() {
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-5">
-                   <div>
+                  <div>
                     <h2 className="text-xl font-bold text-slate-900 tracking-tight">Edit Technician</h2>
                     <p className="text-slate-500 text-[11px] font-medium mt-0.5">Update technician profile information</p>
                   </div>
