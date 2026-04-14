@@ -591,7 +591,7 @@ export default function Assets() {
 
 
 
-        <div className="flex flex-wrap gap-4 justify-start p-4 mt-6">
+        <div className="flex flex-wrap gap-5 justify-center p-4 mt-6">
           {loading ? (
             <div className="w-full h-80 flex flex-col items-center justify-center">
               <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-800 rounded-full animate-spin"></div>

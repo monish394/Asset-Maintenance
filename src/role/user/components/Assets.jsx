@@ -187,7 +187,7 @@ export default function PickAssets() {
 
 
 
-      <div className="flex flex-wrap gap-4 justify-start p-4 ml-6 mt-16">
+      <div className="flex flex-wrap gap-4 justify-center p-4 mt-16">
         {loading ? (
           <div className="w-full flex flex-col items-center justify-center py-20">
             <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4"></div>

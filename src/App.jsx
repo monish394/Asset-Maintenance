@@ -7,7 +7,7 @@ import { Provider } from "react-redux";
 import store from "./store/ConfigureStore";
 
 //public routes
-// import PublicHome from "./logrespage/home.jsx";
+
 import PublicHome from "./logrespage/Home.jsx";
 
 //private route
