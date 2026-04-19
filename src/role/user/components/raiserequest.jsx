@@ -250,7 +250,7 @@ export default function RaiseRequest() {
             assetImg: selectedAsset?.assetImg,
           },
         };
-        setMyraiserequest((prev) => [...prev,newRequest]);
+        setMyraiserequest((prev) => [...prev, newRequest]);
         setShowRaiseForm(false);
         setDraftDescription("");
       } catch (err) {
