@@ -2,16 +2,18 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import Payment from "../models/Payment.js";
 
-const razorpay = new Razorpay({
-  key_id: "rzp_test_SASa7h9ZCNmybV",
-  key_secret: "pCVRCRUVJA7mgr5uzVZJKUh2",
-});
+// Removing global initialization and putting it inside the methods where needed
 
 const PaymentCtrl = {};
 
 PaymentCtrl.createOrder = async (req, res) => {
   try {
     const { amount, raiseRequestId, generalRequestId, requestType } = req.body;
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
 
     const order = await razorpay.orders.create({
       amount: amount * 100,
@@ -50,7 +52,7 @@ PaymentCtrl.verifyPayment = async (req, res) => {
     }
 
     const generated_signature = crypto
-      .createHmac("sha256", "pCVRCRUVJA7mgr5uzVZJKUh2")
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 

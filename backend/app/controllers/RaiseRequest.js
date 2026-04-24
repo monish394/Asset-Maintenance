@@ -17,7 +17,6 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
     const user = await User.findById(req.userid);
     if (!user?.location?.coordinates?.length) return res.status(400).json({ err: "User location missing" });
 
-    // 1. Get AI diagnosis before saving so response has real data
     let aiData = {
       aiResponse: "Issue logged. Technician will assess.",
       aiCategory: "General",
@@ -40,7 +39,6 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
     }
     console.log("Finished getAiDiagnosis", aiData);
 
-    // 2. Create and wait for save
     const newRequest = new RaiseRequest({
       assetid,
       description,
@@ -56,7 +54,6 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
     await newRequest.save();
     console.log("newRequest saved successfully");
 
-    // 3. Send notifications in background (don't block response)
     (async () => {
       try {
         const nearbyTechs = await User.aggregate([
@@ -75,7 +72,7 @@ RaiseRequestCtrl.Postissue = async (req, res) => {
       }
     })();
 
-    res.status(201).json(newRequest); // Send complete response
+    res.status(201).json(newRequest); 
     console.log("Response sent to frontend");
 
   } catch (err) {
