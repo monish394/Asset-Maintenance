@@ -24,7 +24,10 @@ Always write as if filling in a formal maintenance service request.`;
 const GenerateDescription = async (req, res) => {
     const { problem } = req.body;
 
+    console.log("\n🤖 [AI Chatbot Request]", { problem, user: req.userid, time: new Date().toLocaleTimeString() });
+
     if (!problem || !problem.trim()) {
+        console.warn("⚠️  Empty problem statement rejected");
         return res.status(400).json({ err: "Problem statement is required" });
     }
 
@@ -45,12 +48,15 @@ const GenerateDescription = async (req, res) => {
                 const text = response.text().trim();
 
                 if (text) {
+                    console.log(`✅ Gemini (${modelName}) success:`, text.substring(0, 50) + "...");
                     return res.status(200).json({ description: text });
                 }
             } catch (err) {
-                console.warn(`Gemini ${modelName} failed:`, err.message);
+                console.error(`❌ Gemini ${modelName} Error:`, err.message);
             }
         }
+    } else {
+        console.log("ℹ️ Skipping Gemini: No API Key found");
     }
 
     const bytezKey = (process.env.BYTEZ_API_KEY || "").trim().replace(/^"|"$/g, "");
@@ -62,7 +68,7 @@ const GenerateDescription = async (req, res) => {
 
             const { error, output } = await model.run([
                 { role: "system", content: SYSTEM_INSTRUCTION },
-                { role: "user",   content: problem.trim() }
+                { role: "user", content: problem.trim() }
             ]);
 
             if (!error && output) {
@@ -76,12 +82,17 @@ const GenerateDescription = async (req, res) => {
                 ).trim();
 
                 if (text) {
+                    console.log("✅ Bytez GPT-4o success:", text.substring(0, 50) + "...");
                     return res.status(200).json({ description: text });
                 }
+            } else if (error) {
+                console.error("❌ Bytez Error object:", error);
             }
         } catch (err) {
-            console.warn("Bytez GPT-4o failed:", err.message);
+            console.error("❌ Bytez SDK Exception:", err.message);
         }
+    } else {
+        console.log("ℹ️ Skipping Bytez: No API Key found");
     }
 
     for (let attempt = 1; attempt <= 3; attempt++) {
@@ -101,16 +112,19 @@ const GenerateDescription = async (req, res) => {
             if (polRes.data) {
                 const text = (typeof polRes.data === "string" ? polRes.data : JSON.stringify(polRes.data)).trim();
                 if (text) {
+                    console.log("✅ Pollinations success");
                     return res.status(200).json({ description: text });
                 }
             }
         } catch (e) {
-            console.warn(`Pollinations attempt ${attempt} failed:`, e.message);
+            console.error(`❌ Pollinations attempt ${attempt} Error:`, e.message);
             if (e.response?.status === 429 && attempt < 3) {
                 await new Promise(r => setTimeout(r, 2000));
             }
         }
     }
+
+    console.log("⚠️ All AI providers failed. Using static fallback logic.");
 
     const p = problem.toLowerCase();
     let fallback;
