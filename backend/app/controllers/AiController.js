@@ -31,6 +31,7 @@ const GenerateDescription = async (req, res) => {
         return res.status(400).json({ err: "Problem statement is required" });
     }
 
+    // ── 1. Gemini ──────────────────────────────────────────────────────────
     const apiKeyRaw = (process.env.GEMINI_API_KEY || "").trim().replace(/^"|"$/g, "");
 
     if (apiKeyRaw) {
@@ -48,7 +49,7 @@ const GenerateDescription = async (req, res) => {
                 const text = response.text().trim();
 
                 if (text) {
-                    console.log(`✅ Gemini (${modelName}) success:`, text.substring(0, 50) + "...");
+                    console.log(`✅ Gemini (${modelName}) success:`, text.substring(0, 60) + "...");
                     return res.status(200).json({ description: text });
                 }
             } catch (err) {
@@ -56,9 +57,10 @@ const GenerateDescription = async (req, res) => {
             }
         }
     } else {
-        console.log("ℹ️ Skipping Gemini: No API Key found");
+        console.warn("ℹ️ Skipping Gemini: No GEMINI_API_KEY found in environment");
     }
 
+    // ── 2. Bytez GPT-4o ───────────────────────────────────────────────────
     const bytezKey = (process.env.BYTEZ_API_KEY || "").trim().replace(/^"|"$/g, "");
 
     if (bytezKey) {
@@ -68,7 +70,7 @@ const GenerateDescription = async (req, res) => {
 
             const { error, output } = await model.run([
                 { role: "system", content: SYSTEM_INSTRUCTION },
-                { role: "user", content: problem.trim() }
+                { role: "user",   content: problem.trim() }
             ]);
 
             if (!error && output) {
@@ -82,7 +84,7 @@ const GenerateDescription = async (req, res) => {
                 ).trim();
 
                 if (text) {
-                    console.log("✅ Bytez GPT-4o success:", text.substring(0, 50) + "...");
+                    console.log("✅ Bytez GPT-4o success:", text.substring(0, 60) + "...");
                     return res.status(200).json({ description: text });
                 }
             } else if (error) {
@@ -92,9 +94,10 @@ const GenerateDescription = async (req, res) => {
             console.error("❌ Bytez SDK Exception:", err.message);
         }
     } else {
-        console.log("ℹ️ Skipping Bytez: No API Key found");
+        console.warn("ℹ️ Skipping Bytez: No BYTEZ_API_KEY found in environment");
     }
 
+    // ── 3. Pollinations (free, no key needed) ─────────────────────────────
     for (let attempt = 1; attempt <= 3; attempt++) {
         try {
             const polRes = await axios.post(
@@ -124,28 +127,11 @@ const GenerateDescription = async (req, res) => {
         }
     }
 
-    console.log("⚠️ All AI providers failed. Using static fallback logic.");
-
-    const p = problem.toLowerCase();
-    let fallback;
-
-    if (p.includes("ac") || p.includes("air con") || p.includes("hvac") || p.includes("cool") || p.includes("heat")) {
-        fallback = "HVAC unit is not maintaining the set temperature. Airflow appears restricted and cooling performance has degraded. Technician inspection of filters, refrigerant levels, and compressor required.";
-    } else if (p.includes("leak") || p.includes("water") || p.includes("pipe") || p.includes("drain")) {
-        fallback = "Water leak detected from plumbing fixture. Surrounding area at risk of water damage. Immediate inspection and repair of affected pipe or fitting required.";
-    } else if (p.includes("electric") || p.includes("power") || p.includes("wire") || p.includes("short") || p.includes("spark")) {
-        fallback = "Electrical fault reported with intermittent power supply. Potential wiring issue or short circuit detected. Qualified electrician must inspect and repair before further use.";
-    } else if (p.includes("print") || p.includes("scanner") || p.includes("copier")) {
-        fallback = "Printer is experiencing a paper jam and failing to complete print jobs. Internal feed rollers appear worn. Technician required to clear jam and inspect roller mechanism.";
-    } else if (p.includes("laptop") || p.includes("computer") || p.includes("screen") || p.includes("monitor")) {
-        fallback = "Display unit showing flickering and intermittent shutdowns. Hardware fault suspected in GPU or display cable. Device requires diagnostic inspection and component replacement.";
-    } else if (p.includes("lift") || p.includes("elevator")) {
-        fallback = "Elevator is not stopping accurately at floor levels. Door sensors and motor calibration appear to be faulty. Immediate inspection by certified lift technician required.";
-    } else {
-        fallback = "Equipment fault reported. Asset is not functioning as expected and requires a technician assessment. Please assign a qualified engineer to inspect and resolve the issue promptly.";
-    }
-
-    return res.status(200).json({ description: fallback });
+    // ── All providers failed ───────────────────────────────────────────────
+    console.error("🚨 All AI providers failed. No response generated.");
+    return res.status(503).json({
+        err: "AI service is currently unavailable. Please try again in a moment."
+    });
 };
 
 export default { GenerateDescription };
